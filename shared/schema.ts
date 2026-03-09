@@ -32,9 +32,35 @@ export const leads = pgTable("leads", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const blogPosts = pgTable("blog_posts", {
+  id: serial("id").primaryKey(),
+  titleEn: text("title_en").notNull(),
+  titleAr: text("title_ar"),
+  slug: text("slug").notNull().unique(),
+  category: text("category"),
+  excerptEn: text("excerpt_en"),
+  excerptAr: text("excerpt_ar"),
+  contentEn: text("content_en").notNull(),
+  contentAr: text("content_ar"),
+  status: text("status").notNull().default("draft"),
+  featuredImage: text("featured_image"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const siteContent = pgTable("site_content", {
+  id: serial("id").primaryKey(),
+  sectionKey: text("section_key").notNull(),
+  language: text("language").notNull().default("en"),
+  contentJson: text("content_json").notNull(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const insertAdminUserSchema = createInsertSchema(adminUsers).omit({ id: true, isApproved: true, isFirstAdmin: true });
 export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, createdAt: true });
 export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, isRead: true, createdAt: true });
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: true, createdAt: true, updatedAt: true });
+export const insertSiteContentSchema = createInsertSchema(siteContent).omit({ id: true, updatedAt: true });
 
 export type InsertAdminUser = z.infer<typeof insertAdminUserSchema>;
 export type AdminUser = typeof adminUsers.$inferSelect;
@@ -42,3 +68,7 @@ export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
 export type Lead = typeof leads.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertSiteContent = z.infer<typeof insertSiteContentSchema>;
+export type SiteContent = typeof siteContent.$inferSelect;
