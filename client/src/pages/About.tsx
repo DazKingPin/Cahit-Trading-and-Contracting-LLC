@@ -28,16 +28,17 @@ export default function About() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-[120px] overflow-hidden" data-testid="section-about-hero">
+      <section className="relative h-[180px] overflow-hidden" data-testid="section-about-hero">
         <img
           src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOrlgEf.png"
           alt="Infrastructure aerial"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover scale-110 blur-[2px]"
         />
-        <div className="absolute inset-0 bg-[#0A3D6B]/75 flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0E6BA8]/85 to-[#0A5C92]/75"></div>
+        <div className="relative z-10 h-full flex items-center">
           <div className="container mx-auto px-6 md:px-12">
             <h1 className="text-2xl md:text-3xl font-bold italic text-white" data-testid="text-about-heading">About Cahit Trading & Contracting</h1>
-            <p className="text-white/80 text-sm md:text-base mt-1 max-w-2xl">
+            <p className="text-white/80 text-sm md:text-base mt-2 max-w-2xl">
               Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.
             </p>
           </div>
