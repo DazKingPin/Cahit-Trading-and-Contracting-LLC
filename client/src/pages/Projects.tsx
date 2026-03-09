@@ -62,19 +62,19 @@ export default function Projects() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section data-testid="section-projects-hero">
-        <div className="w-full overflow-hidden max-h-[320px]">
-          <img
-            src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/blByadAMGkJrDqRB.gif"
-            alt="Our Projects"
-            className="w-full h-[320px] object-cover"
-          />
-        </div>
-        <div className="text-center py-16 bg-white">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4" data-testid="text-projects-heading">Our Projects</h1>
-          <p className="text-slate-600 max-w-2xl mx-auto text-lg px-4">
-            Delivering excellence across marine, infrastructure, and industrial projects throughout Oman.
-          </p>
+      <section className="relative h-[120px] overflow-hidden" data-testid="section-projects-hero">
+        <img
+          src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/blByadAMGkJrDqRB.gif"
+          alt="Our Projects"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[#0A3D6B]/75 flex items-center">
+          <div className="container mx-auto px-6 md:px-12">
+            <h1 className="text-2xl md:text-3xl font-bold italic text-white" data-testid="text-projects-heading">Our Projects</h1>
+            <p className="text-white/80 text-sm md:text-base mt-1 max-w-2xl">
+              Delivering excellence across marine, infrastructure, and industrial projects throughout Oman.
+            </p>
+          </div>
         </div>
       </section>
 
