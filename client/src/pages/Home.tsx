@@ -9,6 +9,39 @@ import ChatBotWidget from "@/components/ChatBotWidget";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
+const aboutRollingImages = [
+  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/gvWLawWCNocSINuR.jpeg", alt: "Road construction with heavy rollers" },
+  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/GjfldJYeoGyqGIMR.jpeg", alt: "Asphalt paving with Vogele machine" },
+  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/GORAtqFGJ1EPryhc.jpeg", alt: "Road paving in desert landscape" },
+  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/mejIiORMfOESXWxO.jpeg", alt: "Road line marking operations" },
+  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOr1gEf.png", alt: "Road construction aerial perspective" },
+  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/jdGZtMFCClzefYrV.png", alt: "Underground pipe installation" },
+];
+
+function AboutRollingImages() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % aboutRollingImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="mt-4 relative h-48 rounded-2xl overflow-hidden shadow-xl" data-testid="about-rolling-images">
+      {aboutRollingImages.map((img, idx) => (
+        <div
+          key={idx}
+          className={`absolute inset-0 transition-opacity duration-1000 ${idx === activeIndex ? "opacity-100" : "opacity-0"}`}
+        >
+          <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Home() {
   const [showFunnelModal, setShowFunnelModal] = useState(false);
   const [counters, setCounters] = useState({ years: 0, projects: 0, satisfaction: 0 });
@@ -178,9 +211,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about-section" className="py-20 bg-slate-50" data-testid="section-about">
+      <section id="about-section" className="py-20 bg-slate-50 relative" onMouseMove={funnel.handleAboutMouseMove} onMouseLeave={funnel.handleAboutMouseLeave} data-testid="section-about">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="relative">
+              <video className="w-full rounded-2xl shadow-xl" controls>
+                <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
+              </video>
+              <AboutRollingImages />
+            </div>
             <div>
               <h2 className="text-4xl font-bold text-slate-900 mb-6" data-testid="text-about-title">Engineering the Foundations of Tomorrow</h2>
               <p className="text-slate-600 leading-relaxed mb-4">
@@ -198,16 +237,14 @@ export default function Home() {
                 </Button>
               </Link>
             </div>
-            <div className="relative">
-              <video className="w-full rounded-2xl shadow-xl" controls>
-                <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
-              </video>
-            </div>
           </div>
         </div>
+        {funnel.aboutVisible && (
+          <ProgressiveFunnelPanel currentSection="about" onStepComplete={funnel.handleStepComplete} globalStep={funnel.globalStep} mouseActive={funnel.aboutVisible} onPanelInteract={funnel.markPanelInteracting} onPanelFocus={funnel.markPanelFocused} onDismiss={funnel.dismissPanel} />
+        )}
       </section>
 
-      <section id="services-section" className="py-20 relative overflow-hidden" onMouseMove={funnel.handleExpertiseMouseMove} onMouseLeave={funnel.handleExpertiseMouseLeave} data-testid="section-expertise">
+      <section id="services-section" className="py-20 relative overflow-hidden" data-testid="section-expertise">
         <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/NZvSgRQAtwtx1JM.mp4" type="video/mp4" />
         </video>
@@ -251,9 +288,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        {funnel.expertiseVisible && (
-          <ProgressiveFunnelPanel currentSection="expertise" onStepComplete={funnel.handleStepComplete} globalStep={funnel.globalStep} mouseActive={funnel.expertiseVisible} onPanelInteract={funnel.markPanelInteracting} onPanelFocus={funnel.markPanelFocused} onDismiss={funnel.dismissPanel} />
-        )}
       </section>
 
       <section className="relative py-28 overflow-hidden" data-testid="section-marine">
@@ -462,7 +496,7 @@ export default function Home() {
               <h2 className="text-xl font-bold text-slate-900">Get a Free Consultation</h2>
               <button onClick={() => setShowFunnelModal(false)} className="text-slate-400 hover:text-slate-600 transition"><X className="w-6 h-6" /></button>
             </div>
-            <ProgressiveFunnelPanel currentSection={funnel.globalStep === 1 ? "hero" : funnel.globalStep === 2 ? "expertise" : "projects"} onStepComplete={funnel.handleStepComplete} globalStep={funnel.globalStep} mouseActive={true} onPanelInteract={funnel.markPanelInteracting} onPanelFocus={funnel.markPanelFocused} onDismiss={() => setShowFunnelModal(false)} inline />
+            <ProgressiveFunnelPanel currentSection={funnel.globalStep === 1 ? "hero" : funnel.globalStep === 2 ? "about" : "projects"} onStepComplete={funnel.handleStepComplete} globalStep={funnel.globalStep} mouseActive={true} onPanelInteract={funnel.markPanelInteracting} onPanelFocus={funnel.markPanelFocused} onDismiss={() => setShowFunnelModal(false)} inline />
           </div>
         </div>
       )}

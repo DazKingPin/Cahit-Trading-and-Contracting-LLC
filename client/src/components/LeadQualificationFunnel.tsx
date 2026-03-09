@@ -67,6 +67,7 @@ export function useProgressiveFunnel() {
   const [globalStep, setGlobalStep] = useState<FunnelStep>(1);
   const [stepCompleted, setStepCompleted] = useState<Record<number, boolean>>({});
   const [heroVisible, setHeroVisible] = useState(false);
+  const [aboutVisible, setAboutVisible] = useState(false);
   const [expertiseVisible, setExpertiseVisible] = useState(false);
   const [projectsVisible, setProjectsVisible] = useState(false);
   const [suppressed, setSuppressed] = useState(false);
@@ -74,9 +75,9 @@ export function useProgressiveFunnel() {
   const ref = useRef({
     globalStep: 1 as FunnelStep,
     stepCompleted: {} as Record<number, boolean>,
-    dismissed: { hero: false, expertise: false, projects: false } as Record<string, boolean>,
+    dismissed: { hero: false, about: false, expertise: false, projects: false } as Record<string, boolean>,
     inactivityTimeouts: {} as Record<string, ReturnType<typeof setTimeout> | null>,
-    inputFocused: { hero: false, expertise: false, projects: false } as Record<string, boolean>,
+    inputFocused: { hero: false, about: false, expertise: false, projects: false } as Record<string, boolean>,
     lastActivity: {} as Record<string, number>,
     suppressed: false,
   });
@@ -96,6 +97,7 @@ export function useProgressiveFunnel() {
     ref.current.inactivityTimeouts[section] = setTimeout(() => {
       if (!ref.current.inputFocused[section]) {
         if (section === "hero") setHeroVisible(false);
+        if (section === "about") setAboutVisible(false);
         if (section === "expertise") setExpertiseVisible(false);
         if (section === "projects") setProjectsVisible(false);
       }
@@ -113,7 +115,7 @@ export function useProgressiveFunnel() {
     if (completedStep === 1) {
       setHeroVisible(false);
     } else if (completedStep === 2) {
-      setExpertiseVisible(false);
+      setAboutVisible(false);
     } else if (completedStep === 3) {
       setProjectsVisible(false);
     }
@@ -132,13 +134,14 @@ export function useProgressiveFunnel() {
     ref.current.suppressed = true;
     setSuppressed(true);
     setHeroVisible(false);
+    setAboutVisible(false);
     setExpertiseVisible(false);
     setProjectsVisible(false);
   }, []);
 
   const sectionForStep = useCallback((step: FunnelStep): string | null => {
     if (step === 1) return "hero";
-    if (step === 2) return "expertise";
+    if (step === 2) return "about";
     if (step === 3) return "projects";
     return null;
   }, []);
@@ -153,6 +156,7 @@ export function useProgressiveFunnel() {
     clearInactivityTimeout(section);
 
     if (section === "hero") setHeroVisible(true);
+    if (section === "about") setAboutVisible(true);
     if (section === "expertise") setExpertiseVisible(true);
     if (section === "projects") setProjectsVisible(true);
   }, [sectionForStep, clearInactivityTimeout]);
@@ -164,6 +168,15 @@ export function useProgressiveFunnel() {
 
   const handleHeroMouseLeave = useCallback(() => {
     startInactivityTimeout("hero");
+  }, [startInactivityTimeout]);
+
+  const handleAboutMouseMove = useCallback(() => {
+    showPanelForSection("about");
+    startInactivityTimeout("about");
+  }, [showPanelForSection, startInactivityTimeout]);
+
+  const handleAboutMouseLeave = useCallback(() => {
+    startInactivityTimeout("about");
   }, [startInactivityTimeout]);
 
   const handleExpertiseMouseMove = useCallback(() => {
@@ -206,6 +219,7 @@ export function useProgressiveFunnel() {
     ref.current.dismissed[section] = true;
     clearInactivityTimeout(section);
     if (section === "hero") setHeroVisible(false);
+    if (section === "about") setAboutVisible(false);
     if (section === "expertise") setExpertiseVisible(false);
     if (section === "projects") setProjectsVisible(false);
   }, [clearInactivityTimeout]);
@@ -214,12 +228,15 @@ export function useProgressiveFunnel() {
     globalStep,
     stepCompleted,
     heroVisible,
+    aboutVisible,
     expertiseVisible,
     projectsVisible,
     suppressed,
     handleStepComplete,
     handleHeroMouseMove,
     handleHeroMouseLeave,
+    handleAboutMouseMove,
+    handleAboutMouseLeave,
     handleExpertiseMouseMove,
     handleExpertiseMouseLeave,
     handleProjectsMouseMove,
@@ -277,7 +294,7 @@ export default function ProgressiveFunnelPanel({
 
   const stepForSection: Record<string, number> = {
     hero: 1,
-    expertise: 2,
+    about: 2,
     projects: 3,
   };
 
