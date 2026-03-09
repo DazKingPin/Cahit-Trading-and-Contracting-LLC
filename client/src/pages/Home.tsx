@@ -1,22 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Play, X, Phone, Mail, MapPin, MessageCircle, ChevronLeft, ChevronRight, Menu, Anchor, Building2, Mountain, Droplets, Wrench, Shield, Clock, Award, CheckCircle } from "lucide-react";
+import { ArrowRight, Play, X, ChevronLeft, ChevronRight, Anchor, Building2, Mountain, Droplets, Wrench, Shield, Clock, Award } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { Link } from "wouter";
 import { clientLogos as importedLogos } from "@/lib/logos";
 import ProgressiveFunnelPanel, { useProgressiveFunnel } from "@/components/LeadQualificationFunnel";
 import ChatBotWidget from "@/components/ChatBotWidget";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
-  const [hoveredTestimonial, setHoveredTestimonial] = useState<number | null>(null);
-  const [showContactPopup, setShowContactPopup] = useState(false);
   const [showFunnelModal, setShowFunnelModal] = useState(false);
   const [carouselPage, setCarouselPage] = useState(0);
   const [counters, setCounters] = useState({ years: 0, projects: 0, satisfaction: 0 });
   const [counters2, setCounters2] = useState({ years: 0, projects: 0, percent: 0 });
   const [hasScrolled, setHasScrolled] = useState(false);
   const [hasScrolled2, setHasScrolled2] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [visibleLogos, setVisibleLogos] = useState(3);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const funnel = useProgressiveFunnel();
@@ -90,17 +89,13 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (showContactPopup) setShowContactPopup(false);
-        if (showFunnelModal) setShowFunnelModal(false);
-      }
+      if (e.key === "Escape" && showFunnelModal) setShowFunnelModal(false);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showContactPopup, showFunnelModal]);
+  }, [showFunnelModal]);
 
-  const handleTestimonialHover = (key: string, isHovering: boolean) => {
-    setHoveredTestimonial(isHovering ? 1 : null);
+  const handleVideoHover = (key: string, isHovering: boolean) => {
     const video = videoRefs.current[key];
     if (video) {
       if (isHovering) {
@@ -128,87 +123,9 @@ export default function Home() {
     "Boat Ramps and Pontoons", "Quay Wall Construction",
   ];
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-    setMobileMenuOpen(false);
-  };
-
   return (
     <div className="min-h-screen bg-white text-slate-900 overflow-hidden">
-      <nav className="sticky top-0 z-50 bg-sky-500 shadow-lg" data-testid="nav-main">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <a href="/" className="flex items-center gap-3">
-            <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/EILLLBYLeCNrUbzF.png" alt="Cahit Logo" className="h-14 w-auto" data-testid="img-logo" />
-          </a>
-          <div className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-white hover:text-sky-100 transition font-medium" data-testid="link-home">Home</a>
-            <button onClick={() => scrollToSection("about-section")} className="text-white hover:text-sky-100 transition font-medium" data-testid="button-about">About</button>
-            <button onClick={() => scrollToSection("expertise-section")} className="text-white hover:text-sky-100 transition font-medium" data-testid="link-services">Services</button>
-            <button onClick={() => scrollToSection("projects-section")} className="text-white hover:text-sky-100 transition font-medium" data-testid="link-projects">Projects</button>
-            <button onClick={() => scrollToSection("testimonials-section")} className="text-white hover:text-sky-100 transition font-medium" data-testid="link-testimonials">Testimonials</button>
-            <button onClick={() => setShowContactPopup(true)} className="text-white hover:text-sky-100 transition font-medium" data-testid="button-contact-nav">Contact</button>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button className="bg-white text-sky-600 hover:bg-sky-50 font-semibold hidden sm:inline-flex" onClick={() => setShowContactPopup(true)} data-testid="button-get-quote">Get Quote</Button>
-            <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} data-testid="button-mobile-menu">
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-sky-600 border-t border-sky-400 px-4 py-4 space-y-3">
-            <a href="/" className="block text-white hover:text-sky-100 transition font-medium">Home</a>
-            <button onClick={() => scrollToSection("about-section")} className="block text-white hover:text-sky-100 transition font-medium w-full text-left">About</button>
-            <button onClick={() => scrollToSection("expertise-section")} className="block text-white hover:text-sky-100 transition font-medium w-full text-left">Services</button>
-            <button onClick={() => scrollToSection("projects-section")} className="block text-white hover:text-sky-100 transition font-medium w-full text-left">Projects</button>
-            <button onClick={() => scrollToSection("testimonials-section")} className="block text-white hover:text-sky-100 transition font-medium w-full text-left">Testimonials</button>
-            <button onClick={() => { setShowContactPopup(true); setMobileMenuOpen(false); }} className="block text-white hover:text-sky-100 transition font-medium w-full text-left">Contact</button>
-          </div>
-        )}
-      </nav>
-
-      {showContactPopup && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" data-testid="modal-contact" onClick={(e) => { if (e.target === e.currentTarget) setShowContactPopup(false); }}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-slate-900" data-testid="text-contact-title">Contact Us</h2>
-              <button onClick={() => setShowContactPopup(false)} className="text-slate-400 hover:text-slate-600 transition" data-testid="button-close-contact"><X className="w-6 h-6" /></button>
-            </div>
-            <div className="space-y-5">
-              <a href="tel:+96824112406" className="flex items-start gap-4 p-4 rounded-lg hover:bg-sky-50 transition cursor-pointer group" data-testid="link-phone">
-                <Phone className="w-6 h-6 text-sky-500 flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold text-slate-900 group-hover:text-sky-600 transition">Call Us</p>
-                  <p className="text-slate-600">+968 2411 2406 Ext 101</p>
-                  <p className="text-slate-600">+968 9096 6562</p>
-                </div>
-              </a>
-              <a href="mailto:ctc@cahitcontracting.com" className="flex items-start gap-4 p-4 rounded-lg hover:bg-sky-50 transition cursor-pointer group" data-testid="link-email">
-                <Mail className="w-6 h-6 text-sky-500 flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold text-slate-900 group-hover:text-sky-600 transition">Email Us</p>
-                  <p className="text-slate-600">ctc@cahitcontracting.com</p>
-                </div>
-              </a>
-              <a href="https://wa.me/96890966562" target="_blank" rel="noopener noreferrer" className="flex items-start gap-4 p-4 rounded-lg hover:bg-sky-50 transition cursor-pointer group" data-testid="link-whatsapp">
-                <MessageCircle className="w-6 h-6 text-sky-500 flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold text-slate-900 group-hover:text-sky-600 transition">WhatsApp</p>
-                  <p className="text-slate-600">+968 9096 6562</p>
-                </div>
-              </a>
-              <div className="flex items-start gap-4 p-4 rounded-lg bg-slate-50">
-                <MapPin className="w-6 h-6 text-sky-500 flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold text-slate-900 mb-1">Address</p>
-                  <p className="text-slate-600 text-sm">Khaleej Tower<br />6th Floor, No. 603<br />Ghala, Muscat<br />Sultanate of Oman</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <Navbar />
 
       <section className="relative min-h-screen flex items-center overflow-hidden" onMouseMove={funnel.handleHeroMouseMove} onMouseLeave={funnel.handleHeroMouseLeave} data-testid="section-hero">
         <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
@@ -232,12 +149,16 @@ export default function Home() {
                 Marine & Coastal Construction Experts
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <Button size="lg" className="bg-white text-sky-700 hover:bg-cyan-50 font-bold text-sm sm:text-base md:text-lg px-5 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 shadow-lg" onClick={() => scrollToSection("expertise-section")} data-testid="button-hero-consultation">
-                  Schedule Consultation <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-                <Button size="lg" className="bg-cyan-300/20 border-2 border-white text-white hover:bg-white/20 font-bold text-sm sm:text-base md:text-lg px-5 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm shadow-lg" onClick={() => scrollToSection("projects-section")} data-testid="button-hero-portfolio">
-                  View Portfolio
-                </Button>
+                <Link href="/services">
+                  <Button size="lg" className="bg-white text-sky-700 hover:bg-cyan-50 font-bold text-sm sm:text-base md:text-lg px-5 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 shadow-lg" data-testid="button-hero-consultation">
+                    Schedule Consultation <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+                <Link href="/projects">
+                  <Button size="lg" className="bg-cyan-300/20 border-2 border-white text-white hover:bg-white/20 font-bold text-sm sm:text-base md:text-lg px-5 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm shadow-lg" data-testid="button-hero-portfolio">
+                    View Portfolio
+                  </Button>
+                </Link>
               </div>
               <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 pt-6 md:pt-8 border-t border-white/30">
                 <div>
@@ -294,7 +215,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about-section" className="py-20 bg-slate-50" data-testid="section-about">
+      <section className="py-20 bg-slate-50" data-testid="section-about">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -308,9 +229,11 @@ export default function Home() {
               <p className="text-slate-600 leading-relaxed mb-8">
                 Through a combination of engineering expertise, operational excellence, and strong client partnerships, Cahit contributes to the development of critical infrastructure across Oman.
               </p>
-              <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" onClick={() => scrollToSection("expertise-section")} data-testid="button-discover-company">
-                Discover Our Company <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
+              <Link href="/about">
+                <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" data-testid="button-discover-company">
+                  Discover Our Company <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </Link>
             </div>
             <div className="relative">
               <video className="w-full rounded-2xl shadow-xl" controls>
@@ -321,7 +244,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="expertise-section" className="py-20 bg-white relative" onMouseMove={funnel.handleExpertiseMouseMove} onMouseLeave={funnel.handleExpertiseMouseLeave} data-testid="section-expertise">
+      <section className="py-20 bg-white relative" onMouseMove={funnel.handleExpertiseMouseMove} onMouseLeave={funnel.handleExpertiseMouseLeave} data-testid="section-expertise">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-expertise-title">Our Services</h2>
@@ -346,17 +269,19 @@ export default function Home() {
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-slate-900 mb-2">{service.name}</h3>
                   <p className="text-slate-600 mb-4 text-sm">{service.description}</p>
-                  <button onClick={() => scrollToSection("expertise-section")} className="text-sky-600 font-semibold hover:text-sky-700 flex items-center gap-2 text-sm">
+                  <Link href="/services" className="text-sky-600 font-semibold hover:text-sky-700 flex items-center gap-2 text-sm">
                     Learn More <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </Link>
                 </div>
               </Card>
             ))}
           </div>
           <div className="text-center mt-10">
-            <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" onClick={() => scrollToSection("expertise-section")} data-testid="button-view-all-services">
-              View All Services <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+            <Link href="/services">
+              <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" data-testid="button-view-all-services">
+                View All Services <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
         {funnel.expertiseVisible && (
@@ -410,7 +335,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="projects-section" className="py-20 bg-white relative" onMouseMove={funnel.handleProjectsMouseMove} onMouseLeave={funnel.handleProjectsMouseLeave} data-testid="section-projects">
+      <section className="py-20 bg-white relative" onMouseMove={funnel.handleProjectsMouseMove} onMouseLeave={funnel.handleProjectsMouseLeave} data-testid="section-projects">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-projects-title">Selected Projects</h2>
@@ -438,9 +363,11 @@ export default function Home() {
             </div>
           </div>
           <div className="text-center mt-10">
-            <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" onClick={() => scrollToSection("projects-section")} data-testid="button-explore-projects">
-              Explore All Projects <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+            <Link href="/projects">
+              <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" data-testid="button-explore-projects">
+                Explore All Projects <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
         {funnel.projectsVisible && (
@@ -448,15 +375,15 @@ export default function Home() {
         )}
       </section>
 
-      <section id="testimonials-section" className="py-20 bg-slate-50" data-testid="section-testimonials">
+      <section className="py-20 bg-slate-50" data-testid="section-leadership">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-testimonials-title">Leadership</h2>
+            <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-leadership-title">Leadership</h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">Meet the professionals behind Cahit Trading & Contracting.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden" data-testid="card-testimonial-tahir">
-              <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleTestimonialHover("tahir", true)} onMouseLeave={() => handleTestimonialHover("tahir", false)}>
+              <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-full h-full object-cover" loop muted>
                   <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/ieSQBIDjAuekTIBg.mp4" type="video/mp4" />
                 </video>
@@ -485,7 +412,7 @@ export default function Home() {
             </div>
 
             <div className="bg-white rounded-xl shadow-lg overflow-hidden" data-testid="card-testimonial-pasha">
-              <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleTestimonialHover("pasha", true)} onMouseLeave={() => handleTestimonialHover("pasha", false)}>
+              <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-full h-full object-cover" loop muted>
                   <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/KfWjzeCVFRzSeyrS.mp4" type="video/mp4" />
                 </video>
@@ -545,7 +472,7 @@ export default function Home() {
           <p className="text-xl text-sky-100 mb-8 max-w-2xl mx-auto">
             Whether planning marine infrastructure, coastal protection, or large-scale civil works, our team is ready to support your project with reliable expertise and professional execution.
           </p>
-          <Button size="lg" className="bg-white text-sky-600 hover:bg-sky-50 font-semibold" onClick={() => setShowContactPopup(true)} data-testid="button-cta-contact">
+          <Button size="lg" className="bg-white text-sky-600 hover:bg-sky-50 font-semibold" data-testid="button-cta-contact">
             Contact Our Team <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>

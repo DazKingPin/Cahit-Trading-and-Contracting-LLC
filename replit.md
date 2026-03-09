@@ -65,9 +65,23 @@ Corporate website for Cahit Trading & Contracting LLC, a marine & coastal constr
 - `blog_posts` - Blog posts (titleEn, titleAr, slug, category, excerptEn/Ar, contentEn/Ar, status, featuredImage)
 - `site_content` - Editable site sections (sectionKey, language, contentJson)
 
+## Page Routes (matching csbbuilder.com)
+- `/` - Home (hero, logos, about teaser, services overview, marine specialists, stats, projects preview, leadership, commitment, CTA)
+- `/about` - About page (company overview, mission/vision, leadership, commitment, client logos)
+- `/services` - Services page (5 services with detailed descriptions and images)
+- `/projects` - Projects page (6 project cards with categories and locations)
+- `/blog` - Blog listing (published posts)
+- `/blog/:slug` - Blog detail page
+- `/admin` - Admin CRM dashboard
+
 ## Project Structure
-- `client/src/pages/Home.tsx` - Main landing page with all sections
+- `client/src/pages/Home.tsx` - Home landing page
+- `client/src/pages/About.tsx` - About page
+- `client/src/pages/Services.tsx` - Services page
+- `client/src/pages/Projects.tsx` - Projects page
+- `client/src/pages/BlogPage.tsx` - Blog listing and detail pages
 - `client/src/pages/AdminDashboard.tsx` - Full CRM admin dashboard
+- `client/src/components/Navbar.tsx` - Shared navigation bar (Home, About, Services, Projects, Contact)
 - `client/src/components/ChatBotWidget.tsx` - Floating chatbot widget
 - `client/src/components/Footer.tsx` - Footer with admin login modal
 - `client/src/components/LeadQualificationFunnel.tsx` - Multi-step lead capture form
