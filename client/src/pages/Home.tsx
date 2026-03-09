@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Play, X, ChevronLeft, ChevronRight, Anchor, Building2, Mountain, Droplets, Wrench, Shield, Clock, Award } from "lucide-react";
+import { ArrowRight, Play, X, Anchor, Building2, Mountain, Droplets, Wrench, Shield, Clock, Award } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "wouter";
 import { clientLogos as importedLogos } from "@/lib/logos";
@@ -11,12 +11,10 @@ import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const [showFunnelModal, setShowFunnelModal] = useState(false);
-  const [carouselPage, setCarouselPage] = useState(0);
   const [counters, setCounters] = useState({ years: 0, projects: 0, satisfaction: 0 });
   const [counters2, setCounters2] = useState({ years: 0, projects: 0, percent: 0 });
   const [hasScrolled, setHasScrolled] = useState(false);
   const [hasScrolled2, setHasScrolled2] = useState(false);
-  const [visibleLogos, setVisibleLogos] = useState(3);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
   const funnel = useProgressiveFunnel();
 
@@ -67,25 +65,6 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasScrolled, hasScrolled2]);
 
-  useEffect(() => {
-    const updateVisibleLogos = () => {
-      if (window.innerWidth < 640) setVisibleLogos(2);
-      else if (window.innerWidth < 1024) setVisibleLogos(3);
-      else setVisibleLogos(4);
-    };
-    updateVisibleLogos();
-    window.addEventListener("resize", updateVisibleLogos);
-    return () => window.removeEventListener("resize", updateVisibleLogos);
-  }, []);
-
-  const totalPages = Math.ceil(importedLogos.length / visibleLogos);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCarouselPage((prev) => (prev + 1) % totalPages);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [totalPages]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -182,35 +161,22 @@ export default function Home() {
         )}
       </section>
 
-      <section className="py-16 bg-white border-b border-slate-100" data-testid="section-logos">
+      <section className="py-14 bg-white border-b border-slate-100 overflow-hidden" data-testid="section-logos">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-4">
-            <h2 className="text-2xl font-bold text-slate-900 mb-3" data-testid="text-logos-title">Trusted by Leading Organizations</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto text-sm">Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.</p>
-          </div>
-          <div className="relative flex items-center gap-4 mt-10">
-            <button onClick={() => setCarouselPage((prev) => (prev - 1 + totalPages) % totalPages)} className="absolute left-0 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow hover:bg-sky-50" data-testid="button-carousel-prev">
-              <ChevronLeft className="w-6 h-6 text-sky-600" />
-            </button>
-            <div className="overflow-hidden mx-12">
-              <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${carouselPage * 100}%)` }}>
-                {importedLogos.map((logo, idx) => (
-                  <div key={idx} className="flex-shrink-0 px-3 sm:px-6" style={{ width: `${100 / visibleLogos}%` }}>
-                    <div className="flex items-center justify-center h-28 bg-white rounded-xl border border-slate-200 hover:border-sky-300 hover:shadow-lg transition-all group cursor-pointer p-4">
-                      <img src={logo.logo} alt={logo.name} className="h-14 max-w-[140px] object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 opacity-60 group-hover:opacity-100" data-testid={`img-logo-${idx}`} />
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <h2 className="text-center text-2xl sm:text-3xl font-bold text-slate-900 mb-3" data-testid="text-logos-title">Trusted by Leading Organizations</h2>
+          <p className="text-center text-slate-700 max-w-3xl mx-auto mb-10 text-base leading-relaxed">
+            Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.
+          </p>
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
+            <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
+            <div className="flex animate-marquee gap-12 items-center">
+              {[...importedLogos, ...importedLogos].map((logo, idx) => (
+                <div key={idx} className="flex-shrink-0 flex items-center justify-center h-20 w-[160px] bg-white rounded-xl border border-slate-200 p-4 hover:border-sky-300 hover:shadow-lg transition-all group cursor-pointer">
+                  <img src={logo.logo} alt={logo.name} className="h-12 max-w-[130px] object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 opacity-60 group-hover:opacity-100" data-testid={`img-logo-${idx}`} />
+                </div>
+              ))}
             </div>
-            <button onClick={() => setCarouselPage((prev) => (prev + 1) % totalPages)} className="absolute right-0 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow hover:bg-sky-50" data-testid="button-carousel-next">
-              <ChevronRight className="w-6 h-6 text-sky-600" />
-            </button>
-          </div>
-          <div className="flex justify-center gap-2 mt-6">
-            {Array.from({ length: totalPages }).map((_, idx) => (
-              <button key={idx} onClick={() => setCarouselPage(idx)} className={`h-2 rounded-full transition-all ${idx === carouselPage ? "bg-sky-500 w-8" : "bg-slate-300 w-2"}`} aria-label={`Go to page ${idx + 1}`} data-testid={`button-carousel-dot-${idx}`} />
-            ))}
           </div>
         </div>
       </section>
