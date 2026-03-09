@@ -60,19 +60,19 @@ export default function Services() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-[400px] overflow-hidden" data-testid="section-services-hero">
-        <img
-          src={servicesGifPath}
-          alt="Services"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A3D6B]/70 via-[#0A3D6B]/50 to-[#0A3D6B]/80 flex items-center justify-center">
-          <div className="text-center px-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-services-heading">Our Services</h1>
-            <p className="text-white/90 max-w-2xl mx-auto text-lg md:text-xl font-light drop-shadow-md">
-              Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.
-            </p>
-          </div>
+      <section data-testid="section-services-hero">
+        <div className="w-full overflow-hidden">
+          <img
+            src={servicesGifPath}
+            alt="Services"
+            className="w-full h-auto object-cover"
+          />
+        </div>
+        <div className="text-center py-16 bg-white">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4" data-testid="text-services-heading">Our Services</h1>
+          <p className="text-slate-600 max-w-2xl mx-auto text-lg px-4">
+            Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.
+          </p>
         </div>
       </section>
 

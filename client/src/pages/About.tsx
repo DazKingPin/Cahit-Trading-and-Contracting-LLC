@@ -28,19 +28,19 @@ export default function About() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-[400px] overflow-hidden" data-testid="section-about-hero">
-        <img
-          src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOrlgEf.png"
-          alt="Infrastructure aerial"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A3D6B]/70 via-[#0A3D6B]/50 to-[#0A3D6B]/80 flex items-center justify-center">
-          <div className="text-center px-4">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-about-heading">About Cahit Trading & Contracting</h1>
-            <p className="text-white/90 max-w-2xl mx-auto text-lg md:text-xl font-light drop-shadow-md">
-              Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.
-            </p>
-          </div>
+      <section data-testid="section-about-hero">
+        <div className="w-full overflow-hidden">
+          <img
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOrlgEf.png"
+            alt="Infrastructure aerial"
+            className="w-full h-auto object-cover"
+          />
+        </div>
+        <div className="text-center py-16 bg-white">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4" data-testid="text-about-heading">About Cahit Trading & Contracting</h1>
+          <p className="text-slate-600 max-w-2xl mx-auto text-lg px-4">
+            Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.
+          </p>
         </div>
       </section>
 
