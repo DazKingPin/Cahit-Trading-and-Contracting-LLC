@@ -60,7 +60,7 @@ export default function Services() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-[720px] overflow-hidden" data-testid="section-services-hero">
+      <section className="relative h-[400px] overflow-hidden" data-testid="section-services-hero">
         <img
           src={servicesGifPath}
           alt="Services"

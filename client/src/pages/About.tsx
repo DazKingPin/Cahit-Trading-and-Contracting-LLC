@@ -28,7 +28,7 @@ export default function About() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-[720px] overflow-hidden" data-testid="section-about-hero">
+      <section className="relative h-[400px] overflow-hidden" data-testid="section-about-hero">
         <img
           src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOrlgEf.png"
           alt="Infrastructure aerial"
