@@ -286,8 +286,24 @@ export default function ProgressiveFunnelPanel({
     if (projectTimeline && budgetRange) onStepComplete(2);
   };
 
-  const handleStep3Submit = () => {
-    if (role && decisionMaker && name && email && phone) onStepComplete(3);
+  const handleStep3Submit = async () => {
+    if (role && decisionMaker && name && email && phone) {
+      try {
+        await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serviceType,
+            projectScope: `Timeline: ${projectTimeline}, Budget: ${budgetRange}, Location: ${projectLocation}, Role: ${role}, Decision Maker: ${decisionMaker}`,
+            name,
+            email,
+            phone,
+            message: preferredTime ? `Preferred consultation time: ${preferredTime}${customTime ? ` (${customTime})` : ""}` : customTime || undefined,
+          }),
+        });
+      } catch {}
+      onStepComplete(3);
+    }
   };
 
   const serviceOptions = [
