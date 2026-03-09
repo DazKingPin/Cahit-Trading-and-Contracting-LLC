@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useParams } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -6,12 +6,20 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AdminDashboard from "@/pages/AdminDashboard";
+import { BlogListPage, BlogDetailPage } from "@/pages/BlogPage";
+
+function BlogDetailRoute() {
+  const params = useParams<{ slug: string }>();
+  return <BlogDetailPage slug={params.slug} />;
+}
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/admin" component={AdminDashboard} />
+      <Route path="/blog" component={BlogListPage} />
+      <Route path="/blog/:slug" component={BlogDetailRoute} />
       <Route component={NotFound} />
     </Switch>
   );
