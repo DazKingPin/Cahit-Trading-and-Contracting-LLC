@@ -104,7 +104,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 overflow-hidden">
-      <Navbar />
+      <Navbar onGetQuoteClick={funnel.suppressFunnel} onGetQuoteSubmit={funnel.suppressFunnel} />
 
       <section className="relative min-h-screen flex items-center overflow-hidden" onMouseMove={funnel.handleHeroMouseMove} onMouseLeave={funnel.handleHeroMouseLeave} data-testid="section-hero">
         <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
@@ -114,9 +114,6 @@ export default function Home() {
         <div className="relative z-20 w-full h-full flex items-center">
           <div className="container mx-auto px-4 py-20">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full border border-white/30 mb-8">
-                <span className="text-white font-semibold text-sm" data-testid="text-hero-badge">Next Generation Marine Construction</span>
-              </div>
               <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-white mb-6 drop-shadow-lg" data-testid="text-hero-title">
                 CAHIT CONTRACTING
                 <br />
@@ -129,12 +126,12 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
                 <Link href="/services">
-                  <Button size="lg" className="bg-white text-sky-700 hover:bg-cyan-50 font-bold text-sm sm:text-base md:text-lg px-5 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 shadow-lg" data-testid="button-hero-consultation">
-                    Schedule Consultation <ArrowRight className="ml-2 w-5 h-5" />
+                  <Button size="lg" className="bg-white text-sky-700 hover:bg-cyan-50 font-bold text-sm px-6 py-3 shadow-lg w-full sm:w-auto" data-testid="button-hero-consultation">
+                    Schedule Consultation <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </Link>
                 <Link href="/projects">
-                  <Button size="lg" className="bg-cyan-300/20 border-2 border-white text-white hover:bg-white/20 font-bold text-sm sm:text-base md:text-lg px-5 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 backdrop-blur-sm shadow-lg" data-testid="button-hero-portfolio">
+                  <Button size="lg" className="bg-cyan-300/20 border-2 border-white text-white hover:bg-white/20 font-bold text-sm px-6 py-3 backdrop-blur-sm shadow-lg w-full sm:w-auto" data-testid="button-hero-portfolio">
                     View Portfolio
                   </Button>
                 </Link>
@@ -173,7 +170,7 @@ export default function Home() {
             <div className="flex animate-marquee gap-12 items-center">
               {[...importedLogos, ...importedLogos].map((logo, idx) => (
                 <div key={idx} className="flex-shrink-0 flex items-center justify-center h-20 w-[160px] bg-white rounded-xl border border-slate-200 p-4 hover:border-sky-300 hover:shadow-lg transition-all group cursor-pointer">
-                  <img src={logo.logo} alt={logo.name} className="h-12 max-w-[130px] object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300 opacity-60 group-hover:opacity-100" data-testid={`img-logo-${idx}`} />
+                  <img src={logo.logo} alt={logo.name} className="h-12 max-w-[130px] object-contain transition-all duration-300 opacity-80 group-hover:opacity-100" data-testid={`img-logo-${idx}`} />
                 </div>
               ))}
             </div>
@@ -181,7 +178,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-slate-50" data-testid="section-about">
+      <section id="about-section" className="py-20 bg-slate-50" data-testid="section-about">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -210,17 +207,21 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-white relative" onMouseMove={funnel.handleExpertiseMouseMove} onMouseLeave={funnel.handleExpertiseMouseLeave} data-testid="section-expertise">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-expertise-title">Our Services</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+      <section id="services-section" className="py-20 relative overflow-hidden" onMouseMove={funnel.handleExpertiseMouseMove} onMouseLeave={funnel.handleExpertiseMouseLeave} data-testid="section-expertise">
+        <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
+          <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/NZvSgRQAtwtx1JM.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-800/75 via-slate-800/70 to-slate-800/75"></div>
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="text-center mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
               Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service) => (
-              <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0" data-testid={`card-service-${service.id}`}>
+              <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0 bg-white/95 backdrop-blur-sm" data-testid={`card-service-${service.id}`}>
                 <div className="relative h-64 overflow-hidden bg-slate-200">
                   {"images" in service && service.images ? (
                     <div className="grid grid-cols-2 gap-0.5 h-full">
@@ -244,7 +245,7 @@ export default function Home() {
           </div>
           <div className="text-center mt-10">
             <Link href="/services">
-              <Button className="bg-sky-600 hover:bg-sky-700 text-white font-semibold" data-testid="button-view-all-services">
+              <Button className="bg-white text-sky-600 hover:bg-sky-50 font-semibold" data-testid="button-view-all-services">
                 View All Services <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </Link>
@@ -255,11 +256,15 @@ export default function Home() {
         )}
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-[#0A3D6B] to-[#0D5A9E] text-white" data-testid="section-marine">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Specialists in Marine & Coastal Infrastructure</h2>
-            <p className="text-white/80 max-w-2xl mx-auto">
+      <section className="relative py-28 overflow-hidden" data-testid="section-marine">
+        <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
+          <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-900/85 via-sky-800/80 to-sky-900/90"></div>
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 drop-shadow-lg">Specialists in Marine & Coastal Infrastructure</h2>
+            <p className="text-lg text-sky-100 leading-relaxed max-w-3xl mx-auto">
               Cahit Trading & Contracting LLC is recognized for its expertise in the construction of marine and coastal infrastructure.
             </p>
           </div>
@@ -271,7 +276,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p className="text-white/70 text-center mt-8 max-w-2xl mx-auto text-sm">
+          <p className="text-sky-200/70 text-center mt-8 max-w-2xl mx-auto text-sm">
             Through advanced engineering practices and experienced teams, we deliver durable infrastructure designed for challenging marine environments.
           </p>
         </div>
@@ -301,7 +306,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-white relative" onMouseMove={funnel.handleProjectsMouseMove} onMouseLeave={funnel.handleProjectsMouseLeave} data-testid="section-projects">
+      <section id="projects-section" className="py-20 bg-white relative" onMouseMove={funnel.handleProjectsMouseMove} onMouseLeave={funnel.handleProjectsMouseLeave} data-testid="section-projects">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-projects-title">Selected Projects</h2>
@@ -341,14 +346,14 @@ export default function Home() {
         )}
       </section>
 
-      <section className="py-20 bg-slate-50" data-testid="section-leadership">
+      <section className="py-20 bg-white" data-testid="section-leadership">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-leadership-title">Leadership</h2>
+          <div className="text-center mb-14">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4" data-testid="text-leadership-title">Leadership</h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">Meet the professionals behind Cahit Trading & Contracting.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden" data-testid="card-testimonial-tahir">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-tahir">
               <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-full h-full object-cover" loop muted>
                   <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/ieSQBIDjAuekTIBg.mp4" type="video/mp4" />
@@ -377,7 +382,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden" data-testid="card-testimonial-pasha">
+            <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-pasha">
               <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-full h-full object-cover" loop muted>
                   <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/KfWjzeCVFRzSeyrS.mp4" type="video/mp4" />
@@ -411,22 +416,28 @@ export default function Home() {
 
       <section className="py-16 bg-white" data-testid="section-commitment">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">Our Commitment</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 text-center mb-12">Our Commitment</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-xl hover:shadow-lg transition">
-              <Shield className="w-12 h-12 text-sky-600 mx-auto mb-4" />
+            <div className="text-center bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 group border border-slate-100">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-sky-50 rounded-2xl mb-6 group-hover:bg-sky-100 transition-colors group-hover:scale-110 transform duration-300">
+                <Shield className="w-10 h-10 text-sky-500" />
+              </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Best Quality</h3>
-              <p className="text-slate-600 text-sm">We maintain the highest engineering and construction standards in every project.</p>
+              <p className="text-slate-600 text-sm leading-relaxed">We maintain the highest engineering and construction standards in every project.</p>
             </div>
-            <div className="text-center p-8 rounded-xl hover:shadow-lg transition">
-              <Clock className="w-12 h-12 text-sky-600 mx-auto mb-4" />
+            <div className="text-center bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 group border border-slate-100">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-sky-50 rounded-2xl mb-6 group-hover:bg-sky-100 transition-colors group-hover:scale-110 transform duration-300">
+                <Clock className="w-10 h-10 text-sky-500" />
+              </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">On-Time Delivery</h3>
-              <p className="text-slate-600 text-sm">We respect project timelines and deliver reliable execution without compromising quality.</p>
+              <p className="text-slate-600 text-sm leading-relaxed">We respect project timelines and deliver reliable execution without compromising quality.</p>
             </div>
-            <div className="text-center p-8 rounded-xl hover:shadow-lg transition">
-              <Award className="w-12 h-12 text-sky-600 mx-auto mb-4" />
+            <div className="text-center bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 group border border-slate-100">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-sky-50 rounded-2xl mb-6 group-hover:bg-sky-100 transition-colors group-hover:scale-110 transform duration-300">
+                <Award className="w-10 h-10 text-sky-500" />
+              </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Experience</h3>
-              <p className="text-slate-600 text-sm">Our experienced professionals ensure efficient project delivery and operational excellence.</p>
+              <p className="text-slate-600 text-sm leading-relaxed">Our experienced professionals ensure efficient project delivery and operational excellence.</p>
             </div>
           </div>
         </div>

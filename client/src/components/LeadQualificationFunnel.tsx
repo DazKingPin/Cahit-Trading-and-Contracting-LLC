@@ -6,7 +6,7 @@ type FunnelStep = 1 | 2 | 3 | 4;
 
 interface ProgressiveFunnelProps {
   currentSection: string;
-  onStepComplete: (completedStep: number) => void;
+  onStepComplete: (completedStep: number, scrollTarget?: string) => void;
   globalStep: FunnelStep;
   mouseActive: boolean;
   onPanelInteract?: (section: string, interacting: boolean) => void;
@@ -69,6 +69,7 @@ export function useProgressiveFunnel() {
   const [heroVisible, setHeroVisible] = useState(false);
   const [expertiseVisible, setExpertiseVisible] = useState(false);
   const [projectsVisible, setProjectsVisible] = useState(false);
+  const [suppressed, setSuppressed] = useState(false);
 
   const ref = useRef({
     globalStep: 1 as FunnelStep,
@@ -77,6 +78,7 @@ export function useProgressiveFunnel() {
     inactivityTimeouts: {} as Record<string, ReturnType<typeof setTimeout> | null>,
     inputFocused: { hero: false, expertise: false, projects: false } as Record<string, boolean>,
     lastActivity: {} as Record<string, number>,
+    suppressed: false,
   });
 
   const clearInactivityTimeout = useCallback((section: string) => {
@@ -100,7 +102,7 @@ export function useProgressiveFunnel() {
     }, 30000);
   }, [clearInactivityTimeout]);
 
-  const handleStepComplete = useCallback((completedStep: number) => {
+  const handleStepComplete = useCallback((completedStep: number, scrollTarget?: string) => {
     ref.current.stepCompleted[completedStep] = true;
     setStepCompleted({ ...ref.current.stepCompleted });
 
@@ -115,6 +117,23 @@ export function useProgressiveFunnel() {
     } else if (completedStep === 3) {
       setProjectsVisible(false);
     }
+
+    if (scrollTarget) {
+      setTimeout(() => {
+        const el = document.getElementById(scrollTarget);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 300);
+    }
+  }, []);
+
+  const suppressFunnel = useCallback(() => {
+    ref.current.suppressed = true;
+    setSuppressed(true);
+    setHeroVisible(false);
+    setExpertiseVisible(false);
+    setProjectsVisible(false);
   }, []);
 
   const sectionForStep = useCallback((step: FunnelStep): string | null => {
@@ -125,6 +144,7 @@ export function useProgressiveFunnel() {
   }, []);
 
   const showPanelForSection = useCallback((section: string) => {
+    if (ref.current.suppressed) return;
     if (ref.current.dismissed[section]) return;
     const currentSection = sectionForStep(ref.current.globalStep);
     if (currentSection !== section) return;
@@ -196,6 +216,7 @@ export function useProgressiveFunnel() {
     heroVisible,
     expertiseVisible,
     projectsVisible,
+    suppressed,
     handleStepComplete,
     handleHeroMouseMove,
     handleHeroMouseLeave,
@@ -206,6 +227,7 @@ export function useProgressiveFunnel() {
     markPanelInteracting,
     markPanelFocused,
     dismissPanel,
+    suppressFunnel,
   };
 }
 
@@ -219,7 +241,8 @@ export default function ProgressiveFunnelPanel({
   onDismiss,
   inline = false,
 }: ProgressiveFunnelProps) {
-  const [serviceType, setServiceType] = useState("");
+  const [projectType, setProjectType] = useState("");
+  const [projectGoal, setProjectGoal] = useState("");
   const [projectTimeline, setProjectTimeline] = useState("");
   const [budgetRange, setBudgetRange] = useState("");
   const [projectLocation, setProjectLocation] = useState("");
@@ -279,11 +302,15 @@ export default function ProgressiveFunnelPanel({
   }
 
   const handleStep1Submit = () => {
-    if (serviceType) onStepComplete(1);
+    if (projectType && projectGoal) {
+      onStepComplete(1, "about-section");
+    }
   };
 
   const handleStep2Submit = () => {
-    if (projectTimeline && budgetRange) onStepComplete(2);
+    if (projectTimeline && budgetRange) {
+      onStepComplete(2, "services-section");
+    }
   };
 
   const handleStep3Submit = async () => {
@@ -293,8 +320,8 @@ export default function ProgressiveFunnelPanel({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            serviceType,
-            projectScope: `Timeline: ${projectTimeline}, Budget: ${budgetRange}, Location: ${projectLocation}, Role: ${role}, Decision Maker: ${decisionMaker}`,
+            serviceType: projectType,
+            projectScope: `Goal: ${projectGoal}, Timeline: ${projectTimeline}, Budget: ${budgetRange}, Location: ${projectLocation}, Role: ${role}, Decision Maker: ${decisionMaker}`,
             name,
             email,
             phone,
@@ -302,17 +329,23 @@ export default function ProgressiveFunnelPanel({
           }),
         });
       } catch {}
-      onStepComplete(3);
+      onStepComplete(3, "projects-section");
     }
   };
 
-  const serviceOptions = [
+  const projectTypeOptions = [
     "Marine Construction",
-    "Infrastructure Development",
-    "Earthworks & Grading",
-    "Dewatering & Shoring",
+    "Coastal Protection",
+    "Seaport Infrastructure",
+    "Earthworks",
     "MEP Works",
-    "Other / Multiple",
+  ];
+
+  const goalOptions = [
+    "Strengthen coastal protection",
+    "Expand port capacity",
+    "Infrastructure development",
+    "Other",
   ];
 
   const timelineOptions = [
@@ -358,26 +391,41 @@ export default function ProgressiveFunnelPanel({
         {sectionStep === 1 && (
           <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 mb-1">What can we help with?</h3>
-              <p className="text-sm text-slate-500 mb-4">Select the service that best fits your needs</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-1">What type of project are you planning?</h3>
+              <p className="text-sm text-slate-500 mb-4">This helps us direct you to the right service.</p>
             </div>
             <div className="space-y-2">
-              {serviceOptions.map((option) => (
+              {projectTypeOptions.map((option) => (
                 <SelectOption
                   key={option}
                   label={option}
-                  selected={serviceType === option}
-                  onClick={() => setServiceType(option)}
+                  selected={projectType === option}
+                  onClick={() => setProjectType(option)}
                 />
               ))}
             </div>
+
+            <div className="pt-2">
+              <h3 className="text-base font-bold text-slate-900 mb-1">What is the primary goal of your project?</h3>
+              <div className="space-y-2 mt-3">
+                {goalOptions.map((option) => (
+                  <SelectOption
+                    key={option}
+                    label={option}
+                    selected={projectGoal === option}
+                    onClick={() => setProjectGoal(option)}
+                  />
+                ))}
+              </div>
+            </div>
+
             <Button
               onClick={handleStep1Submit}
-              disabled={!serviceType}
+              disabled={!projectType || !projectGoal}
               className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="button-funnel-step1-next"
             >
-              Continue <ArrowRight className="ml-2 w-4 h-4" />
+              Submit <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
         )}
@@ -435,7 +483,7 @@ export default function ProgressiveFunnelPanel({
               className="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="button-funnel-step2-next"
             >
-              Continue <ArrowRight className="ml-2 w-4 h-4" />
+              Submit <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </div>
         )}
