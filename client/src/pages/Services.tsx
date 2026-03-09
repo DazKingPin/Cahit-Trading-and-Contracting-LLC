@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ChatBotWidget from "@/components/ChatBotWidget";
+import servicesGifPath from "@assets/Services__1773095450245.gif";
 
 export default function Services() {
   const services = [
@@ -59,9 +60,9 @@ export default function Services() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-[50vh] md:h-[60vh] overflow-hidden" data-testid="section-services-hero">
+      <section className="relative h-[720px] overflow-hidden" data-testid="section-services-hero">
         <img
-          src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/RAFPoJQUVEWIIOWX.gif"
+          src={servicesGifPath}
           alt="Services"
           className="absolute inset-0 w-full h-full object-cover"
         />
