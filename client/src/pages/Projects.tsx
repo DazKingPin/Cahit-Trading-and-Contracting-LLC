@@ -63,11 +63,11 @@ export default function Projects() {
       <Navbar />
 
       <section data-testid="section-projects-hero">
-        <div className="w-full overflow-hidden">
+        <div className="w-full overflow-hidden max-h-[320px]">
           <img
             src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/blByadAMGkJrDqRB.gif"
             alt="Our Projects"
-            className="w-full h-auto object-cover"
+            className="w-full h-[320px] object-cover"
           />
         </div>
         <div className="text-center py-16 bg-white">

@@ -61,11 +61,11 @@ export default function Services() {
       <Navbar />
 
       <section data-testid="section-services-hero">
-        <div className="w-full overflow-hidden">
+        <div className="w-full overflow-hidden max-h-[320px]">
           <img
             src={servicesGifPath}
             alt="Services"
-            className="w-full h-auto object-cover"
+            className="w-full h-[320px] object-cover"
           />
         </div>
         <div className="text-center py-16 bg-white">
