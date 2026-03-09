@@ -287,15 +287,31 @@ export default function ProgressiveFunnelPanel({
     if (globalStep < sectionStep) return null;
   }
 
+  const stepHeaders: Record<number, { title: string; subtitle: string }> = {
+    1: { title: "Let's Understand Your Needs", subtitle: "This helps us direct you to the right service" },
+    2: { title: "Tell Us About Your Scope", subtitle: "Help us understand your project requirements" },
+    3: { title: "Complete Your Details", subtitle: "Your information for a personalized consultation" },
+  };
+
+  const currentHeader = stepHeaders[globalStep] || stepHeaders[1];
+
   if (globalStep === 4) {
     return (
-      <div ref={panelRef} className={inline ? "w-full" : "absolute right-4 top-1/2 -translate-y-1/2 z-30 w-[380px] hidden md:block"} data-testid="funnel-panel-complete">
-        <div className={inline ? "text-center py-8" : "bg-white rounded-2xl shadow-2xl border border-slate-200 p-8 text-center"}>
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check className="w-8 h-8 text-green-600" />
+      <div ref={panelRef} className={inline ? "w-full" : "absolute right-4 top-1/2 -translate-y-1/2 z-30 w-full max-w-md animate-in slide-in-from-right-5 duration-300 hidden md:block"} data-testid="funnel-panel-complete">
+        <div className={inline ? "text-center py-8" : "bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"}>
+          {!inline && (
+            <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4">
+              <h3 className="text-white font-bold text-lg">Request Received</h3>
+              <p className="text-green-100 text-sm">We'll be in touch soon</p>
+            </div>
+          )}
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-green-600" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Thank You!</h3>
+            <p className="text-slate-600">We've received your inquiry. Our team will contact you shortly to schedule your free consultation.</p>
           </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Thank You!</h3>
-          <p className="text-slate-600">We've received your inquiry. Our team will contact you shortly to schedule your free consultation.</p>
         </div>
       </div>
     );
@@ -369,23 +385,31 @@ export default function ProgressiveFunnelPanel({
   return (
     <div
       ref={panelRef}
-      className={inline ? "w-full" : "absolute right-4 top-1/2 -translate-y-1/2 z-30 w-[380px] max-h-[85vh] overflow-y-auto hidden md:block"}
+      className={inline ? "w-full" : "absolute right-4 top-1/2 -translate-y-1/2 z-30 w-full max-w-md animate-in slide-in-from-right-5 duration-300 hidden md:block"}
       onMouseEnter={() => onPanelInteract?.(currentSection, true)}
       onMouseLeave={() => onPanelInteract?.(currentSection, false)}
       data-testid={`funnel-panel-${currentSection}`}
     >
-      <div className={inline ? "relative" : "bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 relative"}>
+      <div className={inline ? "relative" : "bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"}>
         {!inline && (
-          <button
-            onClick={() => onDismiss?.(currentSection)}
-            className="absolute top-3 right-3 text-slate-400 hover:text-slate-600 transition"
-            data-testid="button-close-funnel"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-4 flex items-start justify-between">
+            <div>
+              <h3 className="text-white font-bold text-lg">{currentHeader.title}</h3>
+              <p className="text-sky-100 text-sm">{currentHeader.subtitle}</p>
+            </div>
+            <button
+              onClick={() => onDismiss?.(currentSection)}
+              className="text-white/70 hover:text-white transition p-1 flex-shrink-0"
+              data-testid="button-close-funnel"
+              aria-label="Close"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         )}
 
+        <div className={inline ? "" : "p-6"}>
         <ProgressBar step={globalStep} />
 
         {sectionStep === 1 && (
@@ -612,6 +636,7 @@ export default function ProgressiveFunnelPanel({
             </Button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
