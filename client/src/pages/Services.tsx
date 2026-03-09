@@ -59,16 +59,16 @@ export default function Services() {
     <div className="min-h-screen bg-white text-slate-900">
       <Navbar />
 
-      <section className="relative h-64 md:h-80 overflow-hidden" data-testid="section-services-hero">
+      <section className="relative h-[50vh] md:h-[60vh] overflow-hidden" data-testid="section-services-hero">
         <img
           src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/RAFPoJQUVEWIIOWX.gif"
           alt="Services"
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A3D6B]/80 to-sky-600/60 flex items-center">
-          <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-white" data-testid="text-services-heading">Our Services</h1>
-            <p className="text-white/80 mt-4 max-w-2xl text-lg">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A3D6B]/70 via-[#0A3D6B]/50 to-[#0A3D6B]/80 flex items-center justify-center">
+          <div className="text-center px-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-services-heading">Our Services</h1>
+            <p className="text-white/90 max-w-2xl mx-auto text-lg md:text-xl font-light drop-shadow-md">
               Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.
             </p>
           </div>
