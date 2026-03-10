@@ -1622,6 +1622,9 @@ footer.site-footer {
   overflow: hidden;
   border: 1px solid #e5e7eb;
 }
+.chatbot-panel.hidden {
+  display: none !important;
+}
 
 .chatbot-header {
   background: linear-gradient(to right, #0A3D6B, #0D5A9E);
