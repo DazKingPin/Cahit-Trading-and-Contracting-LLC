@@ -154,6 +154,7 @@
 
   section {
     border: none !important;
+    outline: none !important;
   }
 
   body {

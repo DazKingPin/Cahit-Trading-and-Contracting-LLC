@@ -246,11 +246,11 @@ export default function Home() {
         )}
       </section>
 
-      <section id="services-section" className="py-20 relative overflow-hidden" onMouseEnter={() => handleVideoHover("services", true, true)} onMouseLeave={() => handleVideoHover("services", false, true)} data-testid="section-expertise">
+      <section id="services-section" className="py-20 relative overflow-hidden border-0" onMouseEnter={() => handleVideoHover("services", true, true)} onMouseLeave={() => handleVideoHover("services", false, true)} data-testid="section-expertise">
         <video ref={(el) => { if (el) videoRefs.current["services"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-600/50 via-gray-500/45 to-gray-600/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-700/60 via-gray-600/55 to-gray-700/60"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
@@ -260,17 +260,9 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service) => (
-              <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0 bg-white/80 backdrop-blur-sm" data-testid={`card-service-${service.id}`}>
+              <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0 bg-white/70 backdrop-blur-sm" data-testid={`card-service-${service.id}`}>
                 <div className="relative h-64 overflow-hidden bg-slate-200">
-                  {"images" in service && service.images ? (
-                    <div className="grid grid-cols-2 gap-0.5 h-full">
-                      {service.images.slice(0, 4).map((img, i) => (
-                        <img key={i} src={img} alt={service.name} className="w-full h-full object-cover" />
-                      ))}
-                    </div>
-                  ) : (
-                    <img src={service.image} alt={service.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                  )}
+                  <img src={"images" in service && service.images ? service.images[0] : service.image} alt={service.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-slate-900 mb-2">{service.name}</h3>

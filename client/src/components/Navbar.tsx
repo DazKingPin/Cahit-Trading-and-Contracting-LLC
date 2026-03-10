@@ -32,7 +32,7 @@ export default function Navbar({ onGetQuoteClick, onGetQuoteSubmit }: NavbarProp
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
+    { href: "/about", label: "About Us" },
     { href: "/services", label: "Services" },
     { href: "/projects", label: "Projects" },
   ];
