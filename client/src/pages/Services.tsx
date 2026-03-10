@@ -78,36 +78,30 @@ export default function Services() {
       </section>
 
       <section className="py-20 bg-white" data-testid="section-services-list">
-        <div className="container mx-auto px-4 space-y-20">
-          {services.map((service, idx) => (
-            <div key={service.id} className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${idx % 2 === 1 ? "lg:flex-row-reverse" : ""}`} data-testid={`service-${service.id}`}>
-              <div className={idx % 2 === 1 ? "lg:order-2" : ""}>
-                {"images" in service && service.images ? (
-                  <div className="grid grid-cols-2 gap-2 rounded-xl overflow-hidden">
-                    {service.images.slice(0, 4).map((img, i) => (
-                      <img key={i} src={img} alt={service.name} className="w-full h-40 object-cover" />
-                    ))}
-                  </div>
-                ) : (
-                  <img src={service.image} alt={service.name} className="w-full h-72 object-cover rounded-xl shadow-lg" />
-                )}
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service) => (
+              <div key={service.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow" data-testid={`service-${service.id}`}>
+                <div className="relative h-56 overflow-hidden">
+                  <img src={"images" in service && service.images ? service.images[0] : service.image} alt={service.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">{service.name}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed mb-4">{service.description}</p>
+                  {"details" in service && service.details && (
+                    <ul className="space-y-2">
+                      {service.details.map((item, i) => (
+                        <li key={i} className="flex items-center gap-2 text-slate-600 text-sm">
+                          <div className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
-              <div className={idx % 2 === 1 ? "lg:order-1" : ""}>
-                <h3 className="text-2xl font-bold text-slate-900 mb-4">{service.name}</h3>
-                <p className="text-slate-600 leading-relaxed mb-4">{service.description}</p>
-                {"details" in service && service.details && (
-                  <ul className="space-y-2 mb-6">
-                    {service.details.map((item, i) => (
-                      <li key={i} className="flex items-center gap-2 text-slate-600">
-                        <div className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
