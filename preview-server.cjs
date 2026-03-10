@@ -62,10 +62,13 @@ function executePhpTemplate(phpContent, currentPage) {
     return processPhpSimple(readThemeFile('footer.php'), currentPage);
   });
 
+  // Remove $base_url definition line
+  html = html.replace(/<\?php\s+\$base_url\s*=\s*'[^']*';\s*\?>/g, '');
+
   html = processPhpSimple(html, currentPage);
 
   // Execute PHP loops for front-page logos marquee
-  html = html.replace(/<\?php[\s\S]*?for\s*\(\$repeat[\s\S]*?endfor;[\s\S]*?\?>/g, () => {
+  html = html.replace(/<\?php\s+\$logos\s*=\s*array[\s\S]*?endfor;[\s\S]*?\?>/g, () => {
     let result = '';
     for (let repeat = 0; repeat < 2; repeat++) {
       logos.forEach((logo, idx) => {
@@ -78,7 +81,7 @@ function executePhpTemplate(phpContent, currentPage) {
   });
 
   // Execute PHP loops for rolling images
-  html = html.replace(/<\?php[\s\S]*?\$rolling_images[\s\S]*?endforeach;\s*\?>/g, () => {
+  html = html.replace(/<\?php\s+\$rolling_images[\s\S]*?endforeach;\s*\?>/g, () => {
     let result = '';
     rolling_images.forEach((img, idx) => {
       result += `<div class="rolling-image-item ${idx === 0 ? 'active' : ''}" data-rolling-index="${idx}">
@@ -89,7 +92,7 @@ function executePhpTemplate(phpContent, currentPage) {
   });
 
   // Execute PHP loops for services
-  html = html.replace(/<\?php[\s\S]*?\$services\s*=\s*array[\s\S]*?endforeach;\s*\?>/g, () => {
+  html = html.replace(/<\?php\s+\$services\s*=\s*array[\s\S]*?endforeach;\s*\?>/g, () => {
     let result = '';
     services.forEach(service => {
       result += `<div class="service-card" data-testid="card-service-${service.id}">
@@ -110,7 +113,7 @@ function executePhpTemplate(phpContent, currentPage) {
   });
 
   // Execute PHP loops for marine capabilities
-  html = html.replace(/<\?php[\s\S]*?\$capabilities\s*=\s*array[\s\S]*?endforeach;\s*\?>/g, () => {
+  html = html.replace(/<\?php\s+\$capabilities\s*=\s*array[\s\S]*?endforeach;\s*\?>/g, () => {
     let result = '';
     capabilities.forEach(cap => {
       result += `<div class="marine-pill">

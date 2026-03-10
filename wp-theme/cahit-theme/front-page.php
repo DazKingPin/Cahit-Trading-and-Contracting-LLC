@@ -1,8 +1,5 @@
 <?php get_header(); ?>
-
-<?php
-$base_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
-?>
+<?php $base_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/'; ?>
 
 <!-- 1. Hero Section -->
 <section class="hero-section" id="hero-section" data-testid="section-hero">
