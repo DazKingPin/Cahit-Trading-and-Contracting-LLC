@@ -213,7 +213,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about-section" className="py-20 bg-slate-50 relative" onMouseMove={funnel.handleAboutMouseMove} onMouseLeave={funnel.handleAboutMouseLeave} data-testid="section-about">
+      <section id="about-section" className="py-20 bg-white relative" onMouseMove={funnel.handleAboutMouseMove} onMouseLeave={funnel.handleAboutMouseLeave} data-testid="section-about">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="relative" onMouseEnter={() => handleVideoHover("about", true)} onMouseLeave={() => handleVideoHover("about", false)}>
@@ -318,7 +318,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="stats-section" className="py-16 bg-slate-50" data-testid="section-stats">
+      <section id="stats-section" className="py-16 bg-white" data-testid="section-stats">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">Delivering Infrastructure Excellence</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
@@ -390,7 +390,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-tahir">
-              <div className="relative h-64 bg-slate-900 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
+              <div className="relative h-64 bg-slate-200 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-[85%] h-[85%] object-contain" loop muted>
                   <source src={tahirVideoSrc} type="video/mp4" />
                 </video>
@@ -419,7 +419,7 @@ export default function Home() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-pasha">
-              <div className="relative h-64 bg-slate-900 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
+              <div className="relative h-64 bg-slate-200 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-[85%] h-[85%] object-contain" loop muted>
                   <source src={pashaVideoSrc} type="video/mp4" />
                 </video>

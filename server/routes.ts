@@ -167,7 +167,7 @@ export async function registerRoutes(
       const { sessionId, message } = req.body;
       if (!sessionId || !message) return res.status(400).json({ message: "sessionId and message required" });
       await storage.createChatMessage({ sessionId, role: "user", content: message });
-      const reply = generateChatReply(message);
+      const reply = await generateChatReply(message, sessionId, storage);
       const botMsg = await storage.createChatMessage({ sessionId, role: "assistant", content: reply });
       res.json({ reply: botMsg.content });
     } catch (e: any) {
@@ -375,31 +375,65 @@ export async function registerRoutes(
   return httpServer;
 }
 
-function generateChatReply(message: string): string {
-  const lower = message.toLowerCase();
-  if (lower.includes("service") || lower.includes("what do you do")) {
-    return "Cahit Trading & Contracting LLC offers marine & coastal construction, infrastructure development, earthworks & grading, dewatering & shoring, and MEP works. How can we help with your project?";
+const COMPANY_KNOWLEDGE = `You are the AI assistant for Cahit Trading & Contracting LLC (CTC). Answer questions based on this company knowledge:
+
+ABOUT THE COMPANY:
+- Cahit Trading & Contracting LLC is a construction and infrastructure company operating in the Sultanate of Oman since 2009.
+- Founded by Tahir Şenyurt, the company has developed into a trusted contractor delivering complex projects across marine construction, infrastructure development, earthworks, and industrial services.
+- Through a combination of engineering expertise, operational excellence, and strong client partnerships, Cahit contributes to the development of critical infrastructure across Oman.
+- 15+ years of experience, 50+ major projects completed, 98% client satisfaction rate.
+
+LEADERSHIP:
+- Tahir Şenyurt — Managing Director. Civil Engineer with over 25 years of experience in the construction and contracting industry. He has successfully led numerous projects including marine infrastructure, road construction, industrial facilities and residential developments across Turkey and the GCC. Education: Bachelor of Civil Engineering — University of Middle East Technical. License: Registered Civil Engineer.
+- Pasha Hüseyin Ari — General Coordinator. Holds a Master's degree in Environmental Engineering from Istanbul Technical University. 15+ years of experience in environmental and infrastructure-related sectors. Education: MSc of Environmental Engineering — Istanbul Technical University. License: Registered Environmental Engineer.
+
+SERVICES:
+1. Marine & Coastal Construction — Design and construction of marine infrastructure including breakwaters, quay walls, revetments, dredging, and coastal protection systems.
+2. Infrastructure Development — Civil infrastructure development including roads, utilities, industrial facilities, and integrated project delivery solutions.
+3. Earthworks & Grading — Land preparation, cut and fill operations, and site grading for large-scale development projects.
+4. Dewatering & Shoring — Groundwater management and temporary earth support systems for safe below-grade construction.
+5. MEP Works — Mechanical, electrical, and plumbing installations for commercial, industrial, and infrastructure projects.
+
+PROJECTS:
+- Seaport Infrastructure projects in Muscat, Oman — quay wall construction and breakwater installation.
+- Coastal Protection Systems in Salalah, Oman — rock armour installation and coastal defense.
+- Road construction, asphalt paving, underground pipe installation across Oman.
+- Work with government authorities, developers, and industrial organizations.
+
+CONTACT INFORMATION:
+- Phone: +968 2411 2406 Ext 101
+- Mobile/WhatsApp: +968 9096 6562
+- Email: ctc@cahitcontracting.com
+- Address: Khaleej Tower, 6th Floor, No. 603, Ghala, Muscat, Sultanate of Oman
+
+CORE VALUES:
+- Safety First: Comprehensive safety protocols and training programs
+- Excellence: Committed to delivering the highest quality in every project
+- Innovation: Adopting advanced construction technologies and methods
+
+Be helpful, professional, and concise. If asked something outside your knowledge, suggest contacting the company directly. Always be friendly and encourage the visitor to learn more or get in touch.`;
+
+async function generateChatReply(message: string, sessionId: string, storage: any): Promise<string> {
+  try {
+    const history = await storage.getChatsBySession(sessionId);
+    const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
+      { role: "system", content: COMPANY_KNOWLEDGE },
+    ];
+    const recentHistory = history.slice(-10);
+    for (const msg of recentHistory) {
+      messages.push({ role: msg.role as "user" | "assistant", content: msg.content });
+    }
+    messages.push({ role: "user", content: message });
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages,
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+    return response.choices[0]?.message?.content || "I'm sorry, I couldn't process that. Please try again or contact us at ctc@cahitcontracting.com.";
+  } catch (e) {
+    console.error("Chat AI error:", e);
+    return "I'm experiencing a temporary issue. Please try again or contact us directly at ctc@cahitcontracting.com or +968 9096 6562.";
   }
-  if (lower.includes("marine") || lower.includes("coastal") || lower.includes("breakwater") || lower.includes("port")) {
-    return "We specialize in marine infrastructure including breakwaters, quay walls, coastal protection systems, dredging, and harbor construction. Would you like to discuss a specific marine project?";
-  }
-  if (lower.includes("contact") || lower.includes("phone") || lower.includes("email") || lower.includes("reach")) {
-    return "You can reach us at:\n\nPhone: +968 2411 2406 Ext 101\nMobile: +968 9096 6562\nEmail: ctc@cahitcontracting.com\nWhatsApp: +968 9096 6562\n\nOffice: Khaleej Tower, 6th Floor, No. 603, Ghala, Muscat, Sultanate of Oman";
-  }
-  if (lower.includes("location") || lower.includes("address") || lower.includes("office") || lower.includes("where")) {
-    return "Our office is located at Khaleej Tower, 6th Floor, No. 603, Ghala, Muscat, Sultanate of Oman.";
-  }
-  if (lower.includes("project") || lower.includes("portfolio")) {
-    return "We have completed 50+ major infrastructure projects across Oman, including seaport infrastructure, coastal protection systems, road construction, and industrial facilities.";
-  }
-  if (lower.includes("quote") || lower.includes("price") || lower.includes("cost") || lower.includes("estimate")) {
-    return "We'd be happy to provide a quote for your project. Could you share some details about the type of work, location, and timeline? Or you can contact us directly at ctc@cahitcontracting.com.";
-  }
-  if (lower.includes("hello") || lower.includes("hi") || lower.includes("hey") || lower.includes("good")) {
-    return "Hello! Welcome to Cahit Trading & Contracting. How can I assist you today? You can ask about our services, projects, or get in touch with our team.";
-  }
-  if (lower.includes("experience") || lower.includes("year") || lower.includes("history")) {
-    return "Cahit Trading & Contracting has been operating in Oman since 2009, with over 15 years of experience in marine construction, infrastructure development, and industrial services.";
-  }
-  return "Thank you for your message! Our team at Cahit Trading & Contracting is here to help. You can ask about our services, projects, or how to get in touch. How can we assist you?";
 }
