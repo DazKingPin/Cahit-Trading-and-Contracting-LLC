@@ -1,0 +1,405 @@
+<?php get_header(); ?>
+
+<?php
+$base_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
+?>
+
+<!-- 1. Hero Section -->
+<section class="hero-section" id="hero-section" data-testid="section-hero">
+  <video class="hero-video-bg" autoplay muted loop playsinline data-video-key="hero" data-keep-playing="true">
+    <source src="<?php echo $base_url; ?>FtuVECRYiIRERWQB.mp4" type="video/mp4" />
+  </video>
+  <div class="hero-gradient-overlay"></div>
+  <div class="hero-content">
+    <div class="container">
+      <div class="hero-text-block">
+        <h1 class="hero-title" data-testid="text-hero-title">
+          CAHIT CONTRACTING
+          <br />
+          <span class="text-cyan-200">A Solid Ground</span>
+          <br />
+          For Your Project
+        </h1>
+        <p class="hero-subtitle" data-testid="text-hero-subtitle">
+          Marine &amp; Coastal Construction Experts
+        </p>
+        <div class="hero-buttons">
+          <a href="<?php echo home_url('/services'); ?>">
+            <button class="btn btn-white" data-testid="button-hero-consultation">
+              Schedule Consultation
+              <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </a>
+          <a href="<?php echo home_url('/projects'); ?>">
+            <button class="btn btn-outline-white" data-testid="button-hero-portfolio">
+              View Portfolio
+            </button>
+          </a>
+        </div>
+        <div class="hero-counters">
+          <div class="hero-counter-item">
+            <div class="hero-counter-value" data-counter="15" data-suffix="+" data-testid="text-counter-years">0+</div>
+            <div class="hero-counter-label">Years Experience</div>
+          </div>
+          <div class="hero-counter-item">
+            <div class="hero-counter-value" data-counter="50" data-suffix="+" data-testid="text-counter-projects">0+</div>
+            <div class="hero-counter-label">Projects Completed</div>
+          </div>
+          <div class="hero-counter-item">
+            <div class="hero-counter-value" data-counter="100" data-suffix="%" data-testid="text-counter-satisfaction">0%</div>
+            <div class="hero-counter-label">Client Satisfaction</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Logo Marquee Section -->
+<section class="logos-section" data-testid="section-logos">
+  <div class="container">
+    <h2 class="section-title text-center" data-testid="text-logos-title">Trusted by Leading Organizations</h2>
+    <p class="section-subtitle text-center">
+      Cahit Trading &amp; Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.
+    </p>
+    <div class="marquee-wrapper">
+      <div class="marquee-fade-left"></div>
+      <div class="marquee-fade-right"></div>
+      <div class="marquee-track">
+        <?php
+        $logos = array(
+          array('name' => 'Doosan Heavy Industries & Construction', 'file' => 'cxoRXpdmBqwcLedo.png'),
+          array('name' => 'Al Jazeera International Group', 'file' => 'qFCAQxxNiSjFqwyq.png'),
+          array('name' => 'Al-Hashemi & Al-Rawas Trading & Contracting', 'file' => 'KXeFROoDmbydRpuQ.png'),
+          array('name' => 'Fisia Italimpianti', 'file' => 'NhkgkgOdoRAutEDK.png'),
+          array('name' => 'GPS In The New Millennium', 'file' => 'ssANHVRFYXALYoKI.png'),
+          array('name' => 'Makyol', 'file' => 'IqZMAjrvgmDdBJaW.png'),
+          array('name' => 'Omran', 'file' => 'cCzhlyOLGOdtqfjD.jpg'),
+          array('name' => 'Salalah Sanitary Drainage Services', 'file' => 'eGXMGushzTuSHdCj.png'),
+          array('name' => 'SNC-Lavalin', 'file' => 'dIjoxYdtJmpPvEZG.png'),
+          array('name' => 'STFA', 'file' => 'MrphYkzHpiuuKwNm.png'),
+          array('name' => 'TAV Construction', 'file' => 'fOxkXRAGOOnYlnkI.png'),
+        );
+        for ($repeat = 0; $repeat < 2; $repeat++) :
+          foreach ($logos as $idx => $logo) :
+        ?>
+        <div class="marquee-logo-card" data-testid="img-logo-<?php echo ($repeat * count($logos)) + $idx; ?>">
+          <img src="<?php echo $base_url . $logo['file']; ?>" alt="<?php echo esc_attr($logo['name']); ?>" class="marquee-logo-img" />
+        </div>
+        <?php
+          endforeach;
+        endfor;
+        ?>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. About Preview Section -->
+<section class="about-section" id="about-section" data-testid="section-about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-media">
+        <video class="about-video" loop muted data-video-key="about">
+          <source src="<?php echo $base_url; ?>AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
+        </video>
+        <div class="rolling-images" data-testid="about-rolling-images">
+          <?php
+          $rolling_images = array(
+            array('src' => 'gvWLawWCNocSINuR.jpeg', 'alt' => 'Road construction with heavy rollers'),
+            array('src' => 'GjfldJYeoGyqGIMR.jpeg', 'alt' => 'Asphalt paving with Vogele machine'),
+            array('src' => 'mejIiORMfOESXWxO.jpeg', 'alt' => 'Road line marking operations'),
+            array('src' => 'jdGZtMFCClzefYrV.png', 'alt' => 'Underground pipe installation'),
+          );
+          foreach ($rolling_images as $idx => $img) :
+          ?>
+          <div class="rolling-image-item <?php echo $idx === 0 ? 'active' : ''; ?>" data-rolling-index="<?php echo $idx; ?>">
+            <img src="<?php echo $base_url . $img['src']; ?>" alt="<?php echo esc_attr($img['alt']); ?>" />
+          </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <div class="about-text">
+        <h2 class="section-title" data-testid="text-about-title">Engineering the Foundations of Tomorrow</h2>
+        <p class="text-slate-600">
+          Cahit Trading &amp; Contracting LLC is a construction and infrastructure company operating in the Sultanate of Oman since 2009.
+        </p>
+        <p class="text-slate-600">
+          Founded by Tahir &#350;enyurt, the company has developed into a trusted contractor delivering complex projects across marine construction, infrastructure development, earthworks, and industrial services.
+        </p>
+        <p class="text-slate-600 mb-8">
+          Through a combination of engineering expertise, operational excellence, and strong client partnerships, Cahit contributes to the development of critical infrastructure across Oman.
+        </p>
+        <a href="<?php echo home_url('/about'); ?>">
+          <button class="btn btn-sky" data-testid="button-discover-company">
+            Discover Our Company
+            <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Our Services Section -->
+<section class="services-section" id="services-section" data-testid="section-expertise">
+  <video class="section-video-bg" autoplay muted loop playsinline data-video-key="services" data-keep-playing="true">
+    <source src="<?php echo $base_url; ?>FtuVECRYiIRERWQB.mp4" type="video/mp4" />
+  </video>
+  <div class="services-overlay"></div>
+  <div class="container relative-z10">
+    <div class="text-center mb-14">
+      <h2 class="section-title text-white" data-testid="text-expertise-title">Our Services</h2>
+      <p class="section-subtitle text-slate-300">
+        Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.
+      </p>
+    </div>
+    <div class="services-grid">
+      <?php
+      $services = array(
+        array('id' => 'marine', 'name' => 'Marine & Coastal Construction', 'image' => 'EGRSgZmJXJSrWKJY.png', 'desc' => 'Design and construction of marine infrastructure including breakwaters, quay walls, revetments, dredging, and coastal protection systems.'),
+        array('id' => 'infrastructure', 'name' => 'Infrastructure Development', 'image' => 'gvWLawWCNocSINuR.jpeg', 'desc' => 'Civil infrastructure development including utilities, industrial facilities, and integrated project delivery solutions.'),
+        array('id' => 'earthworks', 'name' => 'Earthworks', 'image' => 'hMZPCXiHvRhErvHk.gif', 'desc' => 'Bulk excavation, grading, compaction, and large-scale site preparation using modern heavy equipment.'),
+        array('id' => 'dewatering', 'name' => 'Dewatering & Shoring', 'image' => 'NHQbvhqluSlDGrrN.png', 'desc' => 'Advanced groundwater control systems and structural support solutions ensuring safe and stable construction environments.'),
+        array('id' => 'mep', 'name' => 'MEP Works', 'image' => 'qZRtUjMizSFySgTf.png', 'desc' => 'Mechanical, electrical and plumbing systems supporting industrial facilities, infrastructure and utility projects.'),
+      );
+      foreach ($services as $service) :
+      ?>
+      <div class="service-card" data-testid="card-service-<?php echo $service['id']; ?>">
+        <div class="service-card-image">
+          <img src="<?php echo $base_url . $service['image']; ?>" alt="<?php echo esc_attr($service['name']); ?>" />
+        </div>
+        <div class="service-card-body">
+          <h3 class="service-card-title"><?php echo esc_html($service['name']); ?></h3>
+          <p class="service-card-desc"><?php echo esc_html($service['desc']); ?></p>
+          <a href="<?php echo home_url('/services'); ?>" class="service-card-link">
+            Learn More
+            <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <div class="text-center mt-10">
+      <a href="<?php echo home_url('/services'); ?>">
+        <button class="btn btn-white-sky" data-testid="button-view-all-services">
+          View All Services
+          <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Marine Specialists Section -->
+<section class="marine-section" data-testid="section-marine">
+  <video class="section-video-bg" autoplay muted loop playsinline data-video-key="marine" data-keep-playing="true">
+    <source src="<?php echo $base_url; ?>FtuVECRYiIRERWQB.mp4" type="video/mp4" />
+  </video>
+  <div class="marine-overlay"></div>
+  <div class="container relative-z10">
+    <div class="marine-header">
+      <h2 class="marine-title">Specialists in Marine &amp; Coastal Infrastructure</h2>
+      <p class="marine-subtitle">
+        Cahit Trading &amp; Contracting LLC is recognized for its expertise in the construction of marine and coastal infrastructure.
+      </p>
+    </div>
+    <div class="marine-pills-grid">
+      <?php
+      $capabilities = array(
+        'Sea Harbors', 'Breakwaters and Groynes', 'Coastal Protection Systems', 'Rock Armour Installation',
+        'Geotextile Protection', 'Beach Reclamation', 'Dredging', 'Underwater Excavation',
+        'Boat Ramps and Pontoons', 'Quay Wall Construction',
+      );
+      foreach ($capabilities as $cap) :
+      ?>
+      <div class="marine-pill">
+        <svg class="marine-pill-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>
+        <p class="marine-pill-text"><?php echo esc_html($cap); ?></p>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <p class="marine-footer-text">
+      Through advanced engineering practices and experienced teams, we deliver durable infrastructure designed for challenging marine environments.
+    </p>
+  </div>
+</section>
+
+<!-- 6. Stats Section -->
+<section class="stats-section" id="stats-section" data-testid="section-stats">
+  <div class="container">
+    <h2 class="section-title text-center">Delivering Infrastructure Excellence</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" data-counter="15" data-suffix="+">0+</div>
+        <p class="stat-label">Years Industry Leadership Experience</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" data-counter="50" data-suffix="+">0+</div>
+        <p class="stat-label">Major Infrastructure Projects Delivered</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" data-counter="100" data-suffix="%">0%</div>
+        <p class="stat-label">Operations Across Oman</p>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value-static">#1</div>
+        <p class="stat-label">Marine &amp; Infrastructure Specialists</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Selected Projects Section -->
+<section class="projects-section" id="projects-section" data-testid="section-projects">
+  <div class="container">
+    <div class="text-center mb-16">
+      <h2 class="section-title" data-testid="text-projects-title">Selected Projects</h2>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card" data-testid="card-project-seaport">
+        <div class="project-card-image">
+          <img src="<?php echo $base_url; ?>ScxGkCDjPFNOhvON.png" alt="Seaport Infrastructure" />
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-card-title">Seaport Infrastructure</h3>
+          <p class="project-card-location">Muscat, Oman</p>
+          <p class="project-card-desc">Quay wall construction and breakwater installation</p>
+        </div>
+      </div>
+      <div class="project-card" data-testid="card-project-coastal">
+        <div class="project-card-image">
+          <img src="<?php echo $base_url; ?>zrgzKMxwmxJkeDsu.jpg" alt="Coastal Protection" />
+        </div>
+        <div class="project-card-body">
+          <h3 class="project-card-title">Coastal Protection Systems</h3>
+          <p class="project-card-location">Salalah, Oman</p>
+          <p class="project-card-desc">Rock armour installation and coastal defense</p>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-10">
+      <a href="<?php echo home_url('/projects'); ?>">
+        <button class="btn btn-sky" data-testid="button-explore-projects">
+          Explore All Projects
+          <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Leadership Section -->
+<section class="leadership-section" data-testid="section-leadership">
+  <div class="container">
+    <div class="text-center mb-14">
+      <h2 class="section-title" data-testid="text-leadership-title">Leadership</h2>
+      <p class="section-subtitle">Meet the professionals behind Cahit Trading &amp; Contracting.</p>
+    </div>
+    <div class="leadership-grid">
+      <div class="leader-card" data-testid="card-testimonial-tahir">
+        <div class="leader-video-container" data-video-key="tahir">
+          <video class="leader-video" loop muted data-video-key="tahir">
+            <source src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/videos/tahir.mp4" type="video/mp4" />
+          </video>
+          <div class="leader-video-overlay">
+            <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            <span class="hover-label">Hover to Watch</span>
+          </div>
+        </div>
+        <div class="leader-info">
+          <h3 class="leader-name">Tahir &#350;enyurt</h3>
+          <p class="leader-role">Managing Director</p>
+          <p class="leader-bio">
+            Tahir &#350;enyurt is a Civil Engineer with over 25 years of experience in the construction and contracting industry. He has successfully led numerous projects including marine infrastructure, road construction, industrial facilities and residential developments across Turkey and the GCC.
+          </p>
+          <div class="leader-details">
+            <div class="leader-detail-item">
+              <p class="leader-detail-label">Education</p>
+              <p class="leader-detail-value">Bachelor of Civil Engineering &mdash; University of Middle East Technical</p>
+            </div>
+            <div class="leader-detail-item">
+              <p class="leader-detail-label">License</p>
+              <p class="leader-detail-value">Registered Civil Engineer</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="leader-card" data-testid="card-testimonial-pasha">
+        <div class="leader-video-container" data-video-key="pasha">
+          <video class="leader-video" loop muted data-video-key="pasha">
+            <source src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/videos/pasha.mp4" type="video/mp4" />
+          </video>
+          <div class="leader-video-overlay">
+            <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            <span class="hover-label">Hover to Watch</span>
+          </div>
+        </div>
+        <div class="leader-info">
+          <h3 class="leader-name">Pasha H&uuml;seyin Ari</h3>
+          <p class="leader-role">General Coordinator</p>
+          <p class="leader-bio">
+            Pasha H&uuml;seyin Ari holds a Master's degree in Environmental Engineering from Istanbul Technical University and brings over 15 years of experience in environmental and infrastructure-related sectors.
+          </p>
+          <div class="leader-details">
+            <div class="leader-detail-item">
+              <p class="leader-detail-label">Education</p>
+              <p class="leader-detail-value">MSc of Environmental Engineering &mdash; Istanbul Technical University</p>
+            </div>
+            <div class="leader-detail-item">
+              <p class="leader-detail-label">License</p>
+              <p class="leader-detail-value">Registered Environmental Engineer</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Commitment Section -->
+<section class="commitment-section" data-testid="section-commitment">
+  <div class="container">
+    <h2 class="section-title text-center">Our Commitment</h2>
+    <div class="commitment-grid">
+      <div class="commitment-card">
+        <div class="commitment-icon-wrapper">
+          <svg class="commitment-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+        </div>
+        <h3 class="commitment-card-title">Best Quality</h3>
+        <p class="commitment-card-desc">We maintain the highest engineering and construction standards in every project.</p>
+      </div>
+      <div class="commitment-card">
+        <div class="commitment-icon-wrapper">
+          <svg class="commitment-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3 class="commitment-card-title">On-Time Delivery</h3>
+        <p class="commitment-card-desc">We respect project timelines and deliver reliable execution without compromising quality.</p>
+      </div>
+      <div class="commitment-card">
+        <div class="commitment-icon-wrapper">
+          <svg class="commitment-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
+        </div>
+        <h3 class="commitment-card-title">Experience</h3>
+        <p class="commitment-card-desc">Our experienced professionals ensure efficient project delivery and operational excellence.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. CTA Section -->
+<section class="cta-section" data-testid="section-cta">
+  <div class="container text-center">
+    <h2 class="cta-title" data-testid="text-cta-title">Let's Build Your Next Project</h2>
+    <p class="cta-subtitle">
+      Whether planning marine infrastructure, coastal protection, or large-scale civil works, our team is ready to support your project with reliable expertise and professional execution.
+    </p>
+    <button class="btn btn-white-sky btn-lg" data-testid="button-cta-contact" onclick="document.getElementById('contact-popup') && (document.getElementById('contact-popup').style.display='flex')">
+      Contact Our Team
+      <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </button>
+  </div>
+</section>
+
+<?php get_footer(); ?>
