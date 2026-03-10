@@ -107,16 +107,18 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showFunnelModal]);
 
-  const handleVideoHover = (key: string, isHovering: boolean) => {
+  const handleVideoHover = (key: string, isHovering: boolean, keepPlaying = false) => {
     const video = videoRefs.current[key];
     if (video) {
       if (isHovering) {
         video.muted = false;
         video.play().catch(() => { video.muted = true; video.play().catch(() => {}); });
       } else {
-        video.pause();
         video.muted = true;
-        video.currentTime = 0;
+        if (!keepPlaying) {
+          video.pause();
+          video.currentTime = 0;
+        }
       }
     }
   };
@@ -139,8 +141,8 @@ export default function Home() {
     <div className="min-h-screen bg-white text-slate-900 overflow-hidden">
       <Navbar onGetQuoteClick={funnel.suppressFunnel} onGetQuoteSubmit={funnel.suppressFunnel} />
 
-      <section className="relative min-h-screen flex items-center overflow-hidden" onMouseMove={funnel.handleHeroMouseMove} onMouseLeave={funnel.handleHeroMouseLeave} data-testid="section-hero">
-        <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
+      <section className="relative min-h-screen flex items-center overflow-hidden" onMouseMove={funnel.handleHeroMouseMove} onMouseLeave={() => { funnel.handleHeroMouseLeave(); handleVideoHover("hero", false, true); }} onMouseEnter={() => handleVideoHover("hero", true, true)} data-testid="section-hero">
+        <video ref={(el) => { if (el) videoRefs.current["hero"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,100,140,0.85)] via-[rgba(20,130,170,0.70)] to-[rgba(60,180,220,0.30)] z-10"></div>
@@ -214,8 +216,8 @@ export default function Home() {
       <section id="about-section" className="py-20 bg-slate-50 relative" onMouseMove={funnel.handleAboutMouseMove} onMouseLeave={funnel.handleAboutMouseLeave} data-testid="section-about">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative">
-              <video className="w-full rounded-2xl shadow-xl" controls>
+            <div className="relative" onMouseEnter={() => handleVideoHover("about", true)} onMouseLeave={() => handleVideoHover("about", false)}>
+              <video ref={(el) => { if (el) videoRefs.current["about"] = el; }} className="w-full rounded-2xl shadow-xl cursor-pointer" loop>
                 <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
               </video>
               <AboutRollingImages />
@@ -244,8 +246,8 @@ export default function Home() {
         )}
       </section>
 
-      <section id="services-section" className="py-20 relative overflow-hidden" data-testid="section-expertise">
-        <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
+      <section id="services-section" className="py-20 relative overflow-hidden" onMouseEnter={() => handleVideoHover("services", true, true)} onMouseLeave={() => handleVideoHover("services", false, true)} data-testid="section-expertise">
+        <video ref={(el) => { if (el) videoRefs.current["services"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-slate-900/25"></div>
@@ -290,8 +292,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative py-28 overflow-hidden" data-testid="section-marine">
-        <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
+      <section className="relative py-28 overflow-hidden" onMouseEnter={() => handleVideoHover("marine", true, true)} onMouseLeave={() => handleVideoHover("marine", false, true)} data-testid="section-marine">
+        <video ref={(el) => { if (el) videoRefs.current["marine"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-sky-900/85 via-sky-800/80 to-sky-900/90"></div>
