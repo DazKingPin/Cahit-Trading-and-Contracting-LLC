@@ -9,6 +9,7 @@
     initPillButtons();
     initQuoteFormSubmit();
     initSmoothScroll();
+    initLeadFunnel();
   });
 
   function initMobileMenu() {
@@ -439,6 +440,161 @@
       el.removeAttribute("data-en-text");
     });
   }
+
+  var funnelData = {};
+  var funnelGlobalStep = 0;
+  var funnelInactivityTimer = null;
+  var funnelSectionMap = { hero: 1, about: 2, projects: 3 };
+
+  function initLeadFunnel() {
+    var sections = document.querySelectorAll("[data-funnel-section]");
+    if (!sections.length) return;
+
+    function handleSectionInteraction(section) {
+      var sectionName = section.getAttribute("data-funnel-section");
+      var stepForSection = funnelSectionMap[sectionName];
+      if (funnelGlobalStep >= 4) return;
+      if (stepForSection !== funnelGlobalStep + 1) return;
+      showFunnelStep(stepForSection);
+      resetFunnelInactivity(stepForSection);
+    }
+
+    sections.forEach(function (section) {
+      section.addEventListener("mousemove", function () {
+        handleSectionInteraction(section);
+      });
+      section.addEventListener("touchstart", function () {
+        handleSectionInteraction(section);
+      }, { passive: true });
+    });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          handleSectionInteraction(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(function (section) {
+      observer.observe(section);
+    });
+  }
+
+  function showFunnelStep(step) {
+    for (var i = 1; i <= 4; i++) {
+      var panel = document.getElementById("funnel-step-" + i);
+      if (panel) panel.style.display = i === step ? "block" : "none";
+    }
+  }
+
+  function resetFunnelInactivity(step) {
+    clearTimeout(funnelInactivityTimer);
+    var panel = document.getElementById("funnel-step-" + step);
+    if (!panel) return;
+    var focused = panel.querySelector("input:focus");
+    if (focused) return;
+    funnelInactivityTimer = setTimeout(function () {
+      panel.style.display = "none";
+    }, 30000);
+  }
+
+  window.selectFunnelOption = function (groupId, btn) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    var buttons = group.querySelectorAll(".funnel-option");
+    buttons.forEach(function (b) { b.classList.remove("selected"); });
+    btn.classList.add("selected");
+    funnelData[groupId] = btn.textContent.trim();
+    clearTimeout(funnelInactivityTimer);
+  };
+
+  window.closeFunnel = function (step) {
+    var panel = document.getElementById("funnel-step-" + step);
+    if (panel) panel.style.display = "none";
+    clearTimeout(funnelInactivityTimer);
+  };
+
+  window.submitFunnelStep = function (step) {
+    if (step === 1) {
+      var projectType = funnelData["funnel-project-type"];
+      var goal = funnelData["funnel-primary-goal"];
+      if (!projectType || !goal) {
+        alert("Please select both a project type and primary goal.");
+        return;
+      }
+      funnelGlobalStep = 1;
+      showFunnelStep(0);
+      var aboutSection = document.getElementById("about-section");
+      if (aboutSection) aboutSection.scrollIntoView({ behavior: "smooth" });
+    } else if (step === 2) {
+      var timeline = funnelData["funnel-timeline"];
+      var budget = funnelData["funnel-budget"];
+      var location = document.getElementById("funnel-location");
+      if (!timeline || !budget) {
+        alert("Please select timeline and budget range.");
+        return;
+      }
+      if (location) funnelData["location"] = location.value;
+      funnelGlobalStep = 2;
+      showFunnelStep(0);
+      var projectsSection = document.getElementById("projects-section");
+      if (projectsSection) projectsSection.scrollIntoView({ behavior: "smooth" });
+    } else if (step === 3) {
+      var name = document.getElementById("funnel-name");
+      var email = document.getElementById("funnel-email");
+      var phone = document.getElementById("funnel-phone");
+      if (!name || !name.value.trim() || !email || !email.value.trim()) {
+        alert("Please fill in your name and email.");
+        return;
+      }
+      funnelData["name"] = name.value.trim();
+      funnelData["email"] = email.value.trim();
+      funnelData["phone"] = phone ? phone.value.trim() : "";
+      funnelData["role"] = funnelData["funnel-role"] || "";
+      funnelData["decision"] = funnelData["funnel-decision"] || "";
+      funnelData["time"] = funnelData["funnel-time"] || "";
+
+      var scope = [
+        "Type: " + (funnelData["funnel-project-type"] || ""),
+        "Goal: " + (funnelData["funnel-primary-goal"] || ""),
+        "Timeline: " + (funnelData["funnel-timeline"] || ""),
+        "Budget: " + (funnelData["funnel-budget"] || ""),
+        "Location: " + (funnelData["location"] || ""),
+        "Role: " + funnelData["role"],
+        "Decision Maker: " + funnelData["decision"],
+        "Preferred Time: " + funnelData["time"]
+      ].join("; ");
+
+      var formData = new FormData();
+      formData.append("action", "cahit_submit_lead");
+      formData.append("nonce", (typeof cahitData !== "undefined" && cahitData.nonce) || "");
+      formData.append("service_type", funnelData["funnel-project-type"] || "");
+      formData.append("details", scope);
+      formData.append("name", funnelData["name"]);
+      formData.append("email", funnelData["email"]);
+      formData.append("phone", funnelData["phone"]);
+
+      var ajaxUrl = (typeof cahitData !== "undefined" && cahitData.ajaxUrl) || "/api/ajax";
+      var submitBtn = document.querySelector('[data-testid="funnel-submit-3"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Submitting..."; }
+
+      fetch(ajaxUrl, { method: "POST", body: formData })
+        .then(function (res) {
+          if (!res.ok) throw new Error("Server error");
+          return res.json();
+        })
+        .then(function (data) {
+          if (data.success === false) throw new Error(data.data || "Submission failed");
+          funnelGlobalStep = 4;
+          showFunnelStep(4);
+        })
+        .catch(function (err) {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Submit Request"; }
+          alert("Something went wrong. Please try again or contact us directly at ctc@cahitcontracting.com");
+        });
+    }
+  };
 
   (function initLang() {
     var saved = localStorage.getItem("cahit-lang");

@@ -48,6 +48,13 @@ Home, About Us, Services, Projects, Clients, Blog, Careers, Contact
 
 ## Key Features
 - Hero section with video background and animated counters (home)
+- Progressive lead qualification funnel (3-step floating panels in hero/about/projects sections)
+  - Step 1 (Hero): Project type + primary goal
+  - Step 2 (About): Timeline, budget, location
+  - Step 3 (Projects): Role, decision maker, name/email/phone, consultation time
+  - Step 4: Success confirmation
+  - Triggers: mousemove, touchstart, IntersectionObserver
+  - Submits via FormData to WP admin-ajax (service_type, details, name, email, phone)
 - Image hero banner for About page, video heroes for Services/Projects
 - Client logos carousel with auto-scroll
 - 5 service cards (Marine, Infrastructure, Earthworks, Dewatering, MEP)

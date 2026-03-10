@@ -2,7 +2,7 @@
 <?php $base_url = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/'; ?>
 
 <!-- 1. Hero Section -->
-<section class="hero-section" id="hero-section" data-testid="section-hero">
+<section class="hero-section" id="hero-section" data-testid="section-hero" data-funnel-section="hero">
   <video class="hero-video-bg" autoplay muted loop playsinline data-video-key="hero" data-keep-playing="true">
     <source src="<?php echo $base_url; ?>FtuVECRYiIRERWQB.mp4" type="video/mp4" />
   </video>
@@ -50,6 +50,34 @@
       </div>
     </div>
   </div>
+
+  <div class="funnel-panel" id="funnel-step-1" data-testid="funnel-step-1" style="display:none;">
+    <div class="funnel-panel-header">
+      <div class="funnel-step-badge">Step 1 of 3</div>
+      <button class="funnel-close" onclick="closeFunnel(1)" aria-label="Close">&times;</button>
+    </div>
+    <h3 class="funnel-title">Let's Understand Your Needs</h3>
+    <div class="funnel-field">
+      <label class="funnel-label">Project Type</label>
+      <div class="funnel-options" id="funnel-project-type">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-marine">Marine Construction</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-coastal">Coastal Protection</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-seaport">Seaport Infrastructure</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-earthworks">Earthworks</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-mep">MEP Works</button>
+      </div>
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Primary Goal</label>
+      <div class="funnel-options" id="funnel-primary-goal">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Strengthen coastal protection</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Expand port capacity</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Infrastructure development</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Other</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(1)" data-testid="funnel-submit-1">Continue</button>
+  </div>
 </section>
 
 <!-- 2. Logo Marquee Section -->
@@ -93,7 +121,7 @@
 </section>
 
 <!-- 3. About Preview Section -->
-<section class="about-section" id="about-section" data-testid="section-about">
+<section class="about-section" id="about-section" data-testid="section-about" data-funnel-section="about">
   <div class="container">
     <div class="about-grid">
       <div class="about-media">
@@ -135,6 +163,37 @@
         </a>
       </div>
     </div>
+  </div>
+
+  <div class="funnel-panel" id="funnel-step-2" data-testid="funnel-step-2" style="display:none;">
+    <div class="funnel-panel-header">
+      <div class="funnel-step-badge">Step 2 of 3</div>
+      <button class="funnel-close" onclick="closeFunnel(2)" aria-label="Close">&times;</button>
+    </div>
+    <h3 class="funnel-title">Tell Us About Your Scope</h3>
+    <div class="funnel-field">
+      <label class="funnel-label">Project Timeline</label>
+      <div class="funnel-options" id="funnel-timeline">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-immediate">Immediate (&lt; 3 months)</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-short">Short-term (3-6 months)</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-medium">Medium-term (6-12 months)</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-long">Long-term (12+ months)</button>
+      </div>
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Budget Range</label>
+      <div class="funnel-options" id="funnel-budget">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">Under $500K</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">$500K - $2M</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">$2M - $10M</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">$10M+</button>
+      </div>
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Project Location</label>
+      <input type="text" class="funnel-input" id="funnel-location" placeholder="e.g. Muscat, Oman" data-testid="funnel-input-location" />
+    </div>
+    <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(2)" data-testid="funnel-submit-2">Continue</button>
   </div>
 </section>
 
@@ -248,7 +307,7 @@
 </section>
 
 <!-- 7. Selected Projects Section -->
-<section class="projects-section" id="projects-section" data-testid="section-projects">
+<section class="projects-section" id="projects-section" data-testid="section-projects" data-funnel-section="projects">
   <div class="container">
     <div class="text-center mb-16">
       <h2 class="section-title" data-testid="text-projects-title">Selected Projects</h2>
@@ -282,6 +341,65 @@
           <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
       </a>
+    </div>
+  </div>
+
+  <div class="funnel-panel" id="funnel-step-3" data-testid="funnel-step-3" style="display:none;">
+    <div class="funnel-panel-header">
+      <div class="funnel-step-badge">Step 3 of 3</div>
+      <button class="funnel-close" onclick="closeFunnel(3)" aria-label="Close">&times;</button>
+    </div>
+    <h3 class="funnel-title">Complete Your Details</h3>
+    <div class="funnel-field">
+      <label class="funnel-label">Your Role</label>
+      <div class="funnel-options" id="funnel-role">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Project Owner</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Engineer / Consultant</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Procurement / Contract Manager</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Other</button>
+      </div>
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Are you the decision maker?</label>
+      <div class="funnel-options funnel-options-row" id="funnel-decision">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)">Yes</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)">No</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)">Part of a team</button>
+      </div>
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Full Name</label>
+      <input type="text" class="funnel-input" id="funnel-name" placeholder="Your full name" data-testid="funnel-input-name" />
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Email Address</label>
+      <input type="email" class="funnel-input" id="funnel-email" placeholder="your@email.com" data-testid="funnel-input-email" />
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Phone Number</label>
+      <input type="tel" class="funnel-input" id="funnel-phone" placeholder="+968 XXXX XXXX" data-testid="funnel-input-phone" />
+    </div>
+    <div class="funnel-field">
+      <label class="funnel-label">Preferred Consultation Time</label>
+      <div class="funnel-options funnel-options-row" id="funnel-time">
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)">Morning</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)">Afternoon</button>
+        <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)">Evening</button>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(3)" data-testid="funnel-submit-3">Submit Request</button>
+  </div>
+
+  <div class="funnel-panel funnel-panel-success" id="funnel-step-4" data-testid="funnel-step-4" style="display:none;">
+    <div class="funnel-panel-header">
+      <button class="funnel-close" onclick="closeFunnel(4)" aria-label="Close">&times;</button>
+    </div>
+    <div class="funnel-success-content">
+      <div class="funnel-success-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h3 class="funnel-title">Request Received</h3>
+      <p class="funnel-success-text">We've received your inquiry. Our team will contact you shortly to schedule your free consultation.</p>
     </div>
   </div>
 </section>
