@@ -1,7 +1,7 @@
 <?php get_header(); ?>
 
 <section class="hero-banner" data-testid="section-services-hero">
-  <img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/services-hero.gif" alt="Services" class="hero-banner-bg" />
+  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/Services__1773095450245.gif" alt="Services" class="hero-banner-bg" />
   <div class="hero-banner-overlay"></div>
   <div class="hero-banner-content">
     <div class="container">
