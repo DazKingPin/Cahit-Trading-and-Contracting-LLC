@@ -1,97 +1,68 @@
 # Cahit Contracting Website
 
 ## Overview
-Corporate website for Cahit Trading & Contracting LLC, a marine & coastal construction company based in Oman. Built with React + Express + PostgreSQL.
+Corporate website for Cahit Trading & Contracting LLC, a marine & coastal construction company based in Oman. Built as a WordPress theme with a Node.js preview server for Replit.
 
 ## Architecture
-- **Frontend**: React with TypeScript, Tailwind CSS, Shadcn UI components
-- **Backend**: Express.js with session-based auth (express-session + memorystore)
-- **Database**: PostgreSQL via Drizzle ORM + Neon serverless driver
-- **Routing**: Wouter for client-side routing
-- **State Management**: React hooks + TanStack Query
-- **AI Integration**: OpenAI via Replit AI Integrations (env: AI_INTEGRATIONS_OPENAI_BASE_URL, AI_INTEGRATIONS_OPENAI_API_KEY)
-- **File Uploads**: Multer, saved to /uploads/ directory, served as static files
+- **WordPress Theme**: Located at `wp-theme/cahit-theme/`
+- **Preview Server**: `preview-server.cjs` (Node.js/Express) renders PHP templates as HTML for preview
+- **Database**: PostgreSQL available (used by original React app, not the WP theme preview)
+- **AI Integration**: OpenAI via Replit AI Integrations
+
+## WordPress Theme Structure
+- `wp-theme/cahit-theme/header.php` - Navbar, contact popup, quote modal
+- `wp-theme/cahit-theme/footer.php` - Footer with company info, links
+- `wp-theme/cahit-theme/front-page.php` - Home page (10 sections)
+- `wp-theme/cahit-theme/page-about.php` - About Us page
+- `wp-theme/cahit-theme/page-services.php` - Services page
+- `wp-theme/cahit-theme/page-projects.php` - Projects page
+- `wp-theme/cahit-theme/page-clients.php` - Clients page
+- `wp-theme/cahit-theme/page-blog.php` - Blog page
+- `wp-theme/cahit-theme/page-careers.php` - Careers page
+- `wp-theme/cahit-theme/index.php` - Required WP fallback template
+- `wp-theme/cahit-theme/functions.php` - Theme setup, enqueuing, custom post types, AJAX handlers
+- `wp-theme/cahit-theme/style.css` - WP theme metadata
+- `wp-theme/cahit-theme/assets/css/theme.css` - All styling
+- `wp-theme/cahit-theme/assets/js/theme.js` - Main JS (menu, counters, videos, modals, lang toggle)
+- `wp-theme/cahit-theme/assets/js/chatbot.js` - Floating chat widget
+- `wp-theme/cahit-theme/assets/videos/tahir.mp4` - Leadership video
+- `wp-theme/cahit-theme/assets/videos/pasha.mp4` - Leadership video
+
+## Navigation
+Home, About Us, Services, Projects, Clients, Blog, Careers, Contact
+
+## Language Support
+- EN/AR toggle in navbar
+- Arabic RTL support via CSS `html[dir="rtl"]` rules
+- Client-side translation via `switchLang('ar')` / `switchLang('en')`
+- Arabic text stored in `arTranslations` map in theme.js
+- Noto Sans Arabic font loaded from Google Fonts
+- Language preference saved in localStorage
+
+## Preview Server
+- `preview-server.cjs` (CommonJS, port 5000)
+- Reads PHP templates, strips/replaces PHP tags with actual content
+- Routes: `/`, `/about`, `/services`, `/projects`, `/clients`, `/blog`, `/careers`
+- Serves static assets from theme directory
+- Handles AJAX for chatbot and quote form (multipart + JSON)
 
 ## Key Features
-- Hero section with video background and animated counters
-- Navigation with smooth scrolling and mobile responsive menu
-- Client logos carousel (11 logos, auto-scroll)
-- Services section (5 services, no filter tabs)
-- Featured Projects showcase
-- Leadership section with hover-to-play video bios (Tahir Senyurt, Pasha Huseyin Ari)
-- Marine specialists capabilities grid
-- Progressive lead qualification funnel (3-step form)
-- ChatBot widget (floating navy bubble, keyword-based replies via /api/chat)
-- Contact popup modal with phone, email, WhatsApp
-- Admin login link in footer (small text) → popup modal
-- Full CRM admin dashboard at /admin
+- Hero section with video background and animated counters (home)
+- Image hero banner for About page, video heroes for Services/Projects
+- Client logos carousel with auto-scroll
+- 5 service cards (Marine, Infrastructure, Earthworks, Dewatering, MEP)
+- 6 project cards with category badges
+- Leadership section with hover-to-play video bios
+- Marine specialists capabilities pills
+- Quote request form via modal (FormData to WP admin-ajax)
+- Floating chatbot widget
+- Contact popup with phone, email, WhatsApp, address
+- Blog page with article cards
+- Careers page with value proposition cards
+- Full Arabic RTL support
 
-## Admin Dashboard (CRM)
-- **Dashboard**: 6 stat cards (Blog Posts, Total Leads, Unread Leads, Chat Conversations, Contacts from Chat, Content Sections) + Recent Leads + Recent Blog Posts
-- **Site Content**: EN/AR language toggle, expandable accordion sections (Hero, Expertise, Projects, Testimonials, CTA, Footer), form fields with file upload, live preview iframe
-- **Blog Posts**: CRUD with search/filter, bilingual (EN/AR), AI assistant panel with: Generate Article, Optimize SEO, Translate, Generate Excerpt, Improve Content, Suggest Titles
-- **Lead Submissions**: Card view with mark-as-read functionality
-- **Chat History**: Expandable session view with user/bot messages
-- Professional sidebar: Navy (#0A3D6B) with Cahit logo, nav items, sign-out
-
-## Admin System
-- First registered admin is auto-approved
-- Subsequent admins require approval from existing admin
-- Session-based authentication via express-session + memorystore
-- Dashboard at /admin route with sidebar navigation
-
-## API Routes
-### Public
-- POST /api/leads - Submit lead form
-- POST /api/chat - Send chat message
-- GET /api/blog-posts - Published blog posts
-- GET /api/blog-posts/:slug - Single blog post by slug
-
-### Admin (requires session auth)
-- POST /api/admin/register, /api/admin/login, /api/admin/logout
-- GET /api/admin/me - Current admin user
-- GET /api/admin/stats - Dashboard statistics
-- POST /api/admin/upload - File upload (multer)
-- GET/POST/PATCH/DELETE /api/admin/blog-posts - Blog CRUD
-- GET/PUT /api/admin/site-content/:sectionKey - Site content management
-- GET /api/admin/leads, POST /api/admin/leads/:id/read
-- GET /api/admin/chats, GET /api/admin/chats/:sessionId
-- POST /api/admin/ai/generate-article, generate-excerpt, improve-content, translate, optimize-seo, suggest-titles
-
-## Database Tables
-- `admin_users` - Admin accounts (email, username, password, isApproved, isFirstAdmin)
-- `chat_messages` - Chat bot conversations (sessionId, role, content)
-- `leads` - Lead qualification form submissions (serviceType, projectScope, name, email, phone, message)
-- `blog_posts` - Blog posts (titleEn, titleAr, slug, category, excerptEn/Ar, contentEn/Ar, status, featuredImage)
-- `site_content` - Editable site sections (sectionKey, language, contentJson)
-
-## Page Routes (matching csbbuilder.com)
-- `/` - Home (hero, logos, about teaser, services overview, marine specialists, stats, projects preview, leadership, commitment, CTA)
-- `/about` - About page (company overview, mission/vision, leadership, commitment, client logos)
-- `/services` - Services page (5 services with detailed descriptions and images)
-- `/projects` - Projects page (6 project cards with categories and locations)
-- `/blog` - Blog listing (published posts)
-- `/blog/:slug` - Blog detail page
-- `/admin` - Admin CRM dashboard
-
-## Project Structure
-- `client/src/pages/Home.tsx` - Home landing page
-- `client/src/pages/About.tsx` - About page
-- `client/src/pages/Services.tsx` - Services page
-- `client/src/pages/Projects.tsx` - Projects page
-- `client/src/pages/BlogPage.tsx` - Blog listing and detail pages
-- `client/src/pages/AdminDashboard.tsx` - Full CRM admin dashboard
-- `client/src/components/Navbar.tsx` - Shared navigation bar (Home, About, Services, Projects, Contact)
-- `client/src/components/ChatBotWidget.tsx` - Floating chatbot widget
-- `client/src/components/Footer.tsx` - Footer with admin login modal
-- `client/src/components/LeadQualificationFunnel.tsx` - Multi-step lead capture form
-- `client/src/lib/logos.ts` - Client logo data (11 logos)
-- `client/src/App.tsx` - App router and providers
-- `server/routes.ts` - All API routes (admin, blog, leads, chat, AI, uploads)
-- `server/storage.ts` - Database storage implementation (IStorage interface)
-- `server/db.ts` - Drizzle/Neon database connection
-- `shared/schema.ts` - Database schema, insert schemas, and types
-- `server/replit_integrations/` - OpenAI integration files
+## Media CDN
+All images served from: `https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/`
 
 ## Contact Info
 - Phone: +968 2411 2406 Ext 101
@@ -100,15 +71,12 @@ Corporate website for Cahit Trading & Contracting LLC, a marine & coastal constr
 - Address: Khaleej Tower, 6th Floor No. 603, Ghala, Muscat, Sultanate of Oman
 
 ## Design
-- Color scheme: Sky blue primary, navy (#0A3D6B) accent, slate grays for text
-- Font: Sora + Inter
-- Light theme optimized for corporate/professional look
+- Colors: Sky-500 (#0ea5e9), Sky-600 (#0284c7), Navy (#0A3D6B), Slate-900 (#0f172a)
+- Fonts: Sora + Inter (EN), Noto Sans Arabic (AR)
+- Light theme, corporate/professional look
 - Ocean-blue accents reflecting marine expertise
 
-## Dependencies
-- bcrypt (password hashing)
-- memorystore (session store)
-- multer (file uploads)
-- openai (AI integrations)
-- @neondatabase/serverless + ws (database connection)
-- drizzle-orm + drizzle-zod (ORM + validation)
+## WP AJAX Actions
+- `cahit_submit_lead` - Lead form submission
+- `cahit_submit_quote` - Quote request (FormData with nonce)
+- `cahit_chat` - Chatbot messages

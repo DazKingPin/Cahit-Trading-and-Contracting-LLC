@@ -138,7 +138,7 @@ function processPhpSimple(content, currentPage) {
   html = html.replace(/<\?php\s+wp_head\(\);\s*\?>/g, `
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/theme.css">
   `);
   html = html.replace(/<\?php\s+wp_footer\(\);\s*\?>/g, `
@@ -153,6 +153,9 @@ function processPhpSimple(content, currentPage) {
   html = html.replace(/<\?php\s+echo\s+esc_url\(home_url\('\/about'\)\);\s*\?>/g, '/about');
   html = html.replace(/<\?php\s+echo\s+esc_url\(home_url\('\/services'\)\);\s*\?>/g, '/services');
   html = html.replace(/<\?php\s+echo\s+esc_url\(home_url\('\/projects'\)\);\s*\?>/g, '/projects');
+  html = html.replace(/<\?php\s+echo\s+esc_url\(home_url\('\/clients'\)\);\s*\?>/g, '/clients');
+  html = html.replace(/<\?php\s+echo\s+esc_url\(home_url\('\/blog'\)\);\s*\?>/g, '/blog');
+  html = html.replace(/<\?php\s+echo\s+esc_url\(home_url\('\/careers'\)\);\s*\?>/g, '/careers');
   html = html.replace(/<\?php\s+echo\s+home_url\('\/services'\);\s*\?>/g, '/services');
   html = html.replace(/<\?php\s+echo\s+home_url\('\/about'\);\s*\?>/g, '/about');
   html = html.replace(/<\?php\s+echo\s+home_url\('\/projects'\);\s*\?>/g, '/projects');
@@ -171,6 +174,9 @@ function processPhpSimple(content, currentPage) {
     about: "is_page\\('about'\\)",
     services: "is_page\\('services'\\)",
     projects: "is_page\\('projects'\\)",
+    clients: "is_page\\('clients'\\)",
+    blog: "is_page\\('blog'\\)\\s*\\|\\|\\s*is_home\\(\\)",
+    careers: "is_page\\('careers'\\)",
   };
 
   for (const [page, regex] of Object.entries(activeChecks)) {
@@ -250,6 +256,21 @@ app.get('/services', (req, res) => {
 app.get('/projects', (req, res) => {
   const content = readThemeFile('page-projects.php');
   res.send(executePhpTemplate(content, 'projects'));
+});
+
+app.get('/clients', (req, res) => {
+  const content = readThemeFile('page-clients.php');
+  res.send(executePhpTemplate(content, 'clients'));
+});
+
+app.get('/blog', (req, res) => {
+  const content = readThemeFile('page-blog.php');
+  res.send(executePhpTemplate(content, 'blog'));
+});
+
+app.get('/careers', (req, res) => {
+  const content = readThemeFile('page-careers.php');
+  res.send(executePhpTemplate(content, 'careers'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {

@@ -24,7 +24,7 @@ function cahit_setup() {
 add_action('after_setup_theme', 'cahit_setup');
 
 function cahit_enqueue_scripts() {
-    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap', array(), null);
+    wp_enqueue_style('google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap', array(), null);
     wp_enqueue_style('lucide-icons', 'https://unpkg.com/lucide-static@latest/font/lucide.css', array(), null);
     wp_enqueue_style('cahit-theme', CAHIT_URI . '/assets/css/theme.css', array(), CAHIT_VERSION);
 

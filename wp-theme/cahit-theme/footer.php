@@ -10,9 +10,12 @@
         <h4 class="footer-heading">Company</h4>
         <ul class="footer-links">
           <li><a href="<?php echo esc_url(home_url('/')); ?>">Home</a></li>
-          <li><a href="<?php echo esc_url(home_url('/about')); ?>">About</a></li>
+          <li><a href="<?php echo esc_url(home_url('/about')); ?>">About Us</a></li>
           <li><a href="<?php echo esc_url(home_url('/services')); ?>">Services</a></li>
           <li><a href="<?php echo esc_url(home_url('/projects')); ?>">Projects</a></li>
+          <li><a href="<?php echo esc_url(home_url('/clients')); ?>">Clients</a></li>
+          <li><a href="<?php echo esc_url(home_url('/blog')); ?>">Blog</a></li>
+          <li><a href="<?php echo esc_url(home_url('/careers')); ?>">Careers</a></li>
           <li><button onclick="openContactPopup();" class="footer-link-button">Contact</button></li>
         </ul>
       </div>

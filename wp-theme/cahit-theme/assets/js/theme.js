@@ -317,4 +317,135 @@
         }
       });
   };
+
+  var arTranslations = {
+    "Home": "\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629",
+    "About Us": "\u0645\u0646 \u0646\u062D\u0646",
+    "Services": "\u0627\u0644\u062E\u062F\u0645\u0627\u062A",
+    "Projects": "\u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639",
+    "Clients": "\u0627\u0644\u0639\u0645\u0644\u0627\u0621",
+    "Blog": "\u0627\u0644\u0645\u062F\u0648\u0646\u0629",
+    "Careers": "\u0627\u0644\u0648\u0638\u0627\u0626\u0641",
+    "Contact": "\u0627\u062A\u0635\u0644 \u0628\u0646\u0627",
+    "Get Quote": "\u0637\u0644\u0628 \u0639\u0631\u0636 \u0633\u0639\u0631",
+    "CAHIT CONTRACTING": "\u0634\u0631\u0643\u0629 \u062C\u0627\u0647\u062A \u0644\u0644\u0645\u0642\u0627\u0648\u0644\u0627\u062A",
+    "A Solid Ground": "\u0623\u0633\u0627\u0633 \u0645\u062A\u064A\u0646",
+    "For Your Project": "\u0644\u0645\u0634\u0631\u0648\u0639\u0643",
+    "Marine & Coastal Construction Experts": "\u062E\u0628\u0631\u0627\u0621 \u0627\u0644\u0628\u0646\u0627\u0621 \u0627\u0644\u0628\u062D\u0631\u064A \u0648\u0627\u0644\u0633\u0627\u062D\u0644\u064A",
+    "Schedule Consultation": "\u062D\u062C\u0632 \u0627\u0633\u062A\u0634\u0627\u0631\u0629",
+    "View Portfolio": "\u0639\u0631\u0636 \u0627\u0644\u0645\u0634\u0627\u0631\u064A\u0639",
+    "Years Experience": "\u0633\u0646\u0648\u0627\u062A \u0627\u0644\u062E\u0628\u0631\u0629",
+    "Projects Completed": "\u0645\u0634\u0627\u0631\u064A\u0639 \u0645\u0643\u062A\u0645\u0644\u0629",
+    "Client Satisfaction": "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0644\u0627\u0621",
+    "Trusted by Leading Organizations": "\u0645\u0648\u062B\u0648\u0642 \u0628\u0647 \u0645\u0646 \u0642\u0628\u0644 \u0627\u0644\u0645\u0624\u0633\u0633\u0627\u062A \u0627\u0644\u0631\u0627\u0626\u062F\u0629",
+    "Engineering the Foundations of Tomorrow": "\u0647\u0646\u062F\u0633\u0629 \u0623\u0633\u0627\u0633\u0627\u062A \u0627\u0644\u063A\u062F",
+    "Our Services": "\u062E\u062F\u0645\u0627\u062A\u0646\u0627",
+    "Our Projects": "\u0645\u0634\u0627\u0631\u064A\u0639\u0646\u0627",
+    "Selected Projects": "\u0645\u0634\u0627\u0631\u064A\u0639 \u0645\u062E\u062A\u0627\u0631\u0629",
+    "Leadership": "\u0627\u0644\u0642\u064A\u0627\u062F\u0629",
+    "Our Commitment": "\u0627\u0644\u062A\u0632\u0627\u0645\u0646\u0627",
+    "Best Quality": "\u0623\u0641\u0636\u0644 \u062C\u0648\u062F\u0629",
+    "On-Time Delivery": "\u0627\u0644\u062A\u0633\u0644\u064A\u0645 \u0641\u064A \u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062D\u062F\u062F",
+    "Experience": "\u0627\u0644\u062E\u0628\u0631\u0629",
+    "Ready to Start Your Next Project?": "\u0647\u0644 \u0623\u0646\u062A \u0645\u0633\u062A\u0639\u062F \u0644\u0628\u062F\u0621 \u0645\u0634\u0631\u0648\u0639\u0643 \u0627\u0644\u0642\u0627\u062F\u0645\u061F",
+    "Company Overview": "\u0646\u0628\u0630\u0629 \u0639\u0646 \u0627\u0644\u0634\u0631\u0643\u0629",
+    "View Our Services": "\u0639\u0631\u0636 \u062E\u062F\u0645\u0627\u062A\u0646\u0627",
+    "Our Mission": "\u0645\u0647\u0645\u062A\u0646\u0627",
+    "Our Vision": "\u0631\u0624\u064A\u062A\u0646\u0627",
+    "About Cahit Trading & Contracting": "\u0639\u0646 \u0634\u0631\u0643\u0629 \u062C\u0627\u0647\u062A \u0644\u0644\u062A\u062C\u0627\u0631\u0629 \u0648\u0627\u0644\u0645\u0642\u0627\u0648\u0644\u0627\u062A",
+    "Contact Us": "\u0627\u062A\u0635\u0644 \u0628\u0646\u0627",
+    "Call Us": "\u0627\u062A\u0635\u0644 \u0628\u0646\u0627",
+    "Email Us": "\u0631\u0627\u0633\u0644\u0646\u0627",
+    "WhatsApp": "\u0648\u0627\u062A\u0633\u0627\u0628",
+    "Address": "\u0627\u0644\u0639\u0646\u0648\u0627\u0646",
+    "Request a Quote": "\u0637\u0644\u0628 \u0639\u0631\u0636 \u0633\u0639\u0631",
+    "Submit Quote Request": "\u0625\u0631\u0633\u0627\u0644 \u0637\u0644\u0628 \u0639\u0631\u0636 \u0627\u0644\u0633\u0639\u0631",
+    "Company": "\u0627\u0644\u0634\u0631\u0643\u0629",
+    "Marine & Coastal Construction": "\u0627\u0644\u0628\u0646\u0627\u0621 \u0627\u0644\u0628\u062D\u0631\u064A \u0648\u0627\u0644\u0633\u0627\u062D\u0644\u064A",
+    "Infrastructure Development": "\u062A\u0637\u0648\u064A\u0631 \u0627\u0644\u0628\u0646\u064A\u0629 \u0627\u0644\u062A\u062D\u062A\u064A\u0629",
+    "Earthworks": "\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u062D\u0641\u0631 \u0648\u0627\u0644\u0631\u062F\u0645",
+    "Dewatering & Shoring": "\u0646\u0632\u062D \u0627\u0644\u0645\u064A\u0627\u0647 \u0648\u0627\u0644\u062A\u062F\u0639\u064A\u0645",
+    "MEP Works": "\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0643\u0647\u0631\u0628\u0627\u0621 \u0648\u0627\u0644\u0645\u064A\u0643\u0627\u0646\u064A\u0643\u0627",
+    "Cahit Assistant": "\u0645\u0633\u0627\u0639\u062F \u062C\u0627\u0647\u062A",
+    "Ask us anything": "\u0627\u0633\u0623\u0644\u0646\u0627 \u0623\u064A \u0634\u064A\u0621",
+    "Managing Director": "\u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u0639\u0627\u0645",
+    "General Coordinator": "\u0627\u0644\u0645\u0646\u0633\u0642 \u0627\u0644\u0639\u0627\u0645",
+    "Learn More": "\u0627\u0639\u0631\u0641 \u0627\u0644\u0645\u0632\u064A\u062F",
+    "A Solid Ground For Your Project": "\u0623\u0633\u0627\u0633 \u0645\u062A\u064A\u0646 \u0644\u0645\u0634\u0631\u0648\u0639\u0643"
+  };
+
+  var enOriginals = {};
+
+  window.switchLang = function (lang) {
+    var enBtn = document.getElementById("lang-en");
+    var arBtn = document.getElementById("lang-ar");
+    if (!enBtn || !arBtn) return;
+
+    if (lang === "ar") {
+      document.documentElement.setAttribute("dir", "rtl");
+      document.documentElement.setAttribute("lang", "ar");
+      enBtn.classList.remove("lang-btn-active");
+      arBtn.classList.add("lang-btn-active");
+      translateToArabic();
+    } else {
+      document.documentElement.setAttribute("dir", "ltr");
+      document.documentElement.setAttribute("lang", "en");
+      arBtn.classList.remove("lang-btn-active");
+      enBtn.classList.add("lang-btn-active");
+      restoreEnglish();
+    }
+    localStorage.setItem("cahit-lang", lang);
+  };
+
+  function translateToArabic() {
+    var textNodes = document.querySelectorAll(
+      ".nav-link, .mobile-nav-link, .hero-title, .hero-subtitle, .hero-counter-label, " +
+      ".section-title, .section-subtitle, .section-label, .stat-label, " +
+      ".service-card-title, .service-card-link, .marine-pill-text, .marine-title, .marine-subtitle, " +
+      ".leader-name, .leader-role, .commitment-title, .commitment-desc, " +
+      ".cta-title, .cta-subtitle, .hero-banner-title, .hero-banner-subtitle, " +
+      ".footer-heading, .footer-links a, .footer-links button, .footer-tagline, .footer-copyright, " +
+      ".btn, .card-title, .modal-title, .quote-modal-title, .contact-label, " +
+      ".chatbot-header-title, .chatbot-header-subtitle, " +
+      ".detail-label, .quote-section-label, h1, h2, h3"
+    );
+    textNodes.forEach(function (el) {
+      var children = el.childNodes;
+      for (var i = 0; i < children.length; i++) {
+        if (children[i].nodeType === 3) {
+          var text = children[i].textContent.trim();
+          if (text && arTranslations[text]) {
+            if (!el.getAttribute("data-en-text")) {
+              el.setAttribute("data-en-text", text);
+            }
+            children[i].textContent = arTranslations[text];
+          }
+        }
+      }
+    });
+  }
+
+  function restoreEnglish() {
+    var translated = document.querySelectorAll("[data-en-text]");
+    translated.forEach(function (el) {
+      var original = el.getAttribute("data-en-text");
+      var children = el.childNodes;
+      for (var i = 0; i < children.length; i++) {
+        if (children[i].nodeType === 3 && children[i].textContent.trim()) {
+          children[i].textContent = original;
+          break;
+        }
+      }
+      el.removeAttribute("data-en-text");
+    });
+  }
+
+  (function initLang() {
+    var saved = localStorage.getItem("cahit-lang");
+    if (saved === "ar") {
+      document.addEventListener("DOMContentLoaded", function () {
+        window.switchLang("ar");
+      });
+    }
+  })();
 })();

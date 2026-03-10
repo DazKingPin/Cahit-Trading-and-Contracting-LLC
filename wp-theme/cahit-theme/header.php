@@ -21,9 +21,17 @@
       <a href="<?php echo esc_url(home_url('/about')); ?>" class="nav-link<?php if (is_page('about')) echo ' active'; ?>">About Us</a>
       <a href="<?php echo esc_url(home_url('/services')); ?>" class="nav-link<?php if (is_page('services')) echo ' active'; ?>">Services</a>
       <a href="<?php echo esc_url(home_url('/projects')); ?>" class="nav-link<?php if (is_page('projects')) echo ' active'; ?>">Projects</a>
+      <a href="<?php echo esc_url(home_url('/clients')); ?>" class="nav-link<?php if (is_page('clients')) echo ' active'; ?>">Clients</a>
+      <a href="<?php echo esc_url(home_url('/blog')); ?>" class="nav-link<?php if (is_page('blog') || is_home()) echo ' active'; ?>">Blog</a>
+      <a href="<?php echo esc_url(home_url('/careers')); ?>" class="nav-link<?php if (is_page('careers')) echo ' active'; ?>">Careers</a>
       <button class="nav-link nav-link-button" id="contact-nav-btn" onclick="openContactPopup()">Contact</button>
     </div>
     <div class="navbar-actions">
+      <div class="lang-toggle" data-testid="lang-toggle">
+        <button class="lang-btn lang-btn-active" id="lang-en" onclick="switchLang('en')" data-testid="button-lang-en">EN</button>
+        <span class="lang-divider">|</span>
+        <button class="lang-btn" id="lang-ar" onclick="switchLang('ar')" data-testid="button-lang-ar">AR</button>
+      </div>
       <button class="btn btn-white" id="get-quote-btn" onclick="openQuoteModal()">Get Quote</button>
       <button class="mobile-menu-toggle" id="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">
         <svg class="menu-icon" id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -36,6 +44,9 @@
     <a href="<?php echo esc_url(home_url('/about')); ?>" class="mobile-nav-link<?php if (is_page('about')) echo ' active'; ?>">About Us</a>
     <a href="<?php echo esc_url(home_url('/services')); ?>" class="mobile-nav-link<?php if (is_page('services')) echo ' active'; ?>">Services</a>
     <a href="<?php echo esc_url(home_url('/projects')); ?>" class="mobile-nav-link<?php if (is_page('projects')) echo ' active'; ?>">Projects</a>
+    <a href="<?php echo esc_url(home_url('/clients')); ?>" class="mobile-nav-link<?php if (is_page('clients')) echo ' active'; ?>">Clients</a>
+    <a href="<?php echo esc_url(home_url('/blog')); ?>" class="mobile-nav-link<?php if (is_page('blog') || is_home()) echo ' active'; ?>">Blog</a>
+    <a href="<?php echo esc_url(home_url('/careers')); ?>" class="mobile-nav-link<?php if (is_page('careers')) echo ' active'; ?>">Careers</a>
     <button class="mobile-nav-link mobile-nav-link-button" onclick="openContactPopup(); toggleMobileMenu();">Contact</button>
   </div>
 </nav>

@@ -1,14 +1,12 @@
 <?php get_header(); ?>
 
-<section class="hero-banner" data-testid="section-about-hero">
-  <video class="hero-banner-video" autoplay muted loop playsinline data-keep-playing="true">
-    <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
-  </video>
+<section class="hero-banner hero-banner-tall" data-testid="section-about-hero">
+  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOrlgEf.png" alt="Infrastructure aerial" class="hero-banner-bg" />
   <div class="hero-banner-overlay"></div>
   <div class="hero-banner-content">
     <div class="container">
-      <h1 class="hero-banner-title" data-testid="text-about-heading">About Us</h1>
-      <p class="hero-banner-subtitle">Cahit Trading &amp; Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.</p>
+      <h1 class="hero-banner-title hero-banner-title-lg" data-testid="text-about-heading">About Cahit Trading &amp; Contracting</h1>
+      <p class="hero-banner-subtitle hero-banner-subtitle-lg">Cahit Trading &amp; Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.</p>
     </div>
   </div>
 </section>
@@ -53,25 +51,20 @@
           View Our Services
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-white" data-testid="section-stats">
-  <div class="container">
-    <div class="stats-row">
-      <div class="stat-item">
-        <div class="stat-number" data-counter="15" data-suffix="+" data-testid="stat-years">15+</div>
-        <p class="stat-label">Years Experience</p>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" data-counter="50" data-suffix="+" data-testid="stat-projects">50+</div>
-        <p class="stat-label">Projects Completed</p>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number" data-counter="100" data-suffix="%" data-testid="stat-satisfaction">100%</div>
-        <p class="stat-label">Client Satisfaction</p>
+        <div class="stats-row stats-row-inline mt-8" data-testid="section-stats">
+          <div class="stat-item">
+            <div class="stat-number" data-counter="15" data-suffix="+" data-testid="stat-years">15+</div>
+            <p class="stat-label">Years Experience</p>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-counter="50" data-suffix="+" data-testid="stat-projects">50+</div>
+            <p class="stat-label">Projects Completed</p>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-counter="100" data-suffix="%" data-testid="stat-satisfaction">100%</div>
+            <p class="stat-label">Client Satisfaction</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
