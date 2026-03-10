@@ -250,7 +250,7 @@ export default function Home() {
         <video ref={(el) => { if (el) videoRefs.current["services"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-700/60 via-gray-600/55 to-gray-700/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-800/75 via-gray-700/70 to-gray-800/75"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
@@ -260,7 +260,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service) => (
-              <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0 bg-white/70 backdrop-blur-sm" data-testid={`card-service-${service.id}`}>
+              <Card key={service.id} className="overflow-hidden hover:shadow-xl transition-shadow border-0 bg-white/60 backdrop-blur-sm" data-testid={`card-service-${service.id}`}>
                 <div className="relative h-64 overflow-hidden bg-slate-200">
                   <img src={"images" in service && service.images ? service.images[0] : service.image} alt={service.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                 </div>

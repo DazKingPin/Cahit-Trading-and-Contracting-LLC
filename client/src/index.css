@@ -148,13 +148,11 @@
 }
 
 @layer base {
-  * {
+  *,
+  *::before,
+  *::after {
     @apply border-border;
-  }
-
-  section {
-    border: none !important;
-    outline: none !important;
+    border-width: 0;
   }
 
   body {

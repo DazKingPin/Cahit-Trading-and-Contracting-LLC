@@ -69,7 +69,22 @@ export default function About() {
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">Building critical infrastructure across Oman since 2009</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div>
+              <video ref={(el) => { if (el) videoRefs.current["overview"] = el; }} className="w-full rounded-2xl shadow-xl cursor-pointer" loop muted onMouseEnter={() => handleVideoHover("overview", true)} onMouseLeave={() => handleVideoHover("overview", false)}>
+                <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
+              </video>
+              <div className="mt-4 relative aspect-video rounded-2xl overflow-hidden shadow-xl" data-testid="about-rolling-images">
+                {rollingImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${idx === activeImageIndex ? "opacity-100" : "opacity-0"}`}
+                  >
+                    <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            </div>
             <div>
               <p className="text-slate-600 leading-relaxed mb-4">
                 Cahit Trading & Contracting LLC has been operating in Oman since 2009, delivering a wide range of construction and infrastructure services.
@@ -86,22 +101,6 @@ export default function About() {
                 </Button>
               </Link>
             </div>
-            <div>
-              <video ref={(el) => { if (el) videoRefs.current["overview"] = el; }} className="w-full rounded-2xl shadow-xl cursor-pointer" loop muted onMouseEnter={() => handleVideoHover("overview", true)} onMouseLeave={() => handleVideoHover("overview", false)}>
-                <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
-              </video>
-            </div>
-          </div>
-
-          <div className="mt-10 relative aspect-video rounded-2xl overflow-hidden shadow-xl max-w-4xl mx-auto" data-testid="about-rolling-images">
-            {rollingImages.map((img, idx) => (
-              <div
-                key={idx}
-                className={`absolute inset-0 transition-opacity duration-1000 ${idx === activeImageIndex ? "opacity-100" : "opacity-0"}`}
-              >
-                <img src={img.src} alt={img.alt} className="w-full h-full object-cover" />
-              </div>
-            ))}
           </div>
         </div>
       </section>
