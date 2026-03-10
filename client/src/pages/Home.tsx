@@ -8,6 +8,8 @@ import ProgressiveFunnelPanel, { useProgressiveFunnel } from "@/components/LeadQ
 import ChatBotWidget from "@/components/ChatBotWidget";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import tahirVideoSrc from "@assets/Tahir_Sneyurt_intro__1773101636079.mp4";
+import pashaVideoSrc from "@assets/Padhs_Huseyin_into__1773101636077.mp4";
 
 const aboutRollingImages = [
   { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/gvWLawWCNocSINuR.jpeg", alt: "Road construction with heavy rollers" },
@@ -244,9 +246,9 @@ export default function Home() {
 
       <section id="services-section" className="py-20 relative overflow-hidden" data-testid="section-expertise">
         <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
-          <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/NZvSgRQAtwtx1JM.mp4" type="video/mp4" />
+          <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-900/25 to-slate-900/30"></div>
+        <div className="absolute inset-0 bg-slate-900/25"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
@@ -388,7 +390,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-tahir">
               <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-full h-full object-cover" loop muted>
-                  <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/ieSQBIDjAuekTIBg.mp4" type="video/mp4" />
+                  <source src={tahirVideoSrc} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
                   <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -417,7 +419,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-pasha">
               <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-full h-full object-cover" loop muted>
-                  <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/KfWjzeCVFRzSeyrS.mp4" type="video/mp4" />
+                  <source src={pashaVideoSrc} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
                   <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
