@@ -1667,7 +1667,7 @@ footer.site-footer {
   transition: background 150ms;
   color: #ffffff;
   border: none;
-  background: none;
+  background: rgba(255,255,255,0.15);
   cursor: pointer;
   position: relative;
   z-index: 100;
@@ -1806,17 +1806,19 @@ footer.site-footer {
 
 /* ==================== LEAD FUNNEL ==================== */
 .funnel-panel {
-  position: absolute;
+  position: fixed;
   right: 2rem;
   top: 50%;
   transform: translateY(-50%);
   width: 340px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: rgba(255,255,255,0.97);
   backdrop-filter: blur(12px);
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-  z-index: 30;
+  z-index: 45;
   animation: funnelSlideIn 400ms ease;
 }
 @keyframes funnelSlideIn {
@@ -2065,6 +2067,7 @@ html[dir="rtl"] .contact-icon { margin-left: 1rem; margin-right: 0; }
 html[dir="rtl"] .chatbot-msg-user { flex-direction: row-reverse; }
 html[dir="rtl"] .chatbot-msg-assistant { flex-direction: row-reverse; }
 html[dir="rtl"] .funnel-panel { right: auto; left: 2rem; }
+@media (max-width: 767px) { html[dir="rtl"] .funnel-panel { right: 1rem; left: 1rem; } }
 html[dir="rtl"] .funnel-title { text-align: right; }
 html[dir="rtl"] .funnel-label { text-align: right; }
 html[dir="rtl"] .funnel-options { direction: rtl; }

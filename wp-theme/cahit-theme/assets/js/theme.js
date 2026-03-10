@@ -526,7 +526,10 @@
       funnelGlobalStep = 1;
       showFunnelStep(0);
       var aboutSection = document.getElementById("about-section");
-      if (aboutSection) aboutSection.scrollIntoView({ behavior: "smooth" });
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: "smooth" });
+        setTimeout(function () { showFunnelStep(2); }, 800);
+      }
     } else if (step === 2) {
       var timeline = funnelData["funnel-timeline"];
       var budget = funnelData["funnel-budget"];
@@ -539,7 +542,10 @@
       funnelGlobalStep = 2;
       showFunnelStep(0);
       var projectsSection = document.getElementById("projects-section");
-      if (projectsSection) projectsSection.scrollIntoView({ behavior: "smooth" });
+      if (projectsSection) {
+        projectsSection.scrollIntoView({ behavior: "smooth" });
+        setTimeout(function () { showFunnelStep(3); }, 800);
+      }
     } else if (step === 3) {
       var name = document.getElementById("funnel-name");
       var email = document.getElementById("funnel-email");
