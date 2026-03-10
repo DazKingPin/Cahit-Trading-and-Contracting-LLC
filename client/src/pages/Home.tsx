@@ -193,7 +193,7 @@ export default function Home() {
         )}
       </section>
 
-      <section className="py-14 bg-white border-b border-slate-100 overflow-hidden" data-testid="section-logos">
+      <section className="py-14 bg-white overflow-hidden" data-testid="section-logos">
         <div className="container mx-auto px-4">
           <h2 className="text-center text-2xl sm:text-3xl font-bold text-slate-900 mb-3" data-testid="text-logos-title">Trusted by Leading Organizations</h2>
           <p className="text-center text-slate-700 max-w-3xl mx-auto mb-10 text-base leading-relaxed">
@@ -250,7 +250,7 @@ export default function Home() {
         <video ref={(el) => { if (el) videoRefs.current["services"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-slate-900/25"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-700/40 via-slate-700/35 to-slate-700/40"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
@@ -296,7 +296,7 @@ export default function Home() {
         <video ref={(el) => { if (el) videoRefs.current["marine"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-900/85 via-sky-800/80 to-sky-900/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-800/50 via-sky-700/45 to-sky-800/50"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 drop-shadow-lg">Specialists in Marine & Coastal Infrastructure</h2>
@@ -347,25 +347,25 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 mb-4" data-testid="text-projects-title">Selected Projects</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow" data-testid="card-project-seaport">
-              <div className="relative h-72 overflow-hidden bg-slate-200">
+              <div className="relative aspect-square overflow-hidden bg-slate-200">
                 <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/ScxGkCDjPFNOhvON.png" alt="Seaport Infrastructure" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               </div>
-              <div className="p-8 bg-white">
-                <h3 className="text-2xl font-bold text-slate-900 mb-1">Seaport Infrastructure</h3>
-                <p className="text-sky-600 text-sm font-medium mb-3">Muscat, Oman</p>
-                <p className="text-slate-600">Quay wall construction and breakwater installation</p>
+              <div className="p-6 bg-white">
+                <h3 className="text-xl font-bold text-slate-900 mb-1">Seaport Infrastructure</h3>
+                <p className="text-sky-600 text-sm font-medium mb-2">Muscat, Oman</p>
+                <p className="text-slate-600 text-sm">Quay wall construction and breakwater installation</p>
               </div>
             </div>
             <div className="group overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow" data-testid="card-project-coastal">
-              <div className="relative h-72 overflow-hidden bg-slate-200">
+              <div className="relative aspect-square overflow-hidden bg-slate-200">
                 <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/zrgzKMxwmxJkeDsu.jpg" alt="Coastal Protection" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               </div>
-              <div className="p-8 bg-white">
-                <h3 className="text-2xl font-bold text-slate-900 mb-1">Coastal Protection Systems</h3>
-                <p className="text-sky-600 text-sm font-medium mb-3">Salalah, Oman</p>
-                <p className="text-slate-600">Rock armour installation and coastal defense</p>
+              <div className="p-6 bg-white">
+                <h3 className="text-xl font-bold text-slate-900 mb-1">Coastal Protection Systems</h3>
+                <p className="text-sky-600 text-sm font-medium mb-2">Salalah, Oman</p>
+                <p className="text-slate-600 text-sm">Rock armour installation and coastal defense</p>
               </div>
             </div>
           </div>
@@ -390,8 +390,8 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-tahir">
-              <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
-                <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-full h-full object-cover" loop muted>
+              <div className="relative h-64 bg-slate-900 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
+                <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-[85%] h-[85%] object-contain" loop muted>
                   <source src={tahirVideoSrc} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
@@ -419,8 +419,8 @@ export default function Home() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-pasha">
-              <div className="relative h-64 bg-slate-900 cursor-pointer group" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
-                <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-full h-full object-cover" loop muted>
+              <div className="relative h-64 bg-slate-900 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
+                <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-[85%] h-[85%] object-contain" loop muted>
                   <source src={pashaVideoSrc} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all flex items-center justify-center">
