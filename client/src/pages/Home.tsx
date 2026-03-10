@@ -390,7 +390,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-tahir">
-              <div className="relative h-64 bg-slate-200 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
+              <div className="relative h-64 bg-slate-900 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("tahir", true)} onMouseLeave={() => handleVideoHover("tahir", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["tahir"] = el; }} className="w-[85%] h-[85%] object-contain" loop muted>
                   <source src={tahirVideoSrc} type="video/mp4" />
                 </video>
@@ -419,7 +419,7 @@ export default function Home() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-100" data-testid="card-testimonial-pasha">
-              <div className="relative h-64 bg-slate-200 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
+              <div className="relative h-64 bg-slate-900 cursor-pointer group flex items-center justify-center" onMouseEnter={() => handleVideoHover("pasha", true)} onMouseLeave={() => handleVideoHover("pasha", false)}>
                 <video ref={(el) => { if (el) videoRefs.current["pasha"] = el; }} className="w-[85%] h-[85%] object-contain" loop muted>
                   <source src={pashaVideoSrc} type="video/mp4" />
                 </video>
