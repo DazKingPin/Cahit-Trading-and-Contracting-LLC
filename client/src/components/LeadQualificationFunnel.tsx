@@ -407,9 +407,9 @@ export default function ProgressiveFunnelPanel({
       onMouseLeave={() => onPanelInteract?.(currentSection, false)}
       data-testid={`funnel-panel-${currentSection}`}
     >
-      <div className={inline ? "relative" : "bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden"}>
+      <div className={inline ? "relative" : "bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-[80vh] flex flex-col"}>
         {!inline && (
-          <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-4 flex items-start justify-between">
+          <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-4 flex items-start justify-between flex-shrink-0">
             <div>
               <h3 className="text-white font-bold text-lg">{currentHeader.title}</h3>
               <p className="text-sky-100 text-sm">{currentHeader.subtitle}</p>
@@ -426,7 +426,7 @@ export default function ProgressiveFunnelPanel({
           </div>
         )}
 
-        <div className={inline ? "" : "p-6"}>
+        <div className={inline ? "" : "p-6 overflow-y-auto"}>
         <ProgressBar step={globalStep} />
 
         {sectionStep === 1 && (

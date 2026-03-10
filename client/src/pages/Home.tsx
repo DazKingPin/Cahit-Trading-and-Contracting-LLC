@@ -12,9 +12,7 @@ import Navbar from "@/components/Navbar";
 const aboutRollingImages = [
   { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/gvWLawWCNocSINuR.jpeg", alt: "Road construction with heavy rollers" },
   { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/GjfldJYeoGyqGIMR.jpeg", alt: "Asphalt paving with Vogele machine" },
-  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/GORAtqFGJ1EPryhc.jpeg", alt: "Road paving in desert landscape" },
   { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/mejIiORMfOESXWxO.jpeg", alt: "Road line marking operations" },
-  { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/pdSXKYWQJmOr1gEf.png", alt: "Road construction aerial perspective" },
   { src: "https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/jdGZtMFCClzefYrV.png", alt: "Underground pipe installation" },
 ];
 
@@ -29,7 +27,7 @@ function AboutRollingImages() {
   }, []);
 
   return (
-    <div className="mt-4 relative h-48 rounded-2xl overflow-hidden shadow-xl" data-testid="about-rolling-images">
+    <div className="mt-4 relative aspect-video rounded-2xl overflow-hidden shadow-xl" data-testid="about-rolling-images">
       {aboutRollingImages.map((img, idx) => (
         <div
           key={idx}
@@ -202,8 +200,8 @@ export default function Home() {
             <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
             <div className="flex animate-marquee gap-12 items-center">
               {[...importedLogos, ...importedLogos].map((logo, idx) => (
-                <div key={idx} className="flex-shrink-0 flex items-center justify-center h-20 w-[160px] bg-white rounded-xl border border-slate-200 p-4 hover:border-sky-300 hover:shadow-lg transition-all group cursor-pointer">
-                  <img src={logo.logo} alt={logo.name} className="h-12 max-w-[130px] object-contain transition-all duration-300 opacity-80 group-hover:opacity-100" data-testid={`img-logo-${idx}`} />
+                <div key={idx} className="flex-shrink-0 flex items-center justify-center h-20 w-[160px] bg-white rounded-xl border border-slate-200 p-2 hover:border-sky-300 hover:shadow-lg transition-all group cursor-pointer">
+                  <img src={logo.logo} alt={logo.name} className="h-16 max-w-[150px] object-contain transition-all duration-300 opacity-80 group-hover:opacity-100" data-testid={`img-logo-${idx}`} />
                 </div>
               ))}
             </div>
@@ -248,7 +246,7 @@ export default function Home() {
         <video className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/NZvSgRQAtwtx1JM.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-800/75 via-slate-800/70 to-slate-800/75"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/30 via-slate-900/25 to-slate-900/30"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
