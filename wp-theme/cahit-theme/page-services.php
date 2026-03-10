@@ -1,7 +1,9 @@
 <?php get_header(); ?>
 
 <section class="hero-banner" data-testid="section-services-hero">
-  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/Services__1773095450245.gif" alt="Services" class="hero-banner-bg" />
+  <video class="hero-banner-video" autoplay muted loop playsinline data-keep-playing="true">
+    <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
+  </video>
   <div class="hero-banner-overlay"></div>
   <div class="hero-banner-content">
     <div class="container">
