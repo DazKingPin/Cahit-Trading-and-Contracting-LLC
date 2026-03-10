@@ -329,8 +329,8 @@
     "Careers": "\u0627\u0644\u0648\u0638\u0627\u0626\u0641",
     "Contact": "\u0627\u062A\u0635\u0644 \u0628\u0646\u0627",
     "Get Quote": "\u0637\u0644\u0628 \u0639\u0631\u0636 \u0633\u0639\u0631",
-    "CAHIT CONTRACTING": "\u0634\u0631\u0643\u0629 \u062C\u0627\u0647\u062A \u0644\u0644\u0645\u0642\u0627\u0648\u0644\u0627\u062A",
-    "A Solid Ground": "\u0623\u0633\u0627\u0633 \u0645\u062A\u064A\u0646",
+    "CAHIT CONTRACTING": "\u0643\u0627\u0647\u064A\u062A \u0644\u0644\u0645\u0642\u0627\u0648\u0644\u0627\u062A",
+    "A Solid Ground": "\u0623\u0631\u0636 \u0635\u0644\u0628\u0629",
     "For Your Project": "\u0644\u0645\u0634\u0631\u0648\u0639\u0643",
     "Marine & Coastal Construction Experts": "\u062E\u0628\u0631\u0627\u0621 \u0627\u0644\u0628\u0646\u0627\u0621 \u0627\u0644\u0628\u062D\u0631\u064A \u0648\u0627\u0644\u0633\u0627\u062D\u0644\u064A",
     "Schedule Consultation": "\u062D\u062C\u0632 \u0627\u0633\u062A\u0634\u0627\u0631\u0629",
@@ -372,7 +372,7 @@
     "Managing Director": "\u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u0639\u0627\u0645",
     "General Coordinator": "\u0627\u0644\u0645\u0646\u0633\u0642 \u0627\u0644\u0639\u0627\u0645",
     "Learn More": "\u0627\u0639\u0631\u0641 \u0627\u0644\u0645\u0632\u064A\u062F",
-    "A Solid Ground For Your Project": "\u0623\u0633\u0627\u0633 \u0645\u062A\u064A\u0646 \u0644\u0645\u0634\u0631\u0648\u0639\u0643"
+    "A Solid Ground For Your Project": "\u0623\u0631\u0636 \u0635\u0644\u0628\u0629 \u0644\u0645\u0634\u0631\u0648\u0639\u0643"
   };
 
   var enOriginals = {};
@@ -398,8 +398,33 @@
     localStorage.setItem("cahit-lang", lang);
   };
 
+  function translateTextNode(node) {
+    if (node.nodeType === 3) {
+      var text = node.textContent.trim();
+      if (text && arTranslations[text]) {
+        node._enOriginal = node.textContent;
+        node.textContent = arTranslations[text];
+      }
+    } else if (node.nodeType === 1) {
+      for (var i = 0; i < node.childNodes.length; i++) {
+        translateTextNode(node.childNodes[i]);
+      }
+    }
+  }
+
+  function restoreTextNode(node) {
+    if (node.nodeType === 3 && node._enOriginal !== undefined) {
+      node.textContent = node._enOriginal;
+      delete node._enOriginal;
+    } else if (node.nodeType === 1) {
+      for (var i = 0; i < node.childNodes.length; i++) {
+        restoreTextNode(node.childNodes[i]);
+      }
+    }
+  }
+
   function translateToArabic() {
-    var textNodes = document.querySelectorAll(
+    var els = document.querySelectorAll(
       ".nav-link, .mobile-nav-link, .hero-title, .hero-subtitle, .hero-counter-label, " +
       ".section-title, .section-subtitle, .section-label, .stat-label, " +
       ".service-card-title, .service-card-link, .marine-pill-text, .marine-title, .marine-subtitle, " +
@@ -408,36 +433,20 @@
       ".footer-heading, .footer-links a, .footer-links button, .footer-tagline, .footer-copyright, " +
       ".btn, .card-title, .modal-title, .quote-modal-title, .contact-label, " +
       ".chatbot-header-title, .chatbot-header-subtitle, " +
-      ".detail-label, .quote-section-label, h1, h2, h3"
+      ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
+      "h1, h2, h3, p, label"
     );
-    textNodes.forEach(function (el) {
-      var children = el.childNodes;
-      for (var i = 0; i < children.length; i++) {
-        if (children[i].nodeType === 3) {
-          var text = children[i].textContent.trim();
-          if (text && arTranslations[text]) {
-            if (!el.getAttribute("data-en-text")) {
-              el.setAttribute("data-en-text", text);
-            }
-            children[i].textContent = arTranslations[text];
-          }
-        }
-      }
+    els.forEach(function (el) {
+      el.setAttribute("data-translated", "true");
+      translateTextNode(el);
     });
   }
 
   function restoreEnglish() {
-    var translated = document.querySelectorAll("[data-en-text]");
+    var translated = document.querySelectorAll("[data-translated]");
     translated.forEach(function (el) {
-      var original = el.getAttribute("data-en-text");
-      var children = el.childNodes;
-      for (var i = 0; i < children.length; i++) {
-        if (children[i].nodeType === 3 && children[i].textContent.trim()) {
-          children[i].textContent = original;
-          break;
-        }
-      }
-      el.removeAttribute("data-en-text");
+      restoreTextNode(el);
+      el.removeAttribute("data-translated");
     });
   }
 

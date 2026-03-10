@@ -2037,12 +2037,24 @@ html[dir="rtl"] .navbar-actions {
 }
 html[dir="rtl"] .hero-text-block {
   text-align: right;
+  align-items: flex-end;
+}
+html[dir="rtl"] .hero-title {
+  text-align: right;
+}
+html[dir="rtl"] .hero-subtitle {
+  text-align: right;
 }
 html[dir="rtl"] .hero-buttons {
   justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 html[dir="rtl"] .hero-counters {
   justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+html[dir="rtl"] .hero-counter-item {
+  text-align: right;
 }
 html[dir="rtl"] .footer-grid {
   direction: rtl;
