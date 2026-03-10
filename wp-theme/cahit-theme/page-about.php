@@ -2,7 +2,7 @@
 
 <section class="hero-banner" data-testid="section-about-hero">
   <video class="hero-banner-video" autoplay muted loop playsinline data-keep-playing="true">
-    <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
+    <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
   </video>
   <div class="hero-banner-overlay"></div>
   <div class="hero-banner-content">
