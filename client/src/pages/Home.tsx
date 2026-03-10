@@ -250,7 +250,7 @@ export default function Home() {
         <video ref={(el) => { if (el) videoRefs.current["services"] = el; }} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline>
           <source src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/FtuVECRYiIRERWQB.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-700/40 via-slate-700/35 to-slate-700/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-800/55 via-slate-700/50 to-slate-800/55"></div>
         <div className="relative z-10 container mx-auto px-4">
           <div className="text-center mb-14">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg" data-testid="text-expertise-title">Our Services</h2>
