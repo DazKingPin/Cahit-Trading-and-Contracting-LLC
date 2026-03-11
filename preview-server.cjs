@@ -129,6 +129,67 @@ function executePhpTemplate(phpContent, currentPage) {
     return result;
   });
 
+  // Handle WP_Query blog loop: keep only the else (fallback) block for preview
+  html = html.replace(/<\?php\s+\$blog_query[\s\S]*?if\s*\(\$blog_query->have_posts\(\)\)[\s\S]*?\?>\s*([\s\S]*?)<\?php\s+wp_reset_postdata[\s\S]*?\?>\s*<\?php\s+else\s*:\s*\?>\s*([\s\S]*?)<\?php\s+endif;\s*\?>/g, '$2');
+
+  // Handle generic WordPress conditionals: have_posts/the_post loops
+  html = html.replace(/<\?php\s+if\s*\(have_posts\(\)\)\s*:\s*\?>([\s\S]*?)<\?php\s+else\s*:\s*\?>([\s\S]*?)<\?php\s+endif;\s*\?>/g, '$2');
+  html = html.replace(/<\?php\s+while\s*\(have_posts\(\)\)\s*:\s*the_post\(\);\s*\?>([\s\S]*?)<\?php\s+endwhile;\s*\?>/g, '$1');
+
+  // Handle comments_open blocks
+  html = html.replace(/<\?php\s+if\s*\(comments_open\(\)[\s\S]*?\)[\s\S]*?\?>([\s\S]*?)<\?php\s+endif;\s*\?>/g, '');
+
+  // Handle has_post_thumbnail conditionals
+  html = html.replace(/<\?php\s+if\s*\(has_post_thumbnail\(\)\)\s*:\s*\?>([\s\S]*?)<\?php\s+else\s*:\s*\?>([\s\S]*?)<\?php\s+endif;\s*\?>/g, '$2');
+  html = html.replace(/<\?php\s+if\s*\(has_post_thumbnail\(\)\)\s*:\s*\?>([\s\S]*?)<\?php\s+endif;\s*\?>/g, '');
+
+  // Handle prev/next post nav
+  html = html.replace(/<\?php\s+\$prev_post[\s\S]*?endif;\s*\?>/g, '');
+  html = html.replace(/<\?php\s+\$next_post[\s\S]*?endif;\s*\?>/g, '');
+
+  // Handle post_password_required
+  html = html.replace(/<\?php\s+if\s*\(post_password_required\(\)\)\s*return;\s*\?>/g, '');
+
+  // Handle have_comments conditionals
+  html = html.replace(/<\?php\s+if\s*\(have_comments\(\)\)\s*:\s*\?>([\s\S]*?)<\?php\s+endif;\s*\?>/g, '');
+
+  // Handle comment_form
+  html = html.replace(/<\?php\s+comment_form\([\s\S]*?\);\s*\?>/g, '');
+
+  // Handle the_archive_title / the_archive_description
+  html = html.replace(/<\?php\s+the_archive_title\(\);\s*\?>/g, 'Archive');
+  html = html.replace(/<\?php\s+the_archive_description\('[^']*',\s*'[^']*'\);\s*\?>/g, '');
+
+  // Handle wp_list_comments
+  html = html.replace(/<\?php\s+wp_list_comments[\s\S]*?\?>/g, '');
+  html = html.replace(/<\?php\s+the_comments_navigation\(\);\s*\?>/g, '');
+
+  // Handle paginate_links / the_posts_pagination
+  html = html.replace(/<\?php[\s\S]*?paginate_links[\s\S]*?\?>/g, '');
+  html = html.replace(/<\?php[\s\S]*?the_posts_pagination[\s\S]*?\?>/g, '');
+
+  // Handle the_title, the_content, the_date, the_author etc
+  html = html.replace(/<\?php\s+the_title\(\);\s*\?>/g, 'Page Title');
+  html = html.replace(/<\?php\s+the_title_attribute\(\);\s*\?>/g, 'Page Title');
+  html = html.replace(/<\?php\s+the_content\(\);\s*\?>/g, '<p>Page content goes here.</p>');
+  html = html.replace(/<\?php\s+the_permalink\(\);\s*\?>/g, '#');
+  html = html.replace(/<\?php\s+the_ID\(\);\s*\?>/g, '0');
+  html = html.replace(/<\?php\s+echo\s+esc_html\(get_the_date\(\)\);\s*\?>/g, new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+  html = html.replace(/<\?php\s+echo\s+esc_html\(get_the_excerpt\(\)\);\s*\?>/g, 'Excerpt text here.');
+  html = html.replace(/<\?php\s+the_author\(\);\s*\?>/g, 'Admin');
+  html = html.replace(/<\?php\s+the_post_thumbnail\([^)]*\);\s*\?>/g, '');
+
+  // Handle is_active_sidebar
+  html = html.replace(/<\?php\s+if\s*\(is_active_sidebar[\s\S]*?\)[\s\S]*?\?>([\s\S]*?)<\?php\s+endif;\s*\?>/g, '');
+  html = html.replace(/<\?php\s+dynamic_sidebar[\s\S]*?\?>/g, '');
+
+  // Handle wp_body_open
+  html = html.replace(/<\?php\s+if\s*\(function_exists\('wp_body_open'\)\)\s*\{\s*wp_body_open\(\);\s*\}\s*\?>/g, '');
+
+  // Handle _n, _e, __ translation functions
+  html = html.replace(/<\?php\s+_e\('([^']*)',\s*'cahit-theme'\);\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+echo\s+__\('([^']*)',\s*'cahit-theme'\);\s*\?>/g, '$1');
+
   // Clean up remaining PHP blocks  
   html = html.replace(/<\?php[\s\S]*?\?>/g, '');
 
@@ -172,6 +233,26 @@ function processPhpSimple(content, currentPage) {
 
   // Base URL variable
   html = html.replace(/<\?php\s+echo\s+\$base_url;\s*\?>/g, BASE_URL);
+
+  // WordPress function calls used in footer/header
+  html = html.replace(/<\?php\s+echo\s+date\('Y'\);\s*\?>/g, new Date().getFullYear().toString());
+  html = html.replace(/<\?php\s+echo\s+defined\('ABSPATH'\)\s*\?\s*esc_html\(get_theme_mod\('cahit_company_name',\s*'([^']*)'\)\)\s*:\s*'[^']*';\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+echo\s+defined\('ABSPATH'\)\s*\?\s*esc_html__\('([^']*)',\s*'cahit-theme'\)\s*:\s*'[^']*';\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+echo\s+defined\('ABSPATH'\)\s*\?\s*esc_html\(get_theme_mod\('cahit_tagline',\s*'([^']*)'\)\)\s*:\s*'[^']*';\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+echo\s+defined\('ABSPATH'\)\s*\?\s*esc_url\(wp_login_url\(home_url\('\/admin'\)\)\)\s*:\s*'([^']*)';\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+echo\s+defined\('ABSPATH'\)\s*\?\s*esc_url\(home_url\('\/'\)\)\s*:\s*'[^']*';\s*\?>/g, '/');
+  html = html.replace(/<\?php\s+esc_html_e\('([^']*)',\s*'cahit-theme'\);\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+esc_attr_e\('([^']*)',\s*'cahit-theme'\);\s*\?>/g, '$1');
+  html = html.replace(/<\?php\s+echo\s+esc_html\(date_i18n\('[^']*'\)\);\s*\?>/g, () => {
+    return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  });
+  html = html.replace(/<\?php\s+echo\s+esc_html\(date_i18n\('[^']*',\s*strtotime\('([^']*)'\)\)\);\s*\?>/g, (match, offset) => {
+    const d = new Date();
+    const months = parseInt(offset.replace(/[^-\d]/g, '')) || 0;
+    d.setMonth(d.getMonth() + months);
+    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  });
+  html = html.replace(/<\?php\s+printf\(esc_html__\('([^']*)',\s*'cahit-theme'\),\s*'<span>'\s*\.\s*get_search_query\(\)\s*\.\s*'<\/span>'\);\s*\?>/g, '$1');
 
   // Active nav links
   const activeChecks = {
@@ -378,13 +459,23 @@ app.post('/admin/api/logout', express.json(), (req, res) => {
 });
 
 app.get('/admin/login', (req, res) => {
-  res.sendFile(path.join(ADMIN_DIR, 'login.html'));
+  const loginFile = fs.existsSync(path.join(ADMIN_DIR, 'login.php'))
+    ? path.join(ADMIN_DIR, 'login.php')
+    : path.join(ADMIN_DIR, 'login.html');
+  let content = fs.readFileSync(loginFile, 'utf8');
+  content = content.replace(/<\?php[\s\S]*?\?>/g, '');
+  res.send(content);
 });
 
 app.use('/admin', express.static(ADMIN_DIR));
 
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(ADMIN_DIR, 'index.html'));
+  const indexFile = fs.existsSync(path.join(ADMIN_DIR, 'index.php'))
+    ? path.join(ADMIN_DIR, 'index.php')
+    : path.join(ADMIN_DIR, 'index.html');
+  let content = fs.readFileSync(indexFile, 'utf8');
+  content = content.replace(/<\?php[\s\S]*?\?>/g, '');
+  res.send(content);
 });
 
 app.get('/admin/api/leads', (req, res) => {
@@ -453,6 +544,16 @@ app.get('/blog', (req, res) => {
 app.get('/careers', (req, res) => {
   const content = readThemeFile('page-careers.php');
   res.send(executePhpTemplate(content, 'careers'));
+});
+
+app.get('/404', (req, res) => {
+  const content = readThemeFile('404.php');
+  res.send(executePhpTemplate(content, '404'));
+});
+
+app.use((req, res) => {
+  const content = readThemeFile('404.php');
+  res.status(404).send(executePhpTemplate(content, '404'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {

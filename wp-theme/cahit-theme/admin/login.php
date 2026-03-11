@@ -1,3 +1,14 @@
+<?php
+if (defined('ABSPATH')) {
+    if (is_user_logged_in() && current_user_can('manage_options')) {
+        wp_redirect(home_url('/admin'));
+        exit;
+    }
+} elseif (php_sapi_name() !== 'cli' && !defined('CAHIT_PREVIEW_MODE')) {
+    http_response_code(403);
+    exit('Direct access not allowed.');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,7 +85,7 @@
       </form>
     </div>
     <div class="login-footer">
-      <a href="/">&larr; Back to website</a>
+      <a href="<?php echo defined('ABSPATH') ? esc_url(home_url('/')) : '/'; ?>">&larr; Back to website</a>
     </div>
   </div>
 

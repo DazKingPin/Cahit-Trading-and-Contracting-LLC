@@ -55,14 +55,14 @@
             <a href="mailto:ctc@cahitcontracting.com">ctc@cahitcontracting.com</a>
           </div>
         </div>
-        <a href="/admin/login" class="footer-admin-link" data-testid="link-admin-login">
-          <svg style="display:inline-block;vertical-align:middle;margin-right:6px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Admin Login</a>
+        <a href="<?php echo defined('ABSPATH') ? esc_url(wp_login_url(home_url('/admin'))) : '/admin/login'; ?>" class="footer-admin-link" data-testid="link-admin-login">
+          <svg style="display:inline-block;vertical-align:middle;margin-right:6px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><?php echo defined('ABSPATH') ? esc_html__('Admin Login', 'cahit-theme') : 'Admin Login'; ?></a>
       </div>
     </div>
 
     <div class="footer-bottom">
-      <p class="footer-copyright">&copy; 2025 Cahit Trading & Contracting LLC. All Rights Reserved.</p>
-      <p class="footer-tagline">A Solid Ground For Your Project</p>
+      <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo defined('ABSPATH') ? esc_html(get_theme_mod('cahit_company_name', 'Cahit Trading & Contracting LLC')) : 'Cahit Trading & Contracting LLC'; ?>. <?php echo defined('ABSPATH') ? esc_html__('All Rights Reserved.', 'cahit-theme') : 'All Rights Reserved.'; ?></p>
+      <p class="footer-tagline"><?php echo defined('ABSPATH') ? esc_html(get_theme_mod('cahit_tagline', 'A Solid Ground For Your Project')) : 'A Solid Ground For Your Project'; ?></p>
     </div>
   </div>
 </footer>

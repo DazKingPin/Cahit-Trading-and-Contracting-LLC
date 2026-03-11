@@ -10,6 +10,7 @@
   <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+<?php if (function_exists('wp_body_open')) { wp_body_open(); } ?>
 
 <nav class="navbar sticky" id="main-nav">
   <div class="container navbar-inner">

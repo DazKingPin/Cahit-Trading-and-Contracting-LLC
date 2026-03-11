@@ -1,3 +1,14 @@
+<?php
+if (defined('ABSPATH')) {
+    if (!is_user_logged_in() || !current_user_can('manage_options')) {
+        wp_redirect(wp_login_url(home_url('/admin')));
+        exit;
+    }
+} elseif (php_sapi_name() !== 'cli' && !defined('CAHIT_PREVIEW_MODE')) {
+    http_response_code(403);
+    exit('Direct access not allowed.');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +59,7 @@
         </a>
       </nav>
       <div class="sidebar-footer">
-        <a href="/" class="nav-item" data-testid="link-view-site" target="_blank">
+        <a href="<?php echo defined('ABSPATH') ? esc_url(home_url('/')) : '/'; ?>" class="nav-item" data-testid="link-view-site" target="_blank">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           <span>View Live Site</span>
         </a>
