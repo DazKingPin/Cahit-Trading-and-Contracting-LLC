@@ -53,16 +53,16 @@
         </a>
         <div class="stats-row stats-row-inline mt-8" data-testid="section-stats">
           <div class="stat-item">
-            <div class="stat-number" data-counter="15" data-suffix="+" data-testid="stat-years">15+</div>
-            <p class="stat-label">Years Experience</p>
+            <div class="stat-number" data-counter="25" data-suffix="+" data-testid="stat-years">25+</div>
+            <p class="stat-label">Years of Industry-Leading Experience</p>
           </div>
           <div class="stat-item">
             <div class="stat-number" data-counter="50" data-suffix="+" data-testid="stat-projects">50+</div>
-            <p class="stat-label">Projects Completed</p>
+            <p class="stat-label">Major Infrastructure Projects Completed</p>
           </div>
           <div class="stat-item">
-            <div class="stat-number" data-counter="100" data-suffix="%" data-testid="stat-satisfaction">100%</div>
-            <p class="stat-label">Client Satisfaction</p>
+            <div class="stat-number" data-counter="100" data-suffix="%" data-testid="stat-operations">100%</div>
+            <p class="stat-label">Operations Across Oman</p>
           </div>
         </div>
       </div>

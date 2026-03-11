@@ -11,11 +11,9 @@
     <div class="container">
       <div class="hero-text-block">
         <h1 class="hero-title" data-testid="text-hero-title">
-          CAHIT CONTRACTING
+          <span class="hero-title-line">Delivering Infrastructure</span>
           <br />
-          <span class="text-cyan-200">A Solid Ground</span>
-          <br />
-          For Your Project
+          <span class="text-cyan-200 hero-title-line">Excellence</span>
         </h1>
         <p class="hero-subtitle" data-testid="text-hero-subtitle">
           Marine &amp; Coastal Construction Experts
@@ -35,16 +33,20 @@
         </div>
         <div class="hero-counters">
           <div class="hero-counter-item">
-            <div class="hero-counter-value" data-counter="15" data-suffix="+" data-testid="text-counter-years">0+</div>
-            <div class="hero-counter-label">Years Experience</div>
+            <div class="hero-counter-value" data-counter="25" data-suffix="+" data-testid="text-counter-years">0+</div>
+            <div class="hero-counter-label">Years of Industry-Leading Experience</div>
           </div>
           <div class="hero-counter-item">
             <div class="hero-counter-value" data-counter="50" data-suffix="+" data-testid="text-counter-projects">0+</div>
-            <div class="hero-counter-label">Projects Completed</div>
+            <div class="hero-counter-label">Major Infrastructure Projects Completed</div>
           </div>
           <div class="hero-counter-item">
-            <div class="hero-counter-value" data-counter="100" data-suffix="%" data-testid="text-counter-satisfaction">0%</div>
-            <div class="hero-counter-label">Client Satisfaction</div>
+            <div class="hero-counter-value" data-counter="100" data-suffix="%" data-testid="text-counter-operations">0%</div>
+            <div class="hero-counter-label">Operations Across Oman</div>
+          </div>
+          <div class="hero-counter-item">
+            <div class="hero-counter-value" data-testid="text-counter-specialist">#1</div>
+            <div class="hero-counter-label">Marine & Infrastructure Specialists</div>
           </div>
         </div>
       </div>
