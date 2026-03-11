@@ -24,7 +24,8 @@
     editingPage: null,
     editingSection: 'hero',
     viewport: 'desktop',
-    editedContent: {}
+    editedContent: {},
+    funnelDisabled: true
   };
 
   var BASE_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
@@ -298,6 +299,9 @@
           '<button class="viewport-btn' + (state.viewport === 'mobile' ? ' active' : '') + '" data-viewport="mobile" title="Mobile" data-testid="btn-viewport-mobile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></button>' +
         '</div>' +
         '<div class="toolbar-spacer"></div>' +
+        '<button class="btn ' + (state.funnelDisabled ? 'btn-outline funnel-off' : 'btn-primary funnel-on') + '" id="toggleFunnelBtn" data-testid="button-toggle-funnel" title="' + (state.funnelDisabled ? 'Lead funnel disabled in preview' : 'Lead funnel enabled in preview') + '">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>' +
+          (state.funnelDisabled ? ' Funnel Off' : ' Funnel On') + '</button>' +
         '<button class="btn btn-outline" id="refreshPreviewBtn" data-testid="button-refresh-preview" title="Refresh Preview"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>' +
         '<button class="btn btn-primary" id="saveContentBtn" data-testid="button-save-content">' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>' +
@@ -318,7 +322,7 @@
             '<span class="preview-viewport-label" id="viewportLabel">' + (state.viewport || 'Desktop') + '</span>' +
           '</div>' +
           '<div class="preview-frame-wrap" id="previewWrap">' +
-            '<iframe src="' + currentPath + '" id="previewFrame" data-testid="iframe-preview" class="preview-frame-' + (state.viewport || 'desktop') + '"></iframe>' +
+            '<iframe src="' + currentPath + (state.funnelDisabled ? '?disable_funnel=1' : '') + '" id="previewFrame" data-testid="iframe-preview" class="preview-frame-' + (state.viewport || 'desktop') + '"></iframe>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -372,6 +376,25 @@
     var saveBtn = document.getElementById('saveContentBtn');
     if (saveBtn) {
       saveBtn.addEventListener('click', function() { showToast('Content saved successfully', 'success'); });
+    }
+
+    var toggleFunnelBtn = document.getElementById('toggleFunnelBtn');
+    if (toggleFunnelBtn) {
+      toggleFunnelBtn.addEventListener('click', function() {
+        state.funnelDisabled = !state.funnelDisabled;
+        var btn = document.getElementById('toggleFunnelBtn');
+        if (btn) {
+          btn.className = 'btn ' + (state.funnelDisabled ? 'btn-outline funnel-off' : 'btn-primary funnel-on');
+          btn.title = state.funnelDisabled ? 'Lead funnel disabled in preview' : 'Lead funnel enabled in preview';
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>' + (state.funnelDisabled ? ' Funnel Off' : ' Funnel On');
+        }
+        var iframe = document.getElementById('previewFrame');
+        if (iframe) {
+          var path = state.editingPage || '/';
+          iframe.src = path + (state.funnelDisabled ? '?disable_funnel=1' : '');
+        }
+        showToast(state.funnelDisabled ? 'Lead funnel disabled in preview' : 'Lead funnel enabled in preview', 'success');
+      });
     }
 
     var refreshBtn = document.getElementById('refreshPreviewBtn');

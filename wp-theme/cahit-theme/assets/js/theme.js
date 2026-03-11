@@ -487,6 +487,7 @@
   var funnelSectionMap = { hero: 1, about: 2, projects: 3 };
 
   function initLeadFunnel() {
+    if (window.location.search.indexOf("disable_funnel=1") !== -1) return;
     var sections = document.querySelectorAll("[data-funnel-section]");
     if (!sections.length) return;
 

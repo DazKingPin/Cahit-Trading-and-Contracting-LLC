@@ -113,6 +113,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .preview-frame-tablet{width:768px;height:100%;border:none;background:#fff;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
 .preview-frame-mobile{width:375px;height:100%;border:none;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
 
+.funnel-off{color:var(--text-muted);border-color:var(--border)}
+.funnel-on{font-size:13px}
+.funnel-off svg,.funnel-on svg{vertical-align:middle;margin-right:4px}
+
 .viewport-switcher{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:2px}
 .viewport-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;background:none;border-radius:6px;cursor:pointer;color:var(--text-muted);transition:all .15s}
 .viewport-btn:hover{color:var(--text);background:var(--card)}

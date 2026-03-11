@@ -7,6 +7,7 @@
   var isOpen = false;
 
   document.addEventListener("DOMContentLoaded", function () {
+    if (window.location.search.indexOf("disable_funnel=1") !== -1) return;
     createChatWidget();
   });
 
