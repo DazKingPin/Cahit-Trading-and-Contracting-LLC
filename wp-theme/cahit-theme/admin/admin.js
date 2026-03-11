@@ -22,7 +22,9 @@
       { name: 'services-bg.mp4', type: 'video', size: '8.7 MB', date: '2025-03-06' }
     ],
     editingPage: null,
-    editingSection: 'header'
+    editingSection: 'hero',
+    viewport: 'desktop',
+    editedContent: {}
   };
 
   var BASE_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
@@ -174,11 +176,68 @@
     });
   }
 
+  var sectionFields = {
+    hero: [
+      { key: 'hero-title-line1', label: 'Title Line 1', selector: '.hero-title', type: 'text', defaultVal: 'CAHIT CONTRACTING' },
+      { key: 'hero-title-line2', label: 'Title Line 2 (highlight)', selector: '.hero-title .text-cyan-200', type: 'text', defaultVal: 'A Solid Ground' },
+      { key: 'hero-title-line3', label: 'Title Line 3', selector: '.hero-title', type: 'text', defaultVal: 'For Your Project', nodeIndex: 2 },
+      { key: 'hero-subtitle', label: 'Subtitle', selector: '.hero-subtitle', type: 'textarea', defaultVal: 'Marine & Coastal Construction Experts' },
+      { key: 'hero-btn1', label: 'Button 1 Text', selector: '.hero-buttons .btn-sky', type: 'text', defaultVal: 'Schedule Consultation' },
+      { key: 'hero-btn2', label: 'Button 2 Text', selector: '.hero-buttons .btn-outline-white', type: 'text', defaultVal: 'View Portfolio' }
+    ],
+    logos: [
+      { key: 'logos-title', label: 'Section Title', selector: '.logos-section .section-title', type: 'text', defaultVal: 'Trusted by Leading Organizations' },
+      { key: 'logos-subtitle', label: 'Subtitle', selector: '.logos-section .section-subtitle', type: 'textarea', defaultVal: 'Cahit Trading & Contracting LLC partners with...' }
+    ],
+    'about-preview': [
+      { key: 'about-title', label: 'Section Title', selector: '.about-text .section-title', type: 'text', defaultVal: 'Engineering the Foundations of Tomorrow' },
+      { key: 'about-p1', label: 'Paragraph 1', selector: '.about-text p:nth-of-type(1)', type: 'textarea', defaultVal: '' },
+      { key: 'about-p2', label: 'Paragraph 2', selector: '.about-text p:nth-of-type(2)', type: 'textarea', defaultVal: '' },
+      { key: 'about-p3', label: 'Paragraph 3', selector: '.about-text p:nth-of-type(3)', type: 'textarea', defaultVal: '' },
+      { key: 'about-btn', label: 'Button Text', selector: '.about-text .btn-sky', type: 'text', defaultVal: 'Discover Our Company' }
+    ],
+    services: [
+      { key: 'services-title', label: 'Section Title', selector: '#services-section .section-title', type: 'text', defaultVal: 'Our Services' },
+      { key: 'services-subtitle', label: 'Subtitle', selector: '#services-section .section-subtitle', type: 'textarea', defaultVal: 'Our diverse expertise allows us to support...' }
+    ],
+    marine: [
+      { key: 'marine-title', label: 'Section Title', selector: '.marine-title', type: 'text', defaultVal: 'Specialists in Marine & Coastal Infrastructure' },
+      { key: 'marine-subtitle', label: 'Subtitle', selector: '.marine-subtitle', type: 'textarea', defaultVal: 'Cahit Trading & Contracting LLC is recognized...' },
+      { key: 'marine-footer', label: 'Footer Text', selector: '.marine-footer-text', type: 'textarea', defaultVal: 'Through advanced engineering practices...' }
+    ],
+    stats: [
+      { key: 'stats-title', label: 'Section Title', selector: '#stats-section .section-title', type: 'text', defaultVal: 'Delivering Infrastructure Excellence' }
+    ],
+    projects: [
+      { key: 'projects-title', label: 'Section Title', selector: '#projects-section .section-title', type: 'text', defaultVal: 'Selected Projects' }
+    ],
+    leadership: [
+      { key: 'leadership-title', label: 'Section Title', selector: '.leadership-section .section-title', type: 'text', defaultVal: 'Leadership' }
+    ],
+    cta: [
+      { key: 'cta-title', label: 'CTA Title', selector: '.cta-title', type: 'text', defaultVal: 'Start Your Next Project' },
+      { key: 'cta-subtitle', label: 'CTA Subtitle', selector: '.cta-subtitle', type: 'textarea', defaultVal: '' }
+    ],
+    header: [
+      { key: 'header-brand', label: 'Brand Name', selector: '.nav-brand-text', type: 'text', defaultVal: 'CAHIT CONTRACTING' }
+    ],
+    footer: [
+      { key: 'footer-desc', label: 'Company Description', selector: '.footer-desc', type: 'textarea', defaultVal: '' },
+      { key: 'footer-tagline', label: 'Tagline', selector: '.footer-tagline', type: 'text', defaultVal: 'A Solid Ground For Your Project' }
+    ]
+  };
+
+  var sectionScrollTargets = {
+    hero: '.hero-section', logos: '.logos-section', 'about-preview': '.about-preview-section',
+    services: '#services-section', marine: '.marine-section', stats: '#stats-section',
+    projects: '#projects-section', leadership: '.leadership-section', cta: '.cta-section',
+    header: 'header', footer: 'footer'
+  };
+
   function renderContentEditor() {
     var currentPath = state.editingPage || '/';
     var currentPageObj = state.pages.find(function(p) { return p.path === currentPath; }) || state.pages[0];
 
-    var sectionsList = '';
     var sections = [
       { id: 'header', name: 'Header & Navigation', group: 'Global' },
       { id: 'footer', name: 'Footer', group: 'Global' },
@@ -193,6 +252,7 @@
       { id: 'cta', name: 'Call to Action', group: 'Page Sections' }
     ];
 
+    var sectionsList = '';
     var currentGroup = '';
     sections.forEach(function(s) {
       if (s.group !== currentGroup) {
@@ -205,29 +265,61 @@
       '</div>';
     });
 
+    var fields = sectionFields[state.editingSection] || [];
+    var fieldsHtml = '';
+    if (fields.length > 0) {
+      fields.forEach(function(f) {
+        var val = state.editedContent[f.key] || f.defaultVal;
+        if (f.type === 'textarea') {
+          fieldsHtml += '<div class="form-group"><label class="form-label">' + f.label + '</label>' +
+            '<textarea class="form-textarea live-edit-field" data-key="' + f.key + '" data-selector="' + f.selector + '" data-testid="field-' + f.key + '">' + val + '</textarea></div>';
+        } else {
+          fieldsHtml += '<div class="form-group"><label class="form-label">' + f.label + '</label>' +
+            '<input class="form-input live-edit-field" data-key="' + f.key + '" data-selector="' + f.selector + '" value="' + val.replace(/"/g, '&quot;') + '" data-testid="field-' + f.key + '" /></div>';
+        }
+      });
+    } else {
+      fieldsHtml = '<div class="empty-state" style="padding:20px"><div class="empty-state-title">Select a section</div><div>Choose a section to edit its content</div></div>';
+    }
+
+    var currentSectionName = '';
+    sections.forEach(function(s) { if (s.id === state.editingSection) currentSectionName = s.name; });
+
     return '' +
       '<div class="toolbar">' +
-        '<select class="form-select" style="width:200px" id="pageSelector" data-testid="select-page">' +
+        '<select class="form-select" style="width:180px" id="pageSelector" data-testid="select-page">' +
           state.pages.map(function(p) {
             return '<option value="' + p.path + '"' + (p.path === currentPath ? ' selected' : '') + '>' + p.name + '</option>';
           }).join('') +
         '</select>' +
+        '<div class="viewport-switcher" data-testid="viewport-switcher">' +
+          '<button class="viewport-btn' + (state.viewport === 'desktop' ? ' active' : '') + '" data-viewport="desktop" title="Desktop" data-testid="btn-viewport-desktop"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></button>' +
+          '<button class="viewport-btn' + (state.viewport === 'tablet' ? ' active' : '') + '" data-viewport="tablet" title="Tablet" data-testid="btn-viewport-tablet"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></button>' +
+          '<button class="viewport-btn' + (state.viewport === 'mobile' ? ' active' : '') + '" data-viewport="mobile" title="Mobile" data-testid="btn-viewport-mobile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></button>' +
+        '</div>' +
         '<div class="toolbar-spacer"></div>' +
+        '<button class="btn btn-outline" id="refreshPreviewBtn" data-testid="button-refresh-preview" title="Refresh Preview"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>' +
         '<button class="btn btn-primary" id="saveContentBtn" data-testid="button-save-content">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
-          'Save Changes</button>' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save</button>' +
       '</div>' +
-      '<div class="editor-layout">' +
-        '<div class="editor-sidebar card">' +
+      '<div class="editor-layout-3">' +
+        '<div class="editor-sections card">' +
           '<div class="card-header"><span class="card-title">Sections</span></div>' +
-          '<div class="card-body">' + sectionsList + '</div>' +
+          '<div class="card-body" style="padding:8px">' + sectionsList + '</div>' +
+        '</div>' +
+        '<div class="editor-fields card">' +
+          '<div class="card-header"><span class="card-title">' + (currentSectionName || 'Editor') + '</span></div>' +
+          '<div class="card-body" id="editorFieldsBody">' + fieldsHtml + '</div>' +
         '</div>' +
         '<div class="editor-preview">' +
           '<div class="editor-preview-header">' +
-            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' +
+            '<span class="preview-dot"></span>' +
             '<span>Live Preview &mdash; ' + currentPageObj.name + '</span>' +
+            '<span class="preview-viewport-label" id="viewportLabel">' + (state.viewport || 'Desktop') + '</span>' +
           '</div>' +
-          '<iframe src="' + currentPath + '" id="previewFrame" data-testid="iframe-preview"></iframe>' +
+          '<div class="preview-frame-wrap" id="previewWrap">' +
+            '<iframe src="' + currentPath + '" id="previewFrame" data-testid="iframe-preview" class="preview-frame-' + (state.viewport || 'desktop') + '"></iframe>' +
+          '</div>' +
         '</div>' +
       '</div>';
   }
@@ -238,11 +330,33 @@
         document.querySelectorAll('.section-item').forEach(function(s) { s.classList.remove('active'); });
         this.classList.add('active');
         state.editingSection = this.getAttribute('data-section');
+        renderPage('content');
+        bindEditorActions();
+        scrollPreviewToSection(state.editingSection);
+      });
+    });
+
+    document.querySelectorAll('.viewport-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.viewport-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        state.viewport = this.getAttribute('data-viewport');
         var iframe = document.getElementById('previewFrame');
-        if (iframe && iframe.contentWindow) {
-          var sectionId = state.editingSection + '-section';
-          iframe.contentWindow.postMessage({ type: 'scrollToSection', section: sectionId }, '*');
+        if (iframe) {
+          iframe.className = 'preview-frame-' + state.viewport;
         }
+        var label = document.getElementById('viewportLabel');
+        if (label) label.textContent = state.viewport.charAt(0).toUpperCase() + state.viewport.slice(1);
+      });
+    });
+
+    document.querySelectorAll('.live-edit-field').forEach(function(field) {
+      field.addEventListener('input', function() {
+        var key = this.getAttribute('data-key');
+        var selector = this.getAttribute('data-selector');
+        var value = this.value;
+        state.editedContent[key] = value;
+        updatePreviewElement(selector, value, key);
       });
     });
 
@@ -257,10 +371,89 @@
 
     var saveBtn = document.getElementById('saveContentBtn');
     if (saveBtn) {
-      saveBtn.addEventListener('click', function() {
-        showToast('Content saved successfully', 'success');
+      saveBtn.addEventListener('click', function() { showToast('Content saved successfully', 'success'); });
+    }
+
+    var refreshBtn = document.getElementById('refreshPreviewBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', function() {
+        var iframe = document.getElementById('previewFrame');
+        if (iframe) iframe.src = iframe.src;
       });
     }
+
+    var iframe = document.getElementById('previewFrame');
+    if (iframe) {
+      iframe.addEventListener('load', function() {
+        populateFieldsFromPreview();
+        highlightPreviewSection(state.editingSection);
+      });
+    }
+  }
+
+  function scrollPreviewToSection(sectionId) {
+    var iframe = document.getElementById('previewFrame');
+    if (!iframe || !iframe.contentDocument) return;
+    var target = sectionScrollTargets[sectionId];
+    if (!target) return;
+    try {
+      var el = iframe.contentDocument.querySelector(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch(e) {}
+    highlightPreviewSection(sectionId);
+  }
+
+  function highlightPreviewSection(sectionId) {
+    var iframe = document.getElementById('previewFrame');
+    if (!iframe || !iframe.contentDocument) return;
+    var target = sectionScrollTargets[sectionId];
+    if (!target) return;
+    try {
+      var doc = iframe.contentDocument;
+      var existing = doc.querySelectorAll('.admin-highlight-overlay');
+      existing.forEach(function(e) { e.remove(); });
+      var el = doc.querySelector(target);
+      if (el) {
+        el.style.outline = '2px solid #0ea5e9';
+        el.style.outlineOffset = '-2px';
+        el.style.transition = 'outline 0.3s';
+        setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, 2000);
+      }
+    } catch(e) {}
+  }
+
+  function updatePreviewElement(selector, value, key) {
+    var iframe = document.getElementById('previewFrame');
+    if (!iframe || !iframe.contentDocument) return;
+    try {
+      var el = iframe.contentDocument.querySelector(selector);
+      if (el) {
+        el.textContent = value;
+        el.style.outline = '2px solid #0ea5e9';
+        el.style.outlineOffset = '2px';
+        setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, 800);
+      }
+    } catch(e) {}
+  }
+
+  function populateFieldsFromPreview() {
+    var iframe = document.getElementById('previewFrame');
+    if (!iframe || !iframe.contentDocument) return;
+    var fields = sectionFields[state.editingSection] || [];
+    fields.forEach(function(f) {
+      if (state.editedContent[f.key]) return;
+      try {
+        var el = iframe.contentDocument.querySelector(f.selector);
+        if (el) {
+          var inputEl = document.querySelector('[data-key="' + f.key + '"]');
+          if (inputEl && !inputEl.value) {
+            var text = el.textContent.trim();
+            inputEl.value = text;
+            state.editedContent[f.key] = text;
+          }
+        }
+      } catch(e) {}
+    });
   }
 
   function renderMedia() {
