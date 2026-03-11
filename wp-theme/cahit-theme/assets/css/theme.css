@@ -2049,100 +2049,100 @@ footer.site-footer {
 }
 
 /* ==================== ARABIC / RTL ==================== */
-html[dir="rtl"] {
+html.is-rtl {
   direction: ltr;
   overflow-x: hidden;
 }
-html[dir="rtl"] body {
+html.is-rtl body {
   direction: rtl;
   text-align: right;
   font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
 }
-html[dir="rtl"] .navbar-inner {
+html.is-rtl .navbar-inner {
   flex-direction: row-reverse;
 }
-html[dir="rtl"] .nav-link-careers {
+html.is-rtl .nav-link-careers {
   display: none;
 }
-html[dir="rtl"] .nav-links {
+html.is-rtl .nav-links {
   flex-direction: row-reverse;
 }
-html[dir="rtl"] .navbar-actions {
+html.is-rtl .navbar-actions {
   flex-direction: row-reverse;
 }
-html[dir="rtl"] .hero-text-block {
+html.is-rtl .hero-text-block {
   text-align: right;
   align-items: flex-end;
 }
-html[dir="rtl"] .hero-title {
+html.is-rtl .hero-title {
   text-align: right;
 }
-html[dir="rtl"] .hero-subtitle {
+html.is-rtl .hero-subtitle {
   text-align: right;
 }
-html[dir="rtl"] .hero-buttons {
+html.is-rtl .hero-buttons {
   justify-content: flex-end;
   flex-direction: row-reverse;
 }
-html[dir="rtl"] .hero-counters {
+html.is-rtl .hero-counters {
   justify-content: flex-end;
   flex-direction: row-reverse;
 }
-html[dir="rtl"] .hero-counter-item {
+html.is-rtl .hero-counter-item {
   text-align: right;
 }
-html[dir="rtl"] .footer-grid {
+html.is-rtl .footer-grid {
   direction: rtl;
 }
-html[dir="rtl"] .grid {
+html.is-rtl .grid {
   direction: rtl;
 }
-html[dir="rtl"] .section-header {
+html.is-rtl .section-header {
   text-align: right;
 }
-html[dir="rtl"] .icon-arrow,
-html[dir="rtl"] .icon-arrow-sm {
+html.is-rtl .icon-arrow,
+html.is-rtl .icon-arrow-sm {
   transform: scaleX(-1);
 }
-html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
-html[dir="rtl"] .service-card-link svg { transform: scaleX(-1); }
-html[dir="rtl"] .stats-row-inline { justify-content: flex-end; }
-html[dir="rtl"] .stats-row-inline .stat-item { text-align: right; }
-html[dir="rtl"] .grid.grid-2 { direction: rtl; }
-html[dir="rtl"] .hero-banner-content { text-align: right; }
-html[dir="rtl"] .hero-banner-title,
-html[dir="rtl"] .hero-banner-title-lg { text-align: right; }
-html[dir="rtl"] .hero-banner-subtitle,
-html[dir="rtl"] .hero-banner-subtitle-lg { text-align: right; }
-html[dir="rtl"] .section-title { text-align: right; }
-html[dir="rtl"] .section-subtitle { text-align: right; }
-html[dir="rtl"] .section-title.text-center { text-align: center; }
-html[dir="rtl"] .leader-info { text-align: right; }
-html[dir="rtl"] .leader-details { text-align: right; }
-html[dir="rtl"] .commitment-card { text-align: right; }
-html[dir="rtl"] .cta-title,
-html[dir="rtl"] .cta-subtitle { text-align: right; }
-html[dir="rtl"] .cta-section .text-center { text-align: right; }
-html[dir="rtl"] .cta-section .btn { margin-right: 0; }
-html[dir="rtl"] .mission-vision-card { text-align: right; }
-html[dir="rtl"] .card-title { text-align: right; }
-html[dir="rtl"] .footer-col { text-align: right; }
-html[dir="rtl"] .footer-links { text-align: right; }
-html[dir="rtl"] .footer-desc { text-align: right; }
-html[dir="rtl"] .footer-bottom { text-align: right; }
-html[dir="rtl"] .footer-copyright { text-align: right; }
-html[dir="rtl"] .footer-tagline { text-align: right; }
-html[dir="rtl"] .footer-admin-link svg { margin-left: 6px; margin-right: 0; }
-html[dir="rtl"] .footer-contact-item { flex-direction: row-reverse; text-align: right; }
-html[dir="rtl"] .footer-contact-item svg { margin-left: 0.5rem; margin-right: 0; }
-html[dir="rtl"] .contact-item { flex-direction: row-reverse; text-align: right; }
-html[dir="rtl"] .contact-icon { margin-left: 1rem; margin-right: 0; }
-html[dir="rtl"] .chatbot-bubble { left: 1.5rem; right: auto; }
-html[dir="rtl"] .chatbot-panel { left: 1.5rem; right: auto; }
-html[dir="rtl"] .chatbot-msg-user { flex-direction: row-reverse; }
-html[dir="rtl"] .chatbot-msg-assistant { flex-direction: row-reverse; }
-html[dir="rtl"] .funnel-panel { left: 2rem; right: auto; }
-@media (max-width: 767px) { html[dir="rtl"] .funnel-panel { left: 1rem; right: 1rem; } }
-html[dir="rtl"] .funnel-title { text-align: right; }
-html[dir="rtl"] .funnel-label { text-align: right; }
-html[dir="rtl"] .funnel-options { direction: rtl; }
+html.is-rtl .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+html.is-rtl .service-card-link svg { transform: scaleX(-1); }
+html.is-rtl .stats-row-inline { justify-content: flex-end; }
+html.is-rtl .stats-row-inline .stat-item { text-align: right; }
+html.is-rtl .grid.grid-2 { direction: rtl; }
+html.is-rtl .hero-banner-content { text-align: right; }
+html.is-rtl .hero-banner-title,
+html.is-rtl .hero-banner-title-lg { text-align: right; }
+html.is-rtl .hero-banner-subtitle,
+html.is-rtl .hero-banner-subtitle-lg { text-align: right; }
+html.is-rtl .section-title { text-align: right; }
+html.is-rtl .section-subtitle { text-align: right; }
+html.is-rtl .section-title.text-center { text-align: center; }
+html.is-rtl .leader-info { text-align: right; }
+html.is-rtl .leader-details { text-align: right; }
+html.is-rtl .commitment-card { text-align: right; }
+html.is-rtl .cta-title,
+html.is-rtl .cta-subtitle { text-align: right; }
+html.is-rtl .cta-section .text-center { text-align: right; }
+html.is-rtl .cta-section .btn { margin-right: 0; }
+html.is-rtl .mission-vision-card { text-align: right; }
+html.is-rtl .card-title { text-align: right; }
+html.is-rtl .footer-col { text-align: right; }
+html.is-rtl .footer-links { text-align: right; }
+html.is-rtl .footer-desc { text-align: right; }
+html.is-rtl .footer-bottom { text-align: right; }
+html.is-rtl .footer-copyright { text-align: right; }
+html.is-rtl .footer-tagline { text-align: right; }
+html.is-rtl .footer-admin-link svg { margin-left: 6px; margin-right: 0; }
+html.is-rtl .footer-contact-item { flex-direction: row-reverse; text-align: right; }
+html.is-rtl .footer-contact-item svg { margin-left: 0.5rem; margin-right: 0; }
+html.is-rtl .contact-item { flex-direction: row-reverse; text-align: right; }
+html.is-rtl .contact-icon { margin-left: 1rem; margin-right: 0; }
+html.is-rtl .chatbot-bubble { left: 1.5rem; right: auto; }
+html.is-rtl .chatbot-panel { left: 1.5rem; right: auto; }
+html.is-rtl .chatbot-msg-user { flex-direction: row-reverse; }
+html.is-rtl .chatbot-msg-assistant { flex-direction: row-reverse; }
+html.is-rtl .funnel-panel { left: 2rem; right: auto; }
+@media (max-width: 767px) { html.is-rtl .funnel-panel { left: 1rem; right: 1rem; } }
+html.is-rtl .funnel-title { text-align: right; }
+html.is-rtl .funnel-label { text-align: right; }
+html.is-rtl .funnel-options { direction: rtl; }
