@@ -457,6 +457,32 @@
     }
   }
 
+  var arVideoMap = {
+    "tahir": "/wp-content/themes/cahit-theme/assets/videos/tahir-ar.mp4",
+    "pasha": "/wp-content/themes/cahit-theme/assets/videos/pasha-ar.mp4"
+  };
+
+  function swapLeadershipVideos(toArabic) {
+    var videos = document.querySelectorAll(".leadership-section video[data-video-key]");
+    videos.forEach(function (video) {
+      var key = video.getAttribute("data-video-key");
+      if (!key || !arVideoMap[key]) return;
+      var source = video.querySelector("source");
+      if (!source) return;
+      if (toArabic) {
+        if (!source._enOriginalSrc) {
+          source._enOriginalSrc = source.getAttribute("src");
+        }
+        source.setAttribute("src", arVideoMap[key]);
+        video.load();
+      } else if (source._enOriginalSrc) {
+        source.setAttribute("src", source._enOriginalSrc);
+        delete source._enOriginalSrc;
+        video.load();
+      }
+    });
+  }
+
   function translateToArabic() {
     var els = document.querySelectorAll(
       ".nav-link, .mobile-nav-link, .hero-title, .hero-subtitle, .hero-counter-label, " +
@@ -474,6 +500,7 @@
       el.setAttribute("data-translated", "true");
       translateTextNode(el);
     });
+    swapLeadershipVideos(true);
   }
 
   function restoreEnglish() {
@@ -482,6 +509,7 @@
       restoreTextNode(el);
       el.removeAttribute("data-translated");
     });
+    swapLeadershipVideos(false);
   }
 
   var funnelData = {};
