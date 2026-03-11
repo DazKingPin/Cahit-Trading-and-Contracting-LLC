@@ -223,18 +223,73 @@ function parseMultipart(req) {
   });
 }
 
+const leadsStore = [];
+
 app.post('/api/ajax', async (req, res) => {
   const fields = await parseMultipart(req);
   const action = fields.action || (req.body && req.body.action) || '';
   if (action === 'cahit_chat') {
     res.json({ success: true, data: { reply: 'Thank you for your message. Our team will get back to you soon. You can also reach us at ctc@cahitcontracting.com or call +968 2411 2406.' } });
   } else {
-    res.json({ success: true, data: { id: 1 } });
+    if (fields.name || fields.email) {
+      leadsStore.push({
+        id: leadsStore.length + 1,
+        name: fields.name || '',
+        email: fields.email || '',
+        phone: fields.phone || '',
+        service_type: fields.service_type || '',
+        details: fields.details || '',
+        status: 'new',
+        created_at: new Date().toISOString().split('T')[0]
+      });
+    }
+    res.json({ success: true, data: { id: leadsStore.length } });
   }
 });
 
 app.post('/api/chat', (req, res) => {
   res.json({ reply: 'Thank you for your message. Our team will get back to you soon. You can also reach us at ctc@cahitcontracting.com or call +968 2411 2406.' });
+});
+
+// Admin dashboard
+const ADMIN_DIR = path.join(THEME_DIR, 'admin');
+
+app.use('/admin', express.static(ADMIN_DIR));
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(ADMIN_DIR, 'index.html'));
+});
+
+app.get('/admin/api/leads', (req, res) => {
+  res.json({ success: true, data: leadsStore });
+});
+
+app.post('/admin/api/leads', express.json(), (req, res) => {
+  const lead = {
+    id: leadsStore.length + 1,
+    name: req.body.name || '',
+    email: req.body.email || '',
+    phone: req.body.phone || '',
+    service_type: req.body.service_type || '',
+    details: req.body.details || '',
+    status: 'new',
+    created_at: new Date().toISOString().split('T')[0]
+  };
+  leadsStore.push(lead);
+  res.json({ success: true, data: lead });
+});
+
+app.get('/admin/api/pages', (req, res) => {
+  const pages = [
+    { name: 'Home', path: '/', template: 'front-page.php', status: 'published' },
+    { name: 'About Us', path: '/about', template: 'page-about.php', status: 'published' },
+    { name: 'Services', path: '/services', template: 'page-services.php', status: 'published' },
+    { name: 'Projects', path: '/projects', template: 'page-projects.php', status: 'published' },
+    { name: 'Clients', path: '/clients', template: 'page-clients.php', status: 'published' },
+    { name: 'Blog', path: '/blog', template: 'page-blog.php', status: 'published' },
+    { name: 'Careers', path: '/careers', template: 'page-careers.php', status: 'published' }
+  ];
+  res.json({ success: true, data: pages });
 });
 
 // Page routes

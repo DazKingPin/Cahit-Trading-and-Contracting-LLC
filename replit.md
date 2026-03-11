@@ -83,6 +83,19 @@ All images served from: `https://files.manuscdn.com/user_upload_by_module/sessio
 - Light theme, corporate/professional look
 - Ocean-blue accents reflecting marine expertise
 
+## CRM Admin Dashboard
+- Located at `wp-theme/cahit-theme/admin/` (HTML/CSS/JS)
+- Served at `/admin` by the preview server
+- **Dashboard**: Stats overview (pages, leads, media, languages), recent activity, quick actions
+- **Pages**: Grid view of all 7 site pages with edit/view links
+- **Content Editor**: Section-based editor with live preview iframe, page selector dropdown
+- **Media Library**: Drag & drop upload, media grid with thumbnails (images/videos from CDN)
+- **Leads & Contacts**: Table of lead submissions captured from site forms and funnel
+- **Analytics**: Traffic stats, monthly chart, top pages, traffic sources
+- **Settings**: Site info, language toggles (Arabic/RTL), feature toggles (funnel, chatbot, blog), SEO meta
+- Backend API: `/admin/api/leads` (GET/POST), `/admin/api/pages` (GET)
+- Lead submissions from the main site (`/api/ajax`) are automatically stored in the leads list
+
 ## WP AJAX Actions
 - `cahit_submit_lead` - Lead form submission
 - `cahit_submit_quote` - Quote request (FormData with nonce)
