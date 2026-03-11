@@ -377,11 +377,17 @@
     "Our Projects": "\u0645\u0634\u0627\u0631\u064A\u0639\u0646\u0627",
     "Selected Projects": "\u0645\u0634\u0627\u0631\u064A\u0639 \u0645\u062E\u062A\u0627\u0631\u0629",
     "Leadership": "\u0627\u0644\u0642\u064A\u0627\u062F\u0629",
-    "Our Commitment": "\u0627\u0644\u062A\u0632\u0627\u0645\u0646\u0627",
-    "Best Quality": "\u0623\u0641\u0636\u0644 \u062C\u0648\u062F\u0629",
-    "On-Time Delivery": "\u0627\u0644\u062A\u0633\u0644\u064A\u0645 \u0641\u064A \u0627\u0644\u0648\u0642\u062A \u0627\u0644\u0645\u062D\u062F\u062F",
-    "Experience": "\u0627\u0644\u062E\u0628\u0631\u0629",
-    "Ready to Start Your Next Project?": "\u0647\u0644 \u0623\u0646\u062A \u0645\u0633\u062A\u0639\u062F \u0644\u0628\u062F\u0621 \u0645\u0634\u0631\u0648\u0639\u0643 \u0627\u0644\u0642\u0627\u062F\u0645\u061F",
+    "Our Commitment": "التزامنا",
+    "Best Quality": "أفضل جودة",
+    "We maintain the highest engineering and construction standards in every project.": "نحافظ على أعلى معايير الهندسة والبناء في كل مشروع.",
+    "On-Time Delivery": "التسليم في الوقت المحدد",
+    "We respect project timelines and deliver reliable execution without compromising quality.": "نحترم الجداول الزمنية للمشاريع ونقدم تنفيذاً موثوقاً دون المساس بالجودة.",
+    "Experience": "الخبرة",
+    "Our experienced professionals ensure efficient project delivery and operational excellence.": "يضمن محترفونا ذوو الخبرة تسليم المشاريع بكفاءة وتميز تشغيلي.",
+    "Let's Build Your Next Project": "لنبنِ مشروعك القادم",
+    "Whether planning marine infrastructure, coastal protection, or large-scale civil works, our team is ready to support your project with reliable expertise and professional execution.": "سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.",
+    "Contact Our Team": "تواصل مع فريقنا",
+    "Ready to Start Your Next Project?": "هل أنت مستعد لبدء مشروعك القادم؟",
     "Company Overview": "\u0646\u0628\u0630\u0629 \u0639\u0646 \u0627\u0644\u0634\u0631\u0643\u0629",
     "View Our Services": "\u0639\u0631\u0636 \u062E\u062F\u0645\u0627\u062A\u0646\u0627",
     "Our Mission": "\u0645\u0647\u0645\u062A\u0646\u0627",
@@ -422,9 +428,18 @@
     "Meet the professionals behind Cahit Trading & Contracting.": "تعرّف على المتخصصين في شركة كاهيت للتجارة والمقاولات.",
     "Hover to Watch": "مرر للمشاهدة",
     "Explore All Projects": "استكشاف جميع المشاريع",
+    "Cahit Trading & Contracting LLC is a construction and infrastructure company delivering marine, coastal, and civil engineering solutions across Oman. With experienced leadership and skilled engineering teams, we execute complex projects with reliability, precision, and the highest standards of quality and safety.": "شركة كاهيت للتجارة والمقاولات ذ.م.م هي شركة بناء وبنية تحتية تقدم حلول الهندسة البحرية والساحلية والمدنية في جميع أنحاء عُمان. مع قيادة ذات خبرة وفرق هندسية ماهرة، ننفذ مشاريع معقدة بموثوقية ودقة وأعلى معايير الجودة والسلامة.",
+    "Our Services": "خدماتنا",
+    "Home": "الرئيسية",
+    "About Us": "من نحن",
+    "P.O. Box 63, Postal Code 101": "ص.ب. 63، الرمز البريدي 101",
+    "South Al Mawaleh, Muscat": "جنوب الموالح، مسقط",
+    "Sultanate of Oman": "سلطنة عُمان",
+    "Cahit Trading & Contracting LLC": "شركة كاهيت للتجارة والمقاولات ذ.م.م",
+    "All Rights Reserved.": "جميع الحقوق محفوظة.",
     "A Solid Ground For Your Project": "أرض صلبة لمشروعك",
     "Admin": "الإدارة",
-    "Admin Login": "تسجيل دخول المسؤول"
+    "Admin Login": "دخول المسؤول"
   };
 
   var enOriginals = {};
@@ -506,9 +521,10 @@
       ".nav-link, .mobile-nav-link, .hero-title, .hero-subtitle, .hero-counter-label, " +
       ".section-title, .section-subtitle, .section-label, .stat-label, " +
       ".service-card-title, .service-card-desc, .service-card-link, .marine-pill-text, .marine-title, .marine-subtitle, .marine-footer-text, " +
-      ".leader-name, .leader-role, .leader-bio, .leader-detail-label, .leader-detail-value, .hover-label, .commitment-title, .commitment-desc, " +
+      ".leader-name, .leader-role, .leader-bio, .leader-detail-label, .leader-detail-value, .hover-label, " +
+      ".commitment-card-title, .commitment-card-desc, " +
       ".cta-title, .cta-subtitle, .hero-banner-title, .hero-banner-subtitle, " +
-      ".footer-heading, .footer-links a, .footer-links button, .footer-tagline, .footer-copyright, " +
+      ".footer-heading, .footer-links a, .footer-links button, .footer-tagline, .footer-copyright, .footer-desc, .footer-admin-text, .footer-contact-item p, .footer-contact-item a, " +
       ".btn, .card-title, .modal-title, .quote-modal-title, .contact-label, " +
       ".chatbot-header-title, .chatbot-header-subtitle, " +
       ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
