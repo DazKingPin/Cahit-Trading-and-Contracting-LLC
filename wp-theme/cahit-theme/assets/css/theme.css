@@ -2047,9 +2047,11 @@ footer.site-footer {
 
 /* ==================== ARABIC / RTL ==================== */
 html[dir="rtl"] {
-  direction: rtl;
+  direction: ltr;
+  overflow-x: hidden;
 }
 html[dir="rtl"] body {
+  direction: rtl;
   text-align: right;
   font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
 }
