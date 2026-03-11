@@ -1249,7 +1249,7 @@ footer.site-footer {
 }
 
 @media (min-width: 768px) {
-  .footer-grid { grid-template-columns: 2fr 1fr 1fr 0.8fr 1.5fr; }
+  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1.5fr; }
 }
 
 .footer-col { }
@@ -1318,6 +1318,24 @@ footer.site-footer {
 }
 .footer-contact-item a:hover { color: #ffffff; }
 .footer-contact-item p { margin: 0; }
+
+.footer-admin-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  border: 1px solid rgba(148,163,184,.25);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.footer-admin-link:hover {
+  color: #e2e8f0;
+  border-color: rgba(148,163,184,.5);
+  background: rgba(255,255,255,.05);
+}
 
 .footer-contact-icon {
   width: 1rem;
