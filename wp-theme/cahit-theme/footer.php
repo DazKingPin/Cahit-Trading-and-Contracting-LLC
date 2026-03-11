@@ -32,6 +32,15 @@
       </div>
 
       <div class="footer-col">
+        <h4 class="footer-heading">Admin</h4>
+        <ul class="footer-links">
+          <li><a href="/admin/login" data-testid="link-admin-login">
+            <svg style="display:inline-block;vertical-align:middle;margin-right:6px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Admin Login</a></li>
+          <li><a href="/admin/login">CRM Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
         <h4 class="footer-heading">Contact</h4>
         <div class="footer-contact">
           <div class="footer-contact-item">

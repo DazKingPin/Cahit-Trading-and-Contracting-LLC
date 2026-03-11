@@ -37,6 +37,7 @@
     loadLeads();
     bindNavigation();
     bindMobileMenu();
+    bindLogout();
     renderPage('dashboard');
   }
 
@@ -66,6 +67,18 @@
     if (btn) {
       btn.addEventListener('click', function() {
         document.getElementById('sidebar').classList.toggle('open');
+      });
+    }
+  }
+
+  function bindLogout() {
+    var btn = document.getElementById('logoutBtn');
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sessionStorage.removeItem('cahit_admin_token');
+        localStorage.removeItem('cahit_admin_token');
+        window.location.href = '/admin/login';
       });
     }
   }

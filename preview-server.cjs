@@ -1,9 +1,14 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = 5000;
+
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'cahit2024';
+const adminTokens = new Set();
 
 const THEME_DIR = path.join(__dirname, 'wp-theme', 'cahit-theme');
 const BASE_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
@@ -253,6 +258,38 @@ app.post('/api/chat', (req, res) => {
 
 // Admin dashboard
 const ADMIN_DIR = path.join(THEME_DIR, 'admin');
+
+app.post('/admin/api/login', express.json(), (req, res) => {
+  const { username, password } = req.body || {};
+  if ((username === ADMIN_USERNAME || username === 'admin@cahitcontracting.com') && password === ADMIN_PASSWORD) {
+    const token = crypto.randomBytes(32).toString('hex');
+    adminTokens.add(token);
+    res.json({ success: true, token, user: { name: 'Admin', role: 'administrator' } });
+  } else {
+    res.status(401).json({ success: false, message: 'Invalid username or password' });
+  }
+});
+
+app.get('/admin/api/verify', (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (token && adminTokens.has(token)) {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ success: false });
+  }
+});
+
+app.post('/admin/api/logout', express.json(), (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  adminTokens.delete(token);
+  res.json({ success: true });
+});
+
+app.get('/admin/login', (req, res) => {
+  res.sendFile(path.join(ADMIN_DIR, 'login.html'));
+});
 
 app.use('/admin', express.static(ADMIN_DIR));
 
