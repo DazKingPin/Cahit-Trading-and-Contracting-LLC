@@ -25,7 +25,8 @@
     editingSection: 'hero',
     viewport: 'desktop',
     editedContent: {},
-    funnelDisabled: true
+    funnelDisabled: true,
+    dragMode: false
   };
 
   var BASE_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
@@ -329,6 +330,9 @@
           '<button class="viewport-btn' + (state.viewport === 'mobile' ? ' active' : '') + '" data-viewport="mobile" title="Mobile" data-testid="btn-viewport-mobile"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></button>' +
         '</div>' +
         '<div class="toolbar-spacer"></div>' +
+        '<button class="btn ' + (state.dragMode ? 'btn-primary' : 'btn-outline') + '" id="toggleDragBtn" data-testid="button-toggle-drag" title="' + (state.dragMode ? 'Drag mode active — click elements in preview to move them' : 'Enable drag mode to reposition elements') + '">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>' +
+          (state.dragMode ? ' Drag On' : ' Drag') + '</button>' +
         '<button class="btn ' + (state.funnelDisabled ? 'btn-outline funnel-off' : 'btn-primary funnel-on') + '" id="toggleFunnelBtn" data-testid="button-toggle-funnel" title="' + (state.funnelDisabled ? 'Lead funnel disabled in preview' : 'Lead funnel enabled in preview') + '">' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>' +
           (state.funnelDisabled ? ' Funnel Off' : ' Funnel On') + '</button>' +
@@ -408,6 +412,17 @@
       saveBtn.addEventListener('click', function() { showToast('Content saved successfully', 'success'); });
     }
 
+    var toggleDragBtn = document.getElementById('toggleDragBtn');
+    if (toggleDragBtn) {
+      toggleDragBtn.addEventListener('click', function() {
+        state.dragMode = !state.dragMode;
+        this.className = 'btn ' + (state.dragMode ? 'btn-primary' : 'btn-outline');
+        this.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>' + (state.dragMode ? ' Drag On' : ' Drag');
+        injectDragSystem();
+        showToast(state.dragMode ? 'Drag mode enabled — click elements to move them' : 'Drag mode disabled', 'success');
+      });
+    }
+
     var toggleFunnelBtn = document.getElementById('toggleFunnelBtn');
     if (toggleFunnelBtn) {
       toggleFunnelBtn.addEventListener('click', function() {
@@ -440,6 +455,9 @@
       iframe.addEventListener('load', function() {
         populateFieldsFromPreview();
         highlightPreviewSection(state.editingSection);
+        if (state.dragMode) {
+          setTimeout(function() { injectDragSystem(); }, 300);
+        }
       });
     }
 
@@ -542,6 +560,280 @@
         setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, 1200);
       }
     } catch(e) {}
+  }
+
+  function injectDragSystem() {
+    var iframe = document.getElementById('previewFrame');
+    if (!iframe || !iframe.contentDocument) return;
+    var doc = iframe.contentDocument;
+
+    var existing = doc.getElementById('admin-drag-system');
+    if (existing) existing.remove();
+    var existingStyle = doc.getElementById('admin-drag-style');
+    if (existingStyle) existingStyle.remove();
+
+    if (!state.dragMode) {
+      doc.querySelectorAll('.drag-enabled').forEach(function(el) {
+        el.classList.remove('drag-enabled');
+        el.style.cursor = '';
+      });
+      return;
+    }
+
+    var style = doc.createElement('style');
+    style.id = 'admin-drag-style';
+    style.textContent =
+      '.drag-enabled{cursor:move!important;outline:1px dashed rgba(14,165,233,.4)!important;outline-offset:2px!important;transition:outline .15s!important}' +
+      '.drag-enabled:hover{outline:2px solid #0ea5e9!important;outline-offset:2px!important}' +
+      '.drag-selected{outline:2px solid #0ea5e9!important;outline-offset:2px!important;box-shadow:0 0 0 4px rgba(14,165,233,.2)!important}' +
+      '.drag-guide-h,.drag-guide-v{position:fixed!important;z-index:99999!important;pointer-events:none!important;background:#f43f5e!important}' +
+      '.drag-guide-h{height:1px!important;left:0!important;right:0!important}' +
+      '.drag-guide-v{width:1px!important;top:0!important;bottom:0!important}' +
+      '.drag-pos-badge{position:fixed!important;z-index:99999!important;background:#0f172a!important;color:#fff!important;font-size:11px!important;padding:2px 8px!important;border-radius:4px!important;pointer-events:none!important;font-family:monospace!important;white-space:nowrap!important}' +
+      '.drag-handle-overlay{position:fixed!important;z-index:99998!important;pointer-events:none!important;border:2px solid #0ea5e9!important;border-radius:4px!important}' +
+      '.drag-handle-corner{position:absolute!important;width:8px!important;height:8px!important;background:#0ea5e9!important;border:1px solid #fff!important;border-radius:2px!important;pointer-events:none!important}';
+    doc.head.appendChild(style);
+
+    var script = doc.createElement('script');
+    script.id = 'admin-drag-system';
+    script.textContent = '(' + (function() {
+      var DRAG_SELECTORS = [
+        '.navbar-logo', '.logo-img', '.nav-brand-text',
+        '.hero-title', '.hero-subtitle', '.hero-buttons',
+        '.section-title', '.section-subtitle',
+        '.about-video', '.about-text',
+        '.service-card', '.service-card-img',
+        '.marine-title', '.marine-subtitle',
+        '.project-card', '.project-card img',
+        '.leader-card', '.leader-video',
+        '.stat-item',
+        '.cta-title', '.cta-subtitle',
+        '.footer-logo', '.footer-desc',
+        '.marquee-logo-img',
+        'img', 'video'
+      ];
+
+      var selected = null;
+      var dragging = false;
+      var startX = 0, startY = 0;
+      var origLeft = 0, origTop = 0;
+      var origTransform = '';
+      var guides = [];
+      var posBadge = null;
+      var handleOverlay = null;
+      var SNAP_THRESHOLD = 6;
+
+      function getAllDraggable() {
+        var all = [];
+        DRAG_SELECTORS.forEach(function(sel) {
+          try {
+            document.querySelectorAll(sel).forEach(function(el) {
+              if (all.indexOf(el) === -1 && el.offsetWidth > 10 && el.offsetHeight > 10) {
+                all.push(el);
+              }
+            });
+          } catch(e) {}
+        });
+        return all;
+      }
+
+      function enableDraggables() {
+        getAllDraggable().forEach(function(el) {
+          el.classList.add('drag-enabled');
+        });
+      }
+
+      function getElCenter(el) {
+        var r = el.getBoundingClientRect();
+        return { cx: r.left + r.width / 2, cy: r.top + r.height / 2, rect: r };
+      }
+
+      function showGuides(el) {
+        clearGuides();
+        var me = getElCenter(el);
+        var others = getAllDraggable().filter(function(o) { return o !== el && o !== el.parentElement && !el.contains(o); });
+        var parent = el.parentElement;
+        var parentR = parent ? parent.getBoundingClientRect() : null;
+        var viewW = window.innerWidth;
+
+        others.forEach(function(other) {
+          var ot = getElCenter(other);
+          if (Math.abs(me.cy - ot.cy) < SNAP_THRESHOLD) {
+            createGuide('h', ot.cy);
+          }
+          if (Math.abs(me.rect.top - ot.rect.top) < SNAP_THRESHOLD) {
+            createGuide('h', ot.rect.top);
+          }
+          if (Math.abs(me.rect.bottom - ot.rect.bottom) < SNAP_THRESHOLD) {
+            createGuide('h', ot.rect.bottom);
+          }
+          if (Math.abs(me.cx - ot.cx) < SNAP_THRESHOLD) {
+            createGuide('v', ot.cx);
+          }
+          if (Math.abs(me.rect.left - ot.rect.left) < SNAP_THRESHOLD) {
+            createGuide('v', ot.rect.left);
+          }
+          if (Math.abs(me.rect.right - ot.rect.right) < SNAP_THRESHOLD) {
+            createGuide('v', ot.rect.right);
+          }
+        });
+
+        if (parentR) {
+          var parentCx = parentR.left + parentR.width / 2;
+          if (Math.abs(me.cx - parentCx) < SNAP_THRESHOLD) {
+            createGuide('v', parentCx);
+          }
+        }
+        if (Math.abs(me.cx - viewW / 2) < SNAP_THRESHOLD * 2) {
+          createGuide('v', viewW / 2);
+        }
+      }
+
+      function createGuide(dir, pos) {
+        for (var i = 0; i < guides.length; i++) {
+          var g = guides[i];
+          if (g.dir === dir && Math.abs(parseFloat(g.el.style[dir === 'h' ? 'top' : 'left']) - pos) < 2) return;
+        }
+        var line = document.createElement('div');
+        line.className = dir === 'h' ? 'drag-guide-h' : 'drag-guide-v';
+        if (dir === 'h') { line.style.top = pos + 'px'; }
+        else { line.style.left = pos + 'px'; }
+        document.body.appendChild(line);
+        guides.push({ el: line, dir: dir });
+      }
+
+      function clearGuides() {
+        guides.forEach(function(g) { g.el.remove(); });
+        guides = [];
+      }
+
+      function showPosBadge(el) {
+        if (!posBadge) {
+          posBadge = document.createElement('div');
+          posBadge.className = 'drag-pos-badge';
+          document.body.appendChild(posBadge);
+        }
+        var r = el.getBoundingClientRect();
+        var cs = window.getComputedStyle(el);
+        var t = cs.transform || cs.webkitTransform || 'none';
+        var tx = 0, ty = 0;
+        if (t !== 'none') {
+          var m = t.match(/matrix\((.+)\)/);
+          if (m) {
+            var v = m[1].split(',');
+            tx = Math.round(parseFloat(v[4]) || 0);
+            ty = Math.round(parseFloat(v[5]) || 0);
+          }
+        }
+        posBadge.textContent = 'x:' + tx + ' y:' + ty + ' | ' + Math.round(r.width) + '\u00d7' + Math.round(r.height);
+        posBadge.style.top = (r.top - 28) + 'px';
+        posBadge.style.left = r.left + 'px';
+      }
+
+      function hidePosBadge() {
+        if (posBadge) { posBadge.remove(); posBadge = null; }
+      }
+
+      function showHandleOverlay(el) {
+        hideHandleOverlay();
+        var r = el.getBoundingClientRect();
+        handleOverlay = document.createElement('div');
+        handleOverlay.className = 'drag-handle-overlay';
+        handleOverlay.style.top = r.top + 'px';
+        handleOverlay.style.left = r.left + 'px';
+        handleOverlay.style.width = r.width + 'px';
+        handleOverlay.style.height = r.height + 'px';
+
+        var corners = [
+          { t: '-4px', l: '-4px' },
+          { t: '-4px', l: (r.width - 4) + 'px' },
+          { t: (r.height - 4) + 'px', l: '-4px' },
+          { t: (r.height - 4) + 'px', l: (r.width - 4) + 'px' }
+        ];
+        corners.forEach(function(c) {
+          var dot = document.createElement('div');
+          dot.className = 'drag-handle-corner';
+          dot.style.top = c.t;
+          dot.style.left = c.l;
+          handleOverlay.appendChild(dot);
+        });
+        document.body.appendChild(handleOverlay);
+      }
+
+      function hideHandleOverlay() {
+        if (handleOverlay) { handleOverlay.remove(); handleOverlay = null; }
+      }
+
+      function onMouseDown(e) {
+        var el = e.target.closest('.drag-enabled');
+        if (!el) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (selected && selected !== el) {
+          selected.classList.remove('drag-selected');
+        }
+        selected = el;
+        selected.classList.add('drag-selected');
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        var cs = window.getComputedStyle(el);
+        origTransform = cs.transform || cs.webkitTransform || 'none';
+        if (origTransform === 'none') origTransform = '';
+        var tx = 0, ty = 0;
+        if (origTransform) {
+          var m = origTransform.match(/matrix\((.+)\)/);
+          if (m) {
+            var v = m[1].split(',');
+            tx = parseFloat(v[4]) || 0;
+            ty = parseFloat(v[5]) || 0;
+          }
+        }
+        origLeft = tx;
+        origTop = ty;
+
+        showHandleOverlay(el);
+        showPosBadge(el);
+      }
+
+      function onMouseMove(e) {
+        if (!dragging || !selected) return;
+        e.preventDefault();
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        var nx = origLeft + dx;
+        var ny = origTop + dy;
+        selected.style.transform = 'translate(' + nx + 'px, ' + ny + 'px)';
+        selected.style.position = selected.style.position || 'relative';
+        showGuides(selected);
+        showPosBadge(selected);
+        showHandleOverlay(selected);
+      }
+
+      function onMouseUp() {
+        if (dragging && selected) {
+          dragging = false;
+          clearGuides();
+          showPosBadge(selected);
+          setTimeout(function() { hidePosBadge(); }, 1500);
+          window.parent.postMessage({
+            type: 'elementMoved',
+            tag: selected.tagName,
+            className: selected.className,
+            transform: selected.style.transform
+          }, '*');
+        }
+      }
+
+      enableDraggables();
+      document.addEventListener('mousedown', onMouseDown, true);
+      document.addEventListener('mousemove', onMouseMove, true);
+      document.addEventListener('mouseup', onMouseUp, true);
+    }).toString() + ')();';
+
+    doc.body.appendChild(script);
   }
 
   function scrollPreviewToSection(sectionId) {
