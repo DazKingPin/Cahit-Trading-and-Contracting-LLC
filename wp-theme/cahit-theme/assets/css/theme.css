@@ -1085,6 +1085,12 @@ h1, h2, h3, h4, h5, h6 {
   color: #334155;
 }
 
+.leader-detail-university {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-style: italic;
+}
+
 /* ==================== COMMITMENT SECTION ==================== */
 .commitment-section {
   padding: 5rem 0;

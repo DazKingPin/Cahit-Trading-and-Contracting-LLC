@@ -312,13 +312,13 @@
         <div class="leader-info">
           <h3 class="leader-name">Tahir &#350;enyurt</h3>
           <p class="leader-role">Managing Director</p>
-          <p class="leader-bio">
-            Tahir &#350;enyurt is a Civil Engineer with over 25 years of experience in the construction and contracting industry. He has successfully led numerous projects including marine infrastructure, road construction, industrial facilities and residential developments across Turkey and the GCC.
-          </p>
+          <p class="leader-bio">Tahir &#350;enyurt is a Civil Engineer with over 25 years of experience in the construction and contracting industry. He has successfully led numerous projects including marine infrastructure, road construction, industrial facilities and residential developments across Turkey and the GCC.</p>
+          <p class="leader-bio">As Managing Director of Cahit Trading &amp; Contracting LLC, he leads the company's operations and strategic growth in the Omani construction sector.</p>
           <div class="leader-details">
             <div class="leader-detail-item">
               <p class="leader-detail-label">Education</p>
-              <p class="leader-detail-value">Bachelor of Civil Engineering &mdash; University of Middle East Technical</p>
+              <p class="leader-detail-value">Bachelor of Civil Engineering</p>
+              <p class="leader-detail-value leader-detail-university">Middle East Technical University</p>
             </div>
             <div class="leader-detail-item">
               <p class="leader-detail-label">License</p>
@@ -341,13 +341,14 @@
         <div class="leader-info">
           <h3 class="leader-name">Pasha H&uuml;seyin Ari</h3>
           <p class="leader-role">General Coordinator</p>
-          <p class="leader-bio">
-            Pasha H&uuml;seyin Ari holds a Master's degree in Environmental Engineering from Istanbul Technical University and brings over 15 years of experience in environmental and infrastructure-related sectors.
-          </p>
+          <p class="leader-bio">Pasha H&uuml;seyin Ari holds a Master's degree in Environmental Engineering from Istanbul Technical University and brings over 15 years of experience in environmental and infrastructure-related sectors.</p>
+          <p class="leader-bio">His expertise spans water treatment systems, desalination plants, soil improvement projects, marine construction, and oil &amp; gas infrastructure works.</p>
+          <p class="leader-bio">He plays a key role in ensuring successful project delivery while maintaining the highest standards of quality, safety, and environmental responsibility.</p>
           <div class="leader-details">
             <div class="leader-detail-item">
               <p class="leader-detail-label">Education</p>
-              <p class="leader-detail-value">MSc of Environmental Engineering &mdash; Istanbul Technical University</p>
+              <p class="leader-detail-value">MSc of Environmental Engineering</p>
+              <p class="leader-detail-value leader-detail-university">Istanbul Technical University</p>
             </div>
             <div class="leader-detail-item">
               <p class="leader-detail-label">License</p>

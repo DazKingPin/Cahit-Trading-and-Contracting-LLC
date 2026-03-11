@@ -402,11 +402,28 @@
     "MEP Works": "\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0643\u0647\u0631\u0628\u0627\u0621 \u0648\u0627\u0644\u0645\u064A\u0643\u0627\u0646\u064A\u0643\u0627",
     "Cahit Assistant": "\u0645\u0633\u0627\u0639\u062F \u062C\u0627\u0647\u062A",
     "Ask us anything": "\u0627\u0633\u0623\u0644\u0646\u0627 \u0623\u064A \u0634\u064A\u0621",
-    "Managing Director": "\u0627\u0644\u0645\u062F\u064A\u0631 \u0627\u0644\u0639\u0627\u0645",
-    "General Coordinator": "\u0627\u0644\u0645\u0646\u0633\u0642 \u0627\u0644\u0639\u0627\u0645",
-    "A Solid Ground For Your Project": "\u0623\u0631\u0636 \u0635\u0644\u0628\u0629 \u0644\u0645\u0634\u0631\u0648\u0639\u0643",
-    "Admin": "\u0627\u0644\u0625\u062F\u0627\u0631\u0629",
-    "Admin Login": "\u062A\u0633\u062C\u064A\u0644 \u062F\u062E\u0648\u0644 \u0627\u0644\u0645\u0633\u0624\u0648\u0644"
+    "Managing Director": "المدير العام",
+    "General Coordinator": "المنسق العام",
+    "Tahir \u015Eenyurt": "طاهر شنيورت",
+    "Pasha H\u00FCseyin Ari": "باشا حسين آري",
+    "Tahir \u015Eenyurt is a Civil Engineer with over 25 years of experience in the construction and contracting industry. He has successfully led numerous projects including marine infrastructure, road construction, industrial facilities and residential developments across Turkey and the GCC.": "طاهر شنيورت مهندس مدني يتمتع بخبرة تزيد عن 25 عاماً في صناعة البناء والمقاولات. قاد بنجاح العديد من المشاريع بما في ذلك البنية التحتية البحرية وبناء الطرق والمنشآت الصناعية والتطويرات السكنية في تركيا ودول مجلس التعاون الخليجي.",
+    "As Managing Director of Cahit Trading & Contracting LLC, he leads the company's operations and strategic growth in the Omani construction sector.": "بصفته المدير العام لشركة كاهيت للتجارة والمقاولات ذ.م.م، يقود عمليات الشركة ونموها الاستراتيجي في قطاع البناء العُماني.",
+    "Education": "التعليم",
+    "License": "الترخيص",
+    "Bachelor of Civil Engineering": "بكالوريوس الهندسة المدنية",
+    "Middle East Technical University": "جامعة الشرق الأوسط التقنية",
+    "Registered Civil Engineer": "مهندس مدني مسجل",
+    "Pasha H\u00FCseyin Ari holds a Master's degree in Environmental Engineering from Istanbul Technical University and brings over 15 years of experience in environmental and infrastructure-related sectors.": "يحمل باشا حسين آري درجة الماجستير في الهندسة البيئية من جامعة إسطنبول التقنية ويتمتع بخبرة تزيد عن 15 عاماً في القطاعات البيئية والمتعلقة بالبنية التحتية.",
+    "His expertise spans water treatment systems, desalination plants, soil improvement projects, marine construction, and oil & gas infrastructure works.": "تشمل خبرته أنظمة معالجة المياه ومحطات التحلية ومشاريع تحسين التربة والبناء البحري وأعمال البنية التحتية للنفط والغاز.",
+    "He plays a key role in ensuring successful project delivery while maintaining the highest standards of quality, safety, and environmental responsibility.": "يلعب دوراً رئيسياً في ضمان تسليم المشاريع بنجاح مع الحفاظ على أعلى معايير الجودة والسلامة والمسؤولية البيئية.",
+    "MSc of Environmental Engineering": "ماجستير الهندسة البيئية",
+    "Istanbul Technical University": "جامعة إسطنبول التقنية",
+    "Registered Environmental Engineer": "مهندس بيئي مسجل",
+    "Meet the professionals behind Cahit Trading & Contracting.": "تعرّف على المتخصصين في شركة كاهيت للتجارة والمقاولات.",
+    "Hover to Watch": "مرر للمشاهدة",
+    "A Solid Ground For Your Project": "أرض صلبة لمشروعك",
+    "Admin": "الإدارة",
+    "Admin Login": "تسجيل دخول المسؤول"
   };
 
   var enOriginals = {};
@@ -488,7 +505,7 @@
       ".nav-link, .mobile-nav-link, .hero-title, .hero-subtitle, .hero-counter-label, " +
       ".section-title, .section-subtitle, .section-label, .stat-label, " +
       ".service-card-title, .service-card-desc, .service-card-link, .marine-pill-text, .marine-title, .marine-subtitle, .marine-footer-text, " +
-      ".leader-name, .leader-role, .commitment-title, .commitment-desc, " +
+      ".leader-name, .leader-role, .leader-bio, .leader-detail-label, .leader-detail-value, .hover-label, .commitment-title, .commitment-desc, " +
       ".cta-title, .cta-subtitle, .hero-banner-title, .hero-banner-subtitle, " +
       ".footer-heading, .footer-links a, .footer-links button, .footer-tagline, .footer-copyright, " +
       ".btn, .card-title, .modal-title, .quote-modal-title, .contact-label, " +
