@@ -421,6 +421,7 @@
     "Registered Environmental Engineer": "مهندس بيئي مسجل",
     "Meet the professionals behind Cahit Trading & Contracting.": "تعرّف على المتخصصين في شركة كاهيت للتجارة والمقاولات.",
     "Hover to Watch": "مرر للمشاهدة",
+    "Explore All Projects": "استكشاف جميع المشاريع",
     "A Solid Ground For Your Project": "أرض صلبة لمشروعك",
     "Admin": "الإدارة",
     "Admin Login": "تسجيل دخول المسؤول"
