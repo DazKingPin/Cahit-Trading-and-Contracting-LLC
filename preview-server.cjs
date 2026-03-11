@@ -280,6 +280,96 @@ app.get('/admin/api/verify', (req, res) => {
   }
 });
 
+const UPLOADS_DIR = path.join(THEME_DIR, 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+app.use('/uploads', express.static(UPLOADS_DIR));
+
+app.post('/admin/api/upload', (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+
+  const contentType = req.headers['content-type'] || '';
+  if (!contentType.includes('multipart/form-data')) {
+    return res.status(400).json({ success: false, message: 'Expected multipart/form-data' });
+  }
+
+  const boundary = contentType.split('boundary=')[1];
+  if (!boundary) {
+    return res.status(400).json({ success: false, message: 'No boundary found' });
+  }
+
+  const chunks = [];
+  req.on('data', chunk => chunks.push(chunk));
+  req.on('end', () => {
+    const buffer = Buffer.concat(chunks);
+    const boundaryBuf = Buffer.from('--' + boundary);
+    const parts = [];
+    let start = 0;
+    while (true) {
+      const idx = buffer.indexOf(boundaryBuf, start);
+      if (idx === -1) break;
+      if (start > 0) parts.push(buffer.slice(start, idx));
+      start = idx + boundaryBuf.length;
+    }
+
+    let fileBuffer = null;
+    let originalName = 'upload';
+    let mimeType = 'application/octet-stream';
+
+    for (const part of parts) {
+      const headerEnd = part.indexOf('\r\n\r\n');
+      if (headerEnd === -1) continue;
+      const headers = part.slice(0, headerEnd).toString();
+      if (!headers.includes('filename=')) continue;
+      const nameMatch = headers.match(/filename="([^"]+)"/);
+      if (nameMatch) originalName = nameMatch[1];
+      const typeMatch = headers.match(/Content-Type:\s*(.+)/i);
+      if (typeMatch) mimeType = typeMatch[1].trim();
+      let body = part.slice(headerEnd + 4);
+      if (body[body.length - 2] === 13 && body[body.length - 1] === 10) {
+        body = body.slice(0, body.length - 2);
+      }
+      fileBuffer = body;
+      break;
+    }
+
+    if (!fileBuffer) {
+      return res.status(400).json({ success: false, message: 'No file found in upload' });
+    }
+
+    const ext = path.extname(originalName) || '.bin';
+    const safeName = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + ext;
+    const filePath = path.join(UPLOADS_DIR, safeName);
+    fs.writeFileSync(filePath, fileBuffer);
+
+    const fileUrl = '/uploads/' + safeName;
+    res.json({
+      success: true,
+      url: fileUrl,
+      name: originalName,
+      size: fileBuffer.length,
+      type: mimeType
+    });
+  });
+});
+
+app.get('/admin/api/uploads', (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false });
+  }
+  const files = fs.readdirSync(UPLOADS_DIR).map(name => {
+    const stat = fs.statSync(path.join(UPLOADS_DIR, name));
+    return { name, url: '/uploads/' + name, size: stat.size, date: stat.mtime.toISOString().split('T')[0] };
+  });
+  res.json({ success: true, files });
+});
+
 app.post('/admin/api/logout', express.json(), (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');

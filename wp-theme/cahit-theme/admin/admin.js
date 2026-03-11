@@ -184,7 +184,8 @@
       { key: 'hero-title-line3', label: 'Title Line 3', selector: '.hero-title', type: 'text', defaultVal: 'For Your Project', nodeIndex: 2 },
       { key: 'hero-subtitle', label: 'Subtitle', selector: '.hero-subtitle', type: 'textarea', defaultVal: 'Marine & Coastal Construction Experts' },
       { key: 'hero-btn1', label: 'Button 1 Text', selector: '.hero-buttons .btn-sky', type: 'text', defaultVal: 'Schedule Consultation' },
-      { key: 'hero-btn2', label: 'Button 2 Text', selector: '.hero-buttons .btn-outline-white', type: 'text', defaultVal: 'View Portfolio' }
+      { key: 'hero-btn2', label: 'Button 2 Text', selector: '.hero-buttons .btn-outline-white', type: 'text', defaultVal: 'View Portfolio' },
+      { key: 'hero-bg-video', label: 'Background Video', selector: '.hero-video-bg source', type: 'video', attr: 'src', defaultVal: '' }
     ],
     logos: [
       { key: 'logos-title', label: 'Section Title', selector: '.logos-section .section-title', type: 'text', defaultVal: 'Trusted by Leading Organizations' },
@@ -195,22 +196,27 @@
       { key: 'about-p1', label: 'Paragraph 1', selector: '.about-text p:nth-of-type(1)', type: 'textarea', defaultVal: '' },
       { key: 'about-p2', label: 'Paragraph 2', selector: '.about-text p:nth-of-type(2)', type: 'textarea', defaultVal: '' },
       { key: 'about-p3', label: 'Paragraph 3', selector: '.about-text p:nth-of-type(3)', type: 'textarea', defaultVal: '' },
-      { key: 'about-btn', label: 'Button Text', selector: '.about-text .btn-sky', type: 'text', defaultVal: 'Discover Our Company' }
+      { key: 'about-btn', label: 'Button Text', selector: '.about-text .btn-sky', type: 'text', defaultVal: 'Discover Our Company' },
+      { key: 'about-video', label: 'About Video', selector: '.about-video source', type: 'video', attr: 'src', defaultVal: '' }
     ],
     services: [
       { key: 'services-title', label: 'Section Title', selector: '#services-section .section-title', type: 'text', defaultVal: 'Our Services' },
-      { key: 'services-subtitle', label: 'Subtitle', selector: '#services-section .section-subtitle', type: 'textarea', defaultVal: 'Our diverse expertise allows us to support...' }
+      { key: 'services-subtitle', label: 'Subtitle', selector: '#services-section .section-subtitle', type: 'textarea', defaultVal: 'Our diverse expertise allows us to support...' },
+      { key: 'services-bg-video', label: 'Background Video', selector: '#services-section .section-video-bg source', type: 'video', attr: 'src', defaultVal: '' }
     ],
     marine: [
       { key: 'marine-title', label: 'Section Title', selector: '.marine-title', type: 'text', defaultVal: 'Specialists in Marine & Coastal Infrastructure' },
       { key: 'marine-subtitle', label: 'Subtitle', selector: '.marine-subtitle', type: 'textarea', defaultVal: 'Cahit Trading & Contracting LLC is recognized...' },
-      { key: 'marine-footer', label: 'Footer Text', selector: '.marine-footer-text', type: 'textarea', defaultVal: 'Through advanced engineering practices...' }
+      { key: 'marine-footer', label: 'Footer Text', selector: '.marine-footer-text', type: 'textarea', defaultVal: 'Through advanced engineering practices...' },
+      { key: 'marine-bg-video', label: 'Background Video', selector: '.marine-section .section-video-bg source', type: 'video', attr: 'src', defaultVal: '' }
     ],
     stats: [
       { key: 'stats-title', label: 'Section Title', selector: '#stats-section .section-title', type: 'text', defaultVal: 'Delivering Infrastructure Excellence' }
     ],
     projects: [
-      { key: 'projects-title', label: 'Section Title', selector: '#projects-section .section-title', type: 'text', defaultVal: 'Selected Projects' }
+      { key: 'projects-title', label: 'Section Title', selector: '#projects-section .section-title', type: 'text', defaultVal: 'Selected Projects' },
+      { key: 'projects-img1', label: 'Project Image 1', selector: '.project-card:nth-child(1) img', type: 'image', attr: 'src', defaultVal: '' },
+      { key: 'projects-img2', label: 'Project Image 2', selector: '.project-card:nth-child(2) img', type: 'image', attr: 'src', defaultVal: '' }
     ],
     leadership: [
       { key: 'leadership-title', label: 'Section Title', selector: '.leadership-section .section-title', type: 'text', defaultVal: 'Leadership' }
@@ -220,9 +226,11 @@
       { key: 'cta-subtitle', label: 'CTA Subtitle', selector: '.cta-subtitle', type: 'textarea', defaultVal: '' }
     ],
     header: [
+      { key: 'header-logo', label: 'Navigation Logo', selector: '.navbar-logo .logo-img', type: 'image', attr: 'src', defaultVal: '' },
       { key: 'header-brand', label: 'Brand Name', selector: '.nav-brand-text', type: 'text', defaultVal: 'CAHIT CONTRACTING' }
     ],
     footer: [
+      { key: 'footer-logo', label: 'Footer Logo', selector: '.footer-logo', type: 'image', attr: 'src', defaultVal: '' },
       { key: 'footer-desc', label: 'Company Description', selector: '.footer-desc', type: 'textarea', defaultVal: '' },
       { key: 'footer-tagline', label: 'Tagline', selector: '.footer-tagline', type: 'text', defaultVal: 'A Solid Ground For Your Project' }
     ]
@@ -271,7 +279,29 @@
     if (fields.length > 0) {
       fields.forEach(function(f) {
         var val = state.editedContent[f.key] || f.defaultVal;
-        if (f.type === 'textarea') {
+        if (f.type === 'image') {
+          var previewSrc = val || '';
+          fieldsHtml += '<div class="form-group"><label class="form-label">' + f.label + '</label>' +
+            '<div class="media-upload-field" data-testid="upload-' + f.key + '">' +
+              (previewSrc ? '<div class="upload-preview"><img src="' + previewSrc + '" class="upload-preview-img" /><button class="upload-remove-btn" data-key="' + f.key + '" data-selector="' + f.selector + '" title="Remove">&times;</button></div>' : '') +
+              '<div class="upload-drop-area" data-key="' + f.key + '" data-selector="' + f.selector + '" data-attr="' + (f.attr || 'src') + '" data-accept="image/*">' +
+                '<input type="file" class="upload-file-input" accept="image/*" data-key="' + f.key + '" data-selector="' + f.selector + '" data-attr="' + (f.attr || 'src') + '" data-testid="input-upload-' + f.key + '" />' +
+                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
+                '<span>Click to upload or drag image</span>' +
+              '</div>' +
+            '</div></div>';
+        } else if (f.type === 'video') {
+          var videoSrc = val || '';
+          fieldsHtml += '<div class="form-group"><label class="form-label">' + f.label + '</label>' +
+            '<div class="media-upload-field" data-testid="upload-' + f.key + '">' +
+              (videoSrc ? '<div class="upload-preview"><video src="' + videoSrc + '" class="upload-preview-video" muted></video><button class="upload-remove-btn" data-key="' + f.key + '" data-selector="' + f.selector + '" title="Remove">&times;</button></div>' : '') +
+              '<div class="upload-drop-area" data-key="' + f.key + '" data-selector="' + f.selector + '" data-attr="' + (f.attr || 'src') + '" data-accept="video/*">' +
+                '<input type="file" class="upload-file-input" accept="video/*" data-key="' + f.key + '" data-selector="' + f.selector + '" data-attr="' + (f.attr || 'src') + '" data-testid="input-upload-' + f.key + '" />' +
+                '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>' +
+                '<span>Click to upload or drag video</span>' +
+              '</div>' +
+            '</div></div>';
+        } else if (f.type === 'textarea') {
           fieldsHtml += '<div class="form-group"><label class="form-label">' + f.label + '</label>' +
             '<textarea class="form-textarea live-edit-field" data-key="' + f.key + '" data-selector="' + f.selector + '" data-testid="field-' + f.key + '">' + val + '</textarea></div>';
         } else {
@@ -412,6 +442,106 @@
         highlightPreviewSection(state.editingSection);
       });
     }
+
+    document.querySelectorAll('.upload-drop-area').forEach(function(area) {
+      area.addEventListener('click', function() {
+        var input = this.querySelector('.upload-file-input');
+        if (input) input.click();
+      });
+      area.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+      });
+      area.addEventListener('dragleave', function() {
+        this.classList.remove('drag-over');
+      });
+      area.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        var files = e.dataTransfer.files;
+        if (files.length > 0) {
+          uploadFile(files[0], this.getAttribute('data-key'), this.getAttribute('data-selector'), this.getAttribute('data-attr'));
+        }
+      });
+    });
+
+    document.querySelectorAll('.upload-file-input').forEach(function(input) {
+      input.addEventListener('click', function(e) { e.stopPropagation(); });
+      input.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+          uploadFile(this.files[0], this.getAttribute('data-key'), this.getAttribute('data-selector'), this.getAttribute('data-attr'));
+        }
+      });
+    });
+
+    document.querySelectorAll('.upload-remove-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var key = this.getAttribute('data-key');
+        state.editedContent[key] = '';
+        renderPage('content');
+        bindEditorActions();
+        showToast('Media removed', 'success');
+      });
+    });
+  }
+
+  function uploadFile(file, key, selector, attr) {
+    var token = localStorage.getItem('admin_token');
+    if (!token) { showToast('Not authenticated', 'error'); return; }
+
+    var maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) { showToast('File too large (max 50MB)', 'error'); return; }
+
+    var formData = new FormData();
+    formData.append('file', file);
+
+    var uploadArea = document.querySelector('[data-key="' + key + '"].upload-drop-area');
+    if (uploadArea) {
+      uploadArea.classList.add('uploading');
+      var span = uploadArea.querySelector('span');
+      if (span) span.textContent = 'Uploading...';
+    }
+
+    fetch('/admin/api/upload', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: formData
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.success) {
+        state.editedContent[key] = data.url;
+        updatePreviewAttr(selector, attr, data.url);
+        renderPage('content');
+        bindEditorActions();
+        showToast('Uploaded: ' + data.name, 'success');
+      } else {
+        showToast(data.message || 'Upload failed', 'error');
+      }
+    })
+    .catch(function() {
+      showToast('Upload failed', 'error');
+    });
+  }
+
+  function updatePreviewAttr(selector, attr, value) {
+    var iframe = document.getElementById('previewFrame');
+    if (!iframe || !iframe.contentDocument) return;
+    try {
+      var el = iframe.contentDocument.querySelector(selector);
+      if (el) {
+        el.setAttribute(attr, value);
+        if (el.tagName === 'SOURCE') {
+          var parent = el.parentElement;
+          if (parent && parent.tagName === 'VIDEO') {
+            parent.load();
+          }
+        }
+        el.style.outline = '2px solid #0ea5e9';
+        el.style.outlineOffset = '2px';
+        setTimeout(function() { el.style.outline = ''; el.style.outlineOffset = ''; }, 1200);
+      }
+    } catch(e) {}
   }
 
   function scrollPreviewToSection(sectionId) {
