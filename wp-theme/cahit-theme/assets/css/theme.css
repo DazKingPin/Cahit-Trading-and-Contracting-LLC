@@ -2105,6 +2105,7 @@ html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
 html[dir="rtl"] .service-card-link svg { transform: scaleX(-1); }
 html[dir="rtl"] .stats-row-inline { justify-content: flex-end; }
 html[dir="rtl"] .stats-row-inline .stat-item { text-align: right; }
+html[dir="rtl"] .grid.grid-2 { direction: rtl; }
 html[dir="rtl"] .hero-banner-content { text-align: right; }
 html[dir="rtl"] .hero-banner-title,
 html[dir="rtl"] .hero-banner-title-lg { text-align: right; }

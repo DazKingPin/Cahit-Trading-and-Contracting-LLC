@@ -98,7 +98,7 @@
     <div class="grid grid-2 gap-8 max-w-5xl mx-auto">
       <div class="leader-card" data-testid="card-leader-tahir">
         <div class="leader-video-container" data-hover-video="tahir">
-          <video class="leader-video" loop muted>
+          <video class="leader-video" loop muted data-video-key="tahir">
             <source src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/videos/tahir.mp4" type="video/mp4" />
           </video>
           <div class="leader-video-overlay">
@@ -130,7 +130,7 @@
 
       <div class="leader-card" data-testid="card-leader-pasha">
         <div class="leader-video-container" data-hover-video="pasha">
-          <video class="leader-video" loop muted>
+          <video class="leader-video" loop muted data-video-key="pasha">
             <source src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/videos/pasha.mp4" type="video/mp4" />
           </video>
           <div class="leader-video-overlay">

@@ -509,7 +509,7 @@
   };
 
   function swapLeadershipVideos(toArabic) {
-    var videos = document.querySelectorAll(".leadership-section video[data-video-key]");
+    var videos = document.querySelectorAll("video[data-video-key]");
     videos.forEach(function (video) {
       var key = video.getAttribute("data-video-key");
       if (!key || !arVideoMap[key]) return;
