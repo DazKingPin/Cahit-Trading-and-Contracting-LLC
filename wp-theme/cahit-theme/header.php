@@ -24,7 +24,7 @@
       <a href="<?php echo esc_url(home_url('/projects')); ?>" class="nav-link<?php if (is_page('projects')) echo ' active'; ?>">Projects</a>
       <a href="<?php echo esc_url(home_url('/clients')); ?>" class="nav-link<?php if (is_page('clients')) echo ' active'; ?>">Clients</a>
       <a href="<?php echo esc_url(home_url('/blog')); ?>" class="nav-link<?php if (is_page('blog') || is_home()) echo ' active'; ?>">Blog</a>
-      <a href="<?php echo esc_url(home_url('/careers')); ?>" class="nav-link<?php if (is_page('careers')) echo ' active'; ?>">Careers</a>
+      <a href="<?php echo esc_url(home_url('/careers')); ?>" class="nav-link nav-link-careers<?php if (is_page('careers')) echo ' active'; ?>">Careers</a>
       <button class="nav-link nav-link-button" id="contact-nav-btn" onclick="openContactPopup()">Contact</button>
     </div>
     <div class="navbar-actions">
@@ -47,7 +47,7 @@
     <a href="<?php echo esc_url(home_url('/projects')); ?>" class="mobile-nav-link<?php if (is_page('projects')) echo ' active'; ?>">Projects</a>
     <a href="<?php echo esc_url(home_url('/clients')); ?>" class="mobile-nav-link<?php if (is_page('clients')) echo ' active'; ?>">Clients</a>
     <a href="<?php echo esc_url(home_url('/blog')); ?>" class="mobile-nav-link<?php if (is_page('blog') || is_home()) echo ' active'; ?>">Blog</a>
-    <a href="<?php echo esc_url(home_url('/careers')); ?>" class="mobile-nav-link<?php if (is_page('careers')) echo ' active'; ?>">Careers</a>
+    <a href="<?php echo esc_url(home_url('/careers')); ?>" class="mobile-nav-link nav-link-careers<?php if (is_page('careers')) echo ' active'; ?>">Careers</a>
     <button class="mobile-nav-link mobile-nav-link-button" onclick="openContactPopup(); toggleMobileMenu();">Contact</button>
   </div>
 </nav>
