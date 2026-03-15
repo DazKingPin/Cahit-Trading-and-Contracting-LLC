@@ -524,10 +524,12 @@
         }
         source.setAttribute("src", arVideoMap[key]);
         video.load();
+        video.play().catch(function () {});
       } else if (source._enOriginalSrc) {
         source.setAttribute("src", source._enOriginalSrc);
         delete source._enOriginalSrc;
         video.load();
+        video.play().catch(function () {});
       }
     });
   }
