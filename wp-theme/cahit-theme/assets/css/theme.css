@@ -2052,11 +2052,14 @@ footer.site-footer {
 html.is-rtl {
   direction: ltr;
   overflow-x: hidden;
+  overflow-y: scroll;
 }
 html.is-rtl body {
   direction: rtl;
   text-align: right;
   font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 html.is-rtl .navbar-inner {
   flex-direction: row-reverse;
