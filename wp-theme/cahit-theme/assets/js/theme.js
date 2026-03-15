@@ -464,12 +464,14 @@
 
     if (lang === "ar") {
       document.documentElement.classList.add("is-rtl");
+      document.documentElement.removeAttribute("dir");
       document.documentElement.setAttribute("lang", "ar");
       enBtn.classList.remove("lang-btn-active");
       arBtn.classList.add("lang-btn-active");
       translateToArabic();
     } else {
       document.documentElement.classList.remove("is-rtl");
+      document.documentElement.removeAttribute("dir");
       document.documentElement.setAttribute("lang", "en");
       arBtn.classList.remove("lang-btn-active");
       enBtn.classList.add("lang-btn-active");
