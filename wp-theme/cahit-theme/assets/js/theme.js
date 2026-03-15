@@ -506,7 +506,6 @@
   }
 
   var arVideoMap = {
-    "hero": "/wp-content/themes/cahit-theme/assets/videos/hero-ar.mp4",
     "tahir": "/wp-content/themes/cahit-theme/assets/videos/tahir-ar.mp4",
     "pasha": "/wp-content/themes/cahit-theme/assets/videos/pasha-ar.mp4"
   };
