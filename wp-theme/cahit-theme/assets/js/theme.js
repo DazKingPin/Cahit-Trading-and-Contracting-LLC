@@ -505,10 +505,18 @@
     }
   }
 
+  var themeBase = (function() {
+    var s = document.querySelector('script[src*="theme.js"]');
+    if (s) {
+      var src = s.getAttribute('src');
+      return src.replace(/\/js\/theme\.js.*$/, '/videos/');
+    }
+    return '/assets/videos/';
+  })();
   var arVideoMap = {
-    "about": "/wp-content/themes/cahit-theme/assets/videos/about-ar.mp4",
-    "tahir": "/wp-content/themes/cahit-theme/assets/videos/tahir-ar.mp4",
-    "pasha": "/wp-content/themes/cahit-theme/assets/videos/pasha-ar.mp4"
+    "about": themeBase + "about-ar.mp4",
+    "tahir": themeBase + "tahir-ar.mp4",
+    "pasha": themeBase + "pasha-ar.mp4"
   };
 
   function swapLeadershipVideos(toArabic) {
@@ -519,17 +527,23 @@
       var source = video.querySelector("source");
       if (!source) return;
       if (toArabic) {
-        if (!source._enOriginalSrc) {
-          source._enOriginalSrc = source.getAttribute("src");
+        if (!video._enOriginalSrc) {
+          video._enOriginalSrc = source.getAttribute("src");
         }
         source.setAttribute("src", arVideoMap[key]);
+        video.removeAttribute("src");
         video.load();
-        video.play().catch(function () {});
-      } else if (source._enOriginalSrc) {
-        source.setAttribute("src", source._enOriginalSrc);
-        delete source._enOriginalSrc;
+        video.oncanplay = function () {
+          video.play().catch(function () {});
+        };
+      } else if (video._enOriginalSrc) {
+        source.setAttribute("src", video._enOriginalSrc);
+        video.removeAttribute("src");
+        delete video._enOriginalSrc;
         video.load();
-        video.play().catch(function () {});
+        video.oncanplay = function () {
+          video.play().catch(function () {});
+        };
       }
     });
   }

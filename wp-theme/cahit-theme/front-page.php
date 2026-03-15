@@ -100,7 +100,7 @@
   <div class="container">
     <div class="about-grid">
       <div class="about-media">
-        <video class="about-video" autoplay loop muted playsinline data-video-key="about">
+        <video class="about-video" autoplay loop muted playsinline preload="auto" data-video-key="about">
           <source src="<?php echo $base_url; ?>AtcBFtPQatxcgPuw.mp4" type="video/mp4" />
         </video>
         <div class="rolling-images" data-testid="about-rolling-images">
