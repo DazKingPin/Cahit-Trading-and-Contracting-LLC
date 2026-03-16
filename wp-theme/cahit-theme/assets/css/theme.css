@@ -1180,11 +1180,14 @@ h1, h2, h3, h4, h5, h6 {
 .cta-subtitle {
   font-size: 1rem;
   color: rgba(255,255,255,0.85);
-  margin-bottom: 2rem;
+  margin-bottom: 0.25rem;
   max-width: 42rem;
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
+}
+.cta-subtitle-line2 {
+  margin-bottom: 2rem;
 }
 
 /* ==================== MISSION / VISION (About) ==================== */
@@ -2128,8 +2131,8 @@ html.is-rtl .leader-info { text-align: right; }
 html.is-rtl .leader-details { text-align: right; }
 html.is-rtl .commitment-card { text-align: right; }
 html.is-rtl .cta-title,
-html.is-rtl .cta-subtitle { text-align: right; }
-html.is-rtl .cta-section .text-center { text-align: right; }
+html.is-rtl .cta-subtitle { text-align: center; }
+html.is-rtl .cta-section .text-center { text-align: center; }
 html.is-rtl .cta-section .btn { margin-right: 0; }
 html.is-rtl .mission-vision-card { text-align: right; }
 html.is-rtl .card-title { text-align: right; }

@@ -395,9 +395,8 @@
 <section class="cta-section" data-testid="section-cta">
   <div class="container text-center">
     <h2 class="cta-title" data-testid="text-cta-title">Let's Build Your Next Project</h2>
-    <p class="cta-subtitle">
-      Whether planning marine infrastructure, coastal protection, or large-scale civil works, our team is ready to support your project with reliable expertise and professional execution.
-    </p>
+    <p class="cta-subtitle" data-testid="text-cta-subtitle">Whether planning marine infrastructure, coastal protection, or large-scale civil works,</p>
+    <p class="cta-subtitle cta-subtitle-line2" data-testid="text-cta-subtitle-2">our team is ready to support your project with reliable expertise and professional execution.</p>
     <button class="btn btn-white-sky btn-lg" data-testid="button-cta-contact" onclick="document.getElementById('contact-popup') && (document.getElementById('contact-popup').style.display='flex')">
       Contact Our Team
       <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
