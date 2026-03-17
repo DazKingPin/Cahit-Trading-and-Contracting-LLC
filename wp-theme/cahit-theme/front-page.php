@@ -410,9 +410,8 @@
     <div class="funnel-step-badge">Step 1 of 3</div>
     <button class="funnel-close" onclick="closeFunnel(1)" aria-label="Close">&times;</button>
   </div>
-  <h3 class="funnel-title">Let's Understand Your Needs</h3>
+  <h3 class="funnel-title" data-ar="ما نوع المشروع الذي تخطط له؟">What type of project are you planning?</h3>
   <div class="funnel-field">
-    <label class="funnel-label">Project Type</label>
     <div class="funnel-options" id="funnel-project-type">
       <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-marine">Marine Construction</button>
       <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-coastal">Coastal Protection</button>
@@ -430,7 +429,7 @@
     <div class="funnel-step-badge">Step 2 of 3</div>
     <button class="funnel-close" onclick="closeFunnel(2)" aria-label="Close">&times;</button>
   </div>
-  <h3 class="funnel-title">Primary Goal</h3>
+  <h3 class="funnel-title" data-ar="ما هو الهدف الرئيسي لمشروعك؟">What is the primary goal of your project?</h3>
   <div class="funnel-field">
     <div class="funnel-options" id="funnel-primary-goal">
       <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Strengthen coastal protection</button>
