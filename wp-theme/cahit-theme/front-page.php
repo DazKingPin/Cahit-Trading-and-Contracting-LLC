@@ -410,19 +410,20 @@
     <div class="funnel-step-badge">Step 1 of 3</div>
     <button class="funnel-close" onclick="closeFunnel(1)" aria-label="Close">&times;</button>
   </div>
-  <h3 class="funnel-title" data-translate="funnel_step1_title">Let's Understand Your Needs</h3>
+  <h3 class="funnel-title">Let's Understand Your Needs</h3>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_project_type">Project Type</label>
+    <label class="funnel-label">Project Type</label>
     <div class="funnel-options" id="funnel-project-type">
       <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-marine">Marine Construction</button>
       <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-coastal">Coastal Protection</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-seaport">Seaport Infrastructure</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-earthworks">Earthworks</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-mep">MEP Works</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-seaport" data-ar="بنية تحتية للميناء">Seaport Infrastructure</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-earthworks" data-ar="أعمال حفر">Earthworks</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-project-type', this)" data-testid="funnel-opt-mep" data-ar="أعمال ميكانيكا وكهرباء وسباكة">MEP Works</button>
     </div>
+    <p class="funnel-helper">This helps us direct you to the right service.</p>
   </div>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_primary_goal">Primary Goal</label>
+    <label class="funnel-label">Primary Goal</label>
     <div class="funnel-options" id="funnel-primary-goal">
       <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Strengthen coastal protection</button>
       <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Expand port capacity</button>

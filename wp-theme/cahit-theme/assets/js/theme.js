@@ -416,6 +416,20 @@
     "Earthworks": "\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u062D\u0641\u0631 \u0648\u0627\u0644\u0631\u062F\u0645",
     "Dewatering & Shoring": "\u0646\u0632\u062D \u0627\u0644\u0645\u064A\u0627\u0647 \u0648\u0627\u0644\u062A\u062F\u0639\u064A\u0645",
     "MEP Works": "\u0623\u0639\u0645\u0627\u0644 \u0627\u0644\u0643\u0647\u0631\u0628\u0627\u0621 \u0648\u0627\u0644\u0645\u064A\u0643\u0627\u0646\u064A\u0643\u0627",
+    "Step 1 of 3": "الخطوة 1 من 3",
+    "Step 2 of 3": "الخطوة 2 من 3",
+    "Step 3 of 3": "الخطوة 3 من 3",
+    "Let's Understand Your Needs": "ما نوع المشروع الذي تخطط له؟",
+    "Project Type": "نوع المشروع",
+    "Marine Construction": "بناء بحري",
+    "Coastal Protection": "حماية ساحلية",
+    "This helps us direct you to the right service.": "هذا يساعدنا في توجيهك إلى الخدمة المناسبة.",
+    "Primary Goal": "ما هو الهدف الرئيسي لمشروعك؟",
+    "Strengthen coastal protection": "تعزيز حماية السواحل",
+    "Expand port capacity": "توسيع سعة الميناء",
+    "Infrastructure development": "تطوير البنية التحتية",
+    "Other": "أخرى",
+    "Continue": "متابعة",
     "Cahit Assistant": "\u0645\u0633\u0627\u0639\u062F \u062C\u0627\u0647\u062A",
     "Ask us anything": "\u0627\u0633\u0623\u0644\u0646\u0627 \u0623\u064A \u0634\u064A\u0621",
     "Managing Director": "المدير العام",
@@ -492,6 +506,12 @@
 
   function translateTextNode(node) {
     if (node.nodeType === 3) {
+      var parent = node.parentNode;
+      if (parent && parent.nodeType === 1 && parent.getAttribute("data-ar")) {
+        node._enOriginal = node.textContent;
+        node.textContent = parent.getAttribute("data-ar");
+        return;
+      }
       var text = node.textContent.trim();
       if (text && arTranslations[text]) {
         node._enOriginal = node.textContent;
@@ -570,6 +590,7 @@
       ".btn, .card-title, .modal-title, .quote-modal-title, .contact-label, " +
       ".chatbot-header-title, .chatbot-header-subtitle, " +
       ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
+      ".funnel-title, .funnel-label, .funnel-option, .funnel-helper, .funnel-step-badge, .funnel-submit, " +
       "h1, h2, h3, p, label"
     );
     els.forEach(function (el) {
