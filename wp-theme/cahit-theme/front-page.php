@@ -422,15 +422,6 @@
     </div>
     <p class="funnel-helper">This helps us direct you to the right service.</p>
   </div>
-  <div class="funnel-field">
-    <label class="funnel-label">Primary Goal</label>
-    <div class="funnel-options" id="funnel-primary-goal">
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Strengthen coastal protection</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Expand port capacity</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Infrastructure development</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Other</button>
-    </div>
-  </div>
   <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(1)" data-testid="funnel-submit-1">Continue</button>
 </div>
 
@@ -439,28 +430,14 @@
     <div class="funnel-step-badge">Step 2 of 3</div>
     <button class="funnel-close" onclick="closeFunnel(2)" aria-label="Close">&times;</button>
   </div>
-  <h3 class="funnel-title" data-translate="funnel_step2_title">Tell Us About Your Scope</h3>
+  <h3 class="funnel-title">Primary Goal</h3>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_timeline">Project Timeline</label>
-    <div class="funnel-options" id="funnel-timeline">
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-immediate">Immediate (&lt; 3 months)</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-short">Short-term (3-6 months)</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-medium">Medium-term (6-12 months)</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-timeline', this)" data-testid="funnel-opt-long">Long-term (12+ months)</button>
+    <div class="funnel-options" id="funnel-primary-goal">
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Strengthen coastal protection</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Expand port capacity</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Infrastructure development</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Other</button>
     </div>
-  </div>
-  <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_budget">Budget Range</label>
-    <div class="funnel-options" id="funnel-budget">
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">Under $500K</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">$500K - $2M</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">$2M - $10M</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-budget', this)">$10M+</button>
-    </div>
-  </div>
-  <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_location">Project Location</label>
-    <input type="text" class="funnel-input" id="funnel-location" placeholder="e.g. Muscat, Oman" data-testid="funnel-input-location" />
   </div>
   <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(2)" data-testid="funnel-submit-2">Continue</button>
 </div>

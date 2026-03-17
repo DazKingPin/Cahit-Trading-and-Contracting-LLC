@@ -687,9 +687,8 @@
   window.submitFunnelStep = function (step) {
     if (step === 1) {
       var projectType = funnelData["funnel-project-type"];
-      var goal = funnelData["funnel-primary-goal"];
-      if (!projectType || !goal) {
-        alert("Please select both a project type and primary goal.");
+      if (!projectType) {
+        alert("Please select a project type.");
         return;
       }
       funnelGlobalStep = 1;
@@ -700,14 +699,11 @@
         setTimeout(function () { showFunnelStep(2); }, 800);
       }
     } else if (step === 2) {
-      var timeline = funnelData["funnel-timeline"];
-      var budget = funnelData["funnel-budget"];
-      var location = document.getElementById("funnel-location");
-      if (!timeline || !budget) {
-        alert("Please select timeline and budget range.");
+      var goal = funnelData["funnel-primary-goal"];
+      if (!goal) {
+        alert("Please select a primary goal.");
         return;
       }
-      if (location) funnelData["location"] = location.value;
       funnelGlobalStep = 2;
       showFunnelStep(0);
       var projectsSection = document.getElementById("projects-section");
@@ -733,9 +729,6 @@
       var scope = [
         "Type: " + (funnelData["funnel-project-type"] || ""),
         "Goal: " + (funnelData["funnel-primary-goal"] || ""),
-        "Timeline: " + (funnelData["funnel-timeline"] || ""),
-        "Budget: " + (funnelData["funnel-budget"] || ""),
-        "Location: " + (funnelData["location"] || ""),
         "Role: " + funnelData["role"],
         "Decision Maker: " + funnelData["decision"],
         "Preferred Time: " + funnelData["time"]
