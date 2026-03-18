@@ -1361,6 +1361,36 @@ footer.site-footer {
   margin-top: 0.25rem;
 }
 
+.sectors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+.sector-card {
+  background: #fff;
+  border-radius: 0.75rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: box-shadow 200ms;
+}
+.sector-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.sector-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+.sector-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #334155;
+}
+@media (max-width: 767px) {
+  .sectors-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+}
+
 .footer-cta-strip {
   background: #0ea5e9;
   text-align: center;

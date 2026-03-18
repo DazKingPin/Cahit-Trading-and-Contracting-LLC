@@ -66,13 +66,34 @@
   </div>
 </section>
 
-<section class="cta-section" data-testid="section-clients-cta">
-  <div class="container text-center">
-    <h2 class="cta-title">Become Our Next Partner</h2>
-    <p class="cta-subtitle">Join the growing list of organizations that trust Cahit Trading &amp; Contracting for their infrastructure needs.</p>
-    <div class="cta-buttons">
-      <button class="btn btn-white" onclick="openContactPopup()">Contact Us</button>
-      <button class="btn btn-outline-white" onclick="openQuoteModal()">Get Quote</button>
+<section class="section bg-slate-50" data-testid="section-sectors">
+  <div class="container">
+    <h2 class="section-title text-center">Sectors We Serve</h2>
+    <div class="sectors-grid">
+      <div class="sector-card" data-testid="sector-marine">
+        <div class="sector-icon">⚓</div>
+        <p class="sector-name">Marine &amp; Ports</p>
+      </div>
+      <div class="sector-card" data-testid="sector-infra">
+        <div class="sector-icon">🏗️</div>
+        <p class="sector-name">Infrastructure &amp; Transport</p>
+      </div>
+      <div class="sector-card" data-testid="sector-gov">
+        <div class="sector-icon">🏛️</div>
+        <p class="sector-name">Government &amp; Public Sector</p>
+      </div>
+      <div class="sector-card" data-testid="sector-energy">
+        <div class="sector-icon">⚡</div>
+        <p class="sector-name">Energy &amp; Utilities</p>
+      </div>
+      <div class="sector-card" data-testid="sector-commercial">
+        <div class="sector-icon">🏢</div>
+        <p class="sector-name">Commercial &amp; Residential</p>
+      </div>
+      <div class="sector-card" data-testid="sector-health">
+        <div class="sector-icon">🏥</div>
+        <p class="sector-name">Healthcare</p>
+      </div>
     </div>
   </div>
 </section>

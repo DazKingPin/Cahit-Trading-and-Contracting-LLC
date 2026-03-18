@@ -477,6 +477,17 @@
     "Salalah, Oman": "صلالة، عُمان",
     "Oman": "عُمان",
     "Our Projects": "مشاريعنا",
+    "Our Clients": "عملاؤنا",
+    "Trusted by leading organizations across the Sultanate of Oman and the wider Gulf region.": "تتعاون شركة كاهيت للتجارة والمقاولات ذ.م.م مع الجهات الحكومية والمطورين والمؤسسات الصناعية لتنفيذ مشاريع البنية التحتية والبناء البحري المعقدة في جميع أنحاء عُمان.",
+    "Trusted by Leading Organizations": "موثوق من قبل المؤسسات الرائدة",
+    "We are proud to work with some of the most respected organizations in the region.": "تتعاون شركة كاهيت للتجارة والمقاولات ذ.م.م مع الجهات الحكومية والمطورين والمؤسسات الصناعية لتنفيذ مشاريع البنية التحتية والبناء البحري المعقدة في جميع أنحاء عُمان.",
+    "Sectors We Serve": "القطاعات التي نخدمها",
+    "Marine & Ports": "البحري والموانئ",
+    "Infrastructure & Transport": "البنية التحتية والنقل",
+    "Government & Public Sector": "الحكومة والقطاع العام",
+    "Energy & Utilities": "الطاقة والمرافق",
+    "Commercial & Residential": "التجاري والسكني",
+    "Healthcare": "الرعاية الصحية",
     "Delivering excellence across marine, infrastructure, and industrial projects throughout Oman.": "تقديم التميز عبر المشاريع البحرية والبنية التحتية والصناعية في جميع أنحاء عُمان.",
     "About Cahit Trading & Contracting": "عن شركة كاهيت للتجارة والمقاولات",
     "Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.": "تتعاون شركة كاهيت للتجارة والمقاولات ذ.م.م مع الجهات الحكومية والمطورين والمؤسسات الصناعية لتنفيذ مشاريع البنية التحتية والبناء البحري المعقدة في جميع أنحاء عُمان.",
@@ -614,6 +625,7 @@
       ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
       ".funnel-title, .funnel-label, .funnel-option, .funnel-helper, .funnel-step-badge, .funnel-submit, " +
       ".project-category-badge, .project-card-title, .project-card-location, .project-card-desc, " +
+      ".sector-name, .client-logo-name, " +
       "h1, h2, h3, p, label"
     );
     els.forEach(function (el) {
