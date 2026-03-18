@@ -56,6 +56,12 @@
       </div>
     </div>
 
+    <div class="footer-cta-strip" data-testid="footer-cta-strip">
+      <h3 class="footer-cta-title">لنبنِ مشروعك القادم</h3>
+      <p class="footer-cta-desc">سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.</p>
+      <button onclick="openContactPopup();" class="footer-cta-btn" data-testid="footer-cta-contact">تواصل مع فريقنا</button>
+    </div>
+
     <div class="footer-bottom">
       <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo defined('ABSPATH') ? esc_html(get_theme_mod('cahit_company_name', 'Cahit Trading & Contracting LLC')) : 'Cahit Trading & Contracting LLC'; ?>. <?php echo defined('ABSPATH') ? esc_html__('All Rights Reserved.', 'cahit-theme') : 'All Rights Reserved.'; ?></p>
       <p class="footer-tagline"><?php echo defined('ABSPATH') ? esc_html(get_theme_mod('cahit_tagline', 'A Solid Ground For Your Project')) : 'A Solid Ground For Your Project'; ?></p>

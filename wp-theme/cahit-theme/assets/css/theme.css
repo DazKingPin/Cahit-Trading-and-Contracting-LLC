@@ -1361,6 +1361,48 @@ footer.site-footer {
   margin-top: 0.25rem;
 }
 
+.footer-cta-strip {
+  background: #0ea5e9;
+  text-align: center;
+  padding: 2.5rem 2rem;
+  border-radius: 0.75rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  direction: rtl;
+}
+.footer-cta-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+.footer-cta-desc {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.9);
+  max-width: 42rem;
+  margin: 0 auto 1.25rem;
+  line-height: 1.8;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+.footer-cta-btn {
+  display: inline-block;
+  background: #fff;
+  color: #0ea5e9;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+  transition: background 150ms, transform 150ms;
+}
+.footer-cta-btn:hover {
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
 .footer-bottom {
   border-top: 1px solid #334155;
   padding-top: 2rem;
