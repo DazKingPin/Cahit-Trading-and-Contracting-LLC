@@ -437,7 +437,6 @@
       <button class="funnel-option" onclick="selectFunnelOption('funnel-primary-goal', this)">Other</button>
     </div>
   </div>
-  <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(2)" data-testid="funnel-submit-2">Continue</button>
 </div>
 
 <div class="funnel-panel" id="funnel-step-3" data-testid="funnel-step-3" style="display:none;">

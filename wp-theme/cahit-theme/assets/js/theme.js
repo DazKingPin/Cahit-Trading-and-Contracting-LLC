@@ -677,6 +677,8 @@
     clearTimeout(funnelInactivityTimer);
     if (groupId === "funnel-project-type") {
       setTimeout(function () { submitFunnelStep(1); }, 400);
+    } else if (groupId === "funnel-primary-goal") {
+      setTimeout(function () { submitFunnelStep(2); }, 400);
     }
   };
 
