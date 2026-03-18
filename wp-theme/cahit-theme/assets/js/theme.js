@@ -461,6 +461,23 @@
     "Meet the professionals behind Cahit Trading & Contracting.": "تعرف على المحترفين وراء شركة كاهيت للتجارة والمقاولات.",
     "Hover to Watch": "مرر للمشاهدة",
     "Explore All Projects": "استكشاف جميع المشاريع",
+    "Marine": "بحري",
+    "Coastal": "بنية تحتية",
+    "Infrastructure": "بنية تحتية",
+    "Road Infrastructure Development": "تطوير البنية التحتية للطرق",
+    "Road construction and infrastructure development": "بناء الطرق وتطوير البنية التحتية",
+    "Asphalt Paving Works": "أعمال رصف الأسفلت",
+    "Asphalt paving with modern equipment": "رصف الأسفلت بمعدات حديثة",
+    "Underground Pipe Installation": "تركيب الأنابيب تحت الأرض",
+    "Water and sewage pipe installation": "تركيب أنابيب المياه والصرف الصحي",
+    "Concrete Formwork": "أعمال القوالب الخرسانية",
+    "Concrete formwork and reinforcement works": "أعمال القوالب الخرسانية والتسليح",
+    "Quay wall construction and breakwater installation": "بناء الأرصفة البحرية وحواجز الأمواج",
+    "Rock armour installation and coastal defense": "تركيب الصخور الدفاعية وحماية السواحل",
+    "Salalah, Oman": "صلالة، عُمان",
+    "Oman": "عُمان",
+    "Our Projects": "مشاريعنا",
+    "Delivering excellence across marine, infrastructure, and industrial projects throughout Oman.": "تقديم التميز عبر المشاريع البحرية والبنية التحتية والصناعية في جميع أنحاء عُمان.",
     "About Cahit Trading & Contracting": "عن شركة كاهيت للتجارة والمقاولات",
     "Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.": "تتعاون شركة كاهيت للتجارة والمقاولات ذ.م.م مع الجهات الحكومية والمطورين والمؤسسات الصناعية لتنفيذ مشاريع البنية التحتية والبناء البحري المعقدة في جميع أنحاء عُمان.",
     "Company Overview": "نظرة عامة على الشركة",
@@ -596,6 +613,7 @@
       ".chatbot-header-title, .chatbot-header-subtitle, " +
       ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
       ".funnel-title, .funnel-label, .funnel-option, .funnel-helper, .funnel-step-badge, .funnel-submit, " +
+      ".project-category-badge, .project-card-title, .project-card-location, .project-card-desc, " +
       "h1, h2, h3, p, label"
     );
     els.forEach(function (el) {
