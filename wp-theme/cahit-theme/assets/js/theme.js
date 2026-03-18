@@ -562,12 +562,16 @@
     var navbarInner = document.querySelector(".navbar-inner");
     if (!navbarInner) return;
     var logo = navbarInner.querySelector(".navbar-logo");
+    var navLinks = navbarInner.querySelector(".nav-links");
     var actions = navbarInner.querySelector(".navbar-actions");
-    if (!logo || !actions) return;
+    if (!logo || !actions || !navLinks) return;
     if (isRtl) {
       navbarInner.insertBefore(actions, navbarInner.firstChild);
+      navbarInner.insertBefore(navLinks, logo);
+      navbarInner.appendChild(logo);
     } else {
       navbarInner.insertBefore(logo, navbarInner.firstChild);
+      navbarInner.insertBefore(navLinks, actions);
       navbarInner.appendChild(actions);
     }
   };
