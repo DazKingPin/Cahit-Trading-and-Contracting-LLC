@@ -1,3 +1,11 @@
+<div class="footer-cta-strip" data-testid="footer-cta-strip">
+  <div class="container">
+    <h3 class="footer-cta-title">لنبنِ مشروعك القادم</h3>
+    <p class="footer-cta-desc">سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.</p>
+    <button onclick="openContactPopup();" class="footer-cta-btn" data-testid="footer-cta-contact">تواصل مع فريقنا</button>
+  </div>
+</div>
+
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
@@ -54,12 +62,6 @@
         <a href="<?php echo defined('ABSPATH') ? esc_url(wp_login_url(home_url('/admin'))) : '/admin/login'; ?>" class="footer-admin-link" data-testid="link-admin-login">
           <svg style="display:inline-block;vertical-align:middle;margin-right:6px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="footer-admin-text"><?php echo defined('ABSPATH') ? esc_html__('Admin Login', 'cahit-theme') : 'Admin Login'; ?></span></a>
       </div>
-    </div>
-
-    <div class="footer-cta-strip" data-testid="footer-cta-strip">
-      <h3 class="footer-cta-title">لنبنِ مشروعك القادم</h3>
-      <p class="footer-cta-desc">سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.</p>
-      <button onclick="openContactPopup();" class="footer-cta-btn" data-testid="footer-cta-contact">تواصل مع فريقنا</button>
     </div>
 
     <div class="footer-bottom">
