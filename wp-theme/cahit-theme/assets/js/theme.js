@@ -546,7 +546,6 @@
     var actions = navbarInner.querySelector(".navbar-actions");
     if (!logo || !actions) return;
     if (isRtl) {
-      navbarInner.appendChild(logo);
       navbarInner.insertBefore(actions, navbarInner.firstChild);
     } else {
       navbarInner.insertBefore(logo, navbarInner.firstChild);

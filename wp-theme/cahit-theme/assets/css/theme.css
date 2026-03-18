@@ -2256,15 +2256,6 @@ html.is-rtl body {
   overflow-y: auto;
   overflow-x: hidden;
 }
-html.is-rtl .navbar-logo {
-  order: 3 !important;
-}
-html.is-rtl .nav-links {
-  order: 2 !important;
-}
-html.is-rtl .navbar-actions {
-  order: 1 !important;
-}
 html.is-rtl .nav-link-button {
   background: none;
   border: none;
