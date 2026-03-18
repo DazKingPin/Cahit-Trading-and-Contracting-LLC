@@ -501,6 +501,12 @@
     "Interested in Joining Our Team?": "هل ترغب في الانضمام إلى فريقنا؟",
     "Send your CV to our email and our HR team will review your application.": "أرسل سيرتك الذاتية إلى بريدنا الإلكتروني وسيقوم فريق الموارد البشرية بمراجعة طلبك.",
     "Send Your CV": "أرسل سيرتك الذاتية",
+    "Contact Us": "اتصل بنا",
+    "Call Us": "اتصل بنا",
+    "Email Us": "راسلنا",
+    "WhatsApp": "واتساب",
+    "Head Office": "المكتب الرئيسي",
+    "Address": "المكتب الرئيسي",
     "Delivering excellence across marine, infrastructure, and industrial projects throughout Oman.": "تقديم التميز عبر المشاريع البحرية والبنية التحتية والصناعية في جميع أنحاء عُمان.",
     "About Cahit Trading & Contracting": "عن شركة كاهيت للتجارة والمقاولات",
     "Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.": "تتعاون شركة كاهيت للتجارة والمقاولات ذ.م.م مع الجهات الحكومية والمطورين والمؤسسات الصناعية لتنفيذ مشاريع البنية التحتية والبناء البحري المعقدة في جميع أنحاء عُمان.",
@@ -654,12 +660,19 @@
       ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
       ".funnel-title, .funnel-label, .funnel-option, .funnel-helper, .funnel-step-badge, .funnel-submit, " +
       ".project-category-badge, .project-card-title, .project-card-location, .project-card-desc, " +
-      ".sector-name, .client-logo-name, " +
+      ".sector-name, .client-logo-name, .contact-label, " +
       "h1, h2, h3, p, label"
     );
     els.forEach(function (el) {
       el.setAttribute("data-translated", "true");
       translateTextNode(el);
+    });
+    document.querySelectorAll("[data-ar-html]").forEach(function (el) {
+      if (!el.getAttribute("data-en-html")) {
+        el.setAttribute("data-en-html", el.innerHTML);
+      }
+      el.innerHTML = el.getAttribute("data-ar-html");
+      el.setAttribute("data-translated", "true");
     });
     swapLeadershipVideos(true);
   }
@@ -667,7 +680,12 @@
   function restoreEnglish() {
     var translated = document.querySelectorAll("[data-translated]");
     translated.forEach(function (el) {
-      restoreTextNode(el);
+      if (el.getAttribute("data-en-html")) {
+        el.innerHTML = el.getAttribute("data-en-html");
+        el.removeAttribute("data-en-html");
+      } else {
+        restoreTextNode(el);
+      }
       el.removeAttribute("data-translated");
     });
     swapLeadershipVideos(false);
