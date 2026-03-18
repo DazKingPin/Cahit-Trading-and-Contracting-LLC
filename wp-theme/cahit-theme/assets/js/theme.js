@@ -488,6 +488,19 @@
     "Energy & Utilities": "الطاقة والمرافق",
     "Commercial & Residential": "التجاري والسكني",
     "Healthcare": "الرعاية الصحية",
+    "Careers": "انضم إلى فريقنا",
+    "Join our team and help build the future of Oman's infrastructure.": "ابنِ مسيرتك المهنية مع واحدة من الشركات الرائدة في مجال البناء والبنية التحتية في عُمان",
+    "Work With Us": "لماذا العمل في كاهيت؟",
+    "Cahit Trading & Contracting LLC offers exciting career opportunities in marine construction, infrastructure development, and engineering.": "في شركة كاهيت للتجارة والمقاولات ذ.م.م، نؤمن بأن موظفينا هم أعظم أصولنا. نوفر بيئة عمل ديناميكية حيث يلتقي التميز الهندسي بفرص النمو المهني.",
+    "Team Culture": "ثقافة الفريق",
+    "We foster a collaborative environment where every team member's contribution is valued and recognized.": "نعزز بيئة تعاونية حيث تُقدّر مساهمة كل عضو في الفريق.",
+    "Professional Growth": "النمو المهني",
+    "We invest in continuous training and development to help our employees grow their skills and advance their careers.": "نستثمر في التدريب والتطوير المستمر لمساعدة موظفينا على تنمية مهاراتهم والتقدم في حياتهم المهنية.",
+    "Safety First": "السلامة أولاً",
+    "We maintain the highest safety standards across all our operations, ensuring a safe workplace for everyone.": "نحافظ على أعلى معايير السلامة في جميع عملياتنا، لضمان بيئة عمل آمنة للجميع.",
+    "Interested in Joining Our Team?": "هل ترغب في الانضمام إلى فريقنا؟",
+    "Send your CV to our email and our HR team will review your application.": "أرسل سيرتك الذاتية إلى بريدنا الإلكتروني وسيقوم فريق الموارد البشرية بمراجعة طلبك.",
+    "Send Your CV": "أرسل سيرتك الذاتية",
     "Delivering excellence across marine, infrastructure, and industrial projects throughout Oman.": "تقديم التميز عبر المشاريع البحرية والبنية التحتية والصناعية في جميع أنحاء عُمان.",
     "About Cahit Trading & Contracting": "عن شركة كاهيت للتجارة والمقاولات",
     "Cahit Trading & Contracting LLC partners with government authorities, developers, and industrial organizations to deliver complex infrastructure and marine construction projects across Oman.": "تتعاون شركة كاهيت للتجارة والمقاولات ذ.م.م مع الجهات الحكومية والمطورين والمؤسسات الصناعية لتنفيذ مشاريع البنية التحتية والبناء البحري المعقدة في جميع أنحاء عُمان.",
@@ -633,7 +646,7 @@
       ".section-title, .section-subtitle, .section-label, .stat-label, " +
       ".service-card-title, .service-card-desc, .service-card-link, .marine-pill-text, .marine-title, .marine-subtitle, .marine-footer-text, " +
       ".leader-name, .leader-role, .leader-bio, .leader-detail-label, .leader-detail-value, .hover-label, " +
-      ".commitment-card-title, .commitment-card-desc, " +
+      ".commitment-card-title, .commitment-card-desc, .commitment-title, .commitment-desc, " +
       ".cta-title, .cta-subtitle, .hero-banner-title, .hero-banner-subtitle, " +
       ".footer-heading, .footer-links a, .footer-links button, .footer-tagline, .footer-copyright, .footer-desc, .footer-admin-text, .footer-contact-item p, .footer-contact-item a, " +
       ".btn, .card-title, .modal-title, .quote-modal-title, .contact-label, " +
