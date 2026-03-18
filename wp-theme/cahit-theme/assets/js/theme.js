@@ -402,7 +402,7 @@
     "View Our Services": "\u0639\u0631\u0636 \u062E\u062F\u0645\u0627\u062A\u0646\u0627",
     "Our Mission": "\u0645\u0647\u0645\u062A\u0646\u0627",
     "Our Vision": "\u0631\u0624\u064A\u062A\u0646\u0627",
-    "About Cahit Trading & Contracting": "\u0639\u0646 \u0634\u0631\u0643\u0629 \u062C\u0627\u0647\u062A \u0644\u0644\u062A\u062C\u0627\u0631\u0629 \u0648\u0627\u0644\u0645\u0642\u0627\u0648\u0644\u0627\u062A",
+    "About Cahit Trading & Contracting": "عن شركة كاهيت للتجارة والمقاولات",
     "Contact Us": "\u0627\u062A\u0635\u0644 \u0628\u0646\u0627",
     "Call Us": "\u0627\u062A\u0635\u0644 \u0628\u0646\u0627",
     "Email Us": "\u0631\u0627\u0633\u0644\u0646\u0627",
