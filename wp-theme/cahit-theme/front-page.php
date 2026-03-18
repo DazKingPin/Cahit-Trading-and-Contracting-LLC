@@ -420,7 +420,7 @@
     </div>
     <p class="funnel-helper-ar">هذا يساعدنا في توجيهك إلى الخدمة المناسبة</p>
   </div>
-  <div class="funnel-question-block funnel-q2-hidden" id="funnel-q2-block">
+  <div class="funnel-question-block" id="funnel-q2-block">
     <h3 class="funnel-title-ar" data-testid="funnel-q2-title"><span class="funnel-qnum">2.</span> ما هو الهدف الرئيسي لمشروعك؟</h3>
     <div class="funnel-options-ar" id="funnel-primary-goal">
       <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-coastal" data-en="Strengthen coastal protection">تعزيز حماية السواحل</button>
@@ -428,6 +428,10 @@
       <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-infra" data-en="Infrastructure development">تطوير البنية التحتية</button>
       <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-other" data-en="Other">أخرى</button>
     </div>
+  </div>
+  <div class="funnel-comm-box">
+    <textarea class="funnel-comm-input" id="funnel-message" placeholder="أخبرنا المزيد عن مشروعك..." data-testid="funnel-message" rows="3"></textarea>
+    <button class="funnel-comm-send" onclick="submitHeroFunnel()" data-testid="funnel-hero-submit">إرسال</button>
   </div>
 </div>
 

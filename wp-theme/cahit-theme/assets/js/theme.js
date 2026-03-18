@@ -656,25 +656,7 @@
     funnelData[groupId] = btn.getAttribute("data-en") || btn.textContent.trim();
     clearTimeout(funnelInactivityTimer);
 
-    if (groupId === "funnel-project-type") {
-      setTimeout(function () {
-        var q2 = document.getElementById("funnel-q2-block");
-        if (q2) {
-          q2.classList.remove("funnel-q2-hidden");
-          q2.style.display = "block";
-        }
-        resetFunnelInactivity(1);
-      }, 300);
-    } else if (groupId === "funnel-primary-goal") {
-      setTimeout(function () {
-        funnelGlobalStep = 2;
-        showFunnelStep(0);
-        var aboutSection = document.getElementById("about-section");
-        if (aboutSection) {
-          aboutSection.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 400);
-    }
+    resetFunnelInactivity(1);
   };
 
   window.selectFunnelOption = function (groupId, btn) {
@@ -685,6 +667,17 @@
     btn.classList.add("selected");
     funnelData[groupId] = btn.textContent.trim();
     clearTimeout(funnelInactivityTimer);
+  };
+
+  window.submitHeroFunnel = function () {
+    var msg = document.getElementById("funnel-message");
+    funnelData["message"] = msg ? msg.value.trim() : "";
+    funnelGlobalStep = 2;
+    showFunnelStep(0);
+    var aboutSection = document.getElementById("about-section");
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   window.closeFunnel = function (step) {

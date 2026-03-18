@@ -2124,8 +2124,46 @@ footer.site-footer {
   text-align: right;
   font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
-.funnel-q2-hidden {
-  display: none;
+.funnel-comm-box {
+  margin-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+.funnel-comm-input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  color: #0f172a;
+  background: #fff;
+  outline: none;
+  resize: vertical;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+  transition: border-color 150ms;
+}
+.funnel-comm-input:focus {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+}
+.funnel-comm-send {
+  margin-top: 0.5rem;
+  width: 100%;
+  padding: 0.6rem;
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+  transition: background 150ms;
+}
+.funnel-comm-send:hover {
+  background: #0E6BA8;
 }
 @media (max-width: 767px) {
   .funnel-hero-panel {
