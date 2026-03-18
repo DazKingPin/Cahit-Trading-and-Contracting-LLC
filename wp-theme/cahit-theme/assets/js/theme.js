@@ -611,7 +611,7 @@
   var funnelData = {};
   var funnelGlobalStep = 0;
   var funnelInactivityTimer = null;
-  var funnelSectionMap = { hero: 1, about: 2, projects: 3 };
+  var funnelSectionMap = { hero: 1, about: 3, projects: 3 };
 
   function initLeadFunnel() {
     if (window.location.search.indexOf("disable_funnel=1") !== -1) return;
@@ -696,12 +696,8 @@
         return;
       }
       funnelGlobalStep = 1;
-      showFunnelStep(0);
-      var aboutSection = document.getElementById("about-section");
-      if (aboutSection) {
-        aboutSection.scrollIntoView({ behavior: "smooth" });
-        setTimeout(function () { showFunnelStep(2); }, 800);
-      }
+      showFunnelStep(2);
+      resetFunnelInactivity(2);
     } else if (step === 2) {
       var goal = funnelData["funnel-primary-goal"];
       if (!goal) {
@@ -710,10 +706,9 @@
       }
       funnelGlobalStep = 2;
       showFunnelStep(0);
-      var projectsSection = document.getElementById("projects-section");
-      if (projectsSection) {
-        projectsSection.scrollIntoView({ behavior: "smooth" });
-        setTimeout(function () { showFunnelStep(3); }, 800);
+      var aboutSection = document.getElementById("about-section");
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: "smooth" });
       }
     } else if (step === 3) {
       var name = document.getElementById("funnel-name");
