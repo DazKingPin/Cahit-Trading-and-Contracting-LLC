@@ -539,7 +539,7 @@
     localStorage.setItem("cahit-lang", lang);
   };
 
-  function swapNavbarForRtl(isRtl) {
+  window.swapNavbarForRtl = function(isRtl) {
     var navbarInner = document.querySelector(".navbar-inner");
     if (!navbarInner) return;
     var logo = navbarInner.querySelector(".navbar-logo");
@@ -552,7 +552,7 @@
       navbarInner.insertBefore(logo, navbarInner.firstChild);
       navbarInner.appendChild(actions);
     }
-  }
+  };
 
   function translateTextNode(node) {
     if (node.nodeType === 3) {
