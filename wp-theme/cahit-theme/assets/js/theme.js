@@ -526,6 +526,7 @@
       enBtn.classList.remove("lang-btn-active");
       arBtn.classList.add("lang-btn-active");
       translateToArabic();
+      swapNavbarForRtl(true);
     } else {
       document.documentElement.classList.remove("is-rtl");
       document.documentElement.removeAttribute("dir");
@@ -533,9 +534,25 @@
       arBtn.classList.remove("lang-btn-active");
       enBtn.classList.add("lang-btn-active");
       restoreEnglish();
+      swapNavbarForRtl(false);
     }
     localStorage.setItem("cahit-lang", lang);
   };
+
+  function swapNavbarForRtl(isRtl) {
+    var navbarInner = document.querySelector(".navbar-inner");
+    if (!navbarInner) return;
+    var logo = navbarInner.querySelector(".navbar-logo");
+    var actions = navbarInner.querySelector(".navbar-actions");
+    if (!logo || !actions) return;
+    if (isRtl) {
+      navbarInner.appendChild(logo);
+      navbarInner.insertBefore(actions, navbarInner.firstChild);
+    } else {
+      navbarInner.insertBefore(logo, navbarInner.firstChild);
+      navbarInner.appendChild(actions);
+    }
+  }
 
   function translateTextNode(node) {
     if (node.nodeType === 3) {
