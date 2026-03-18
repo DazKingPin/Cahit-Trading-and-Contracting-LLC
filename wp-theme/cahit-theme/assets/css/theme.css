@@ -2296,7 +2296,7 @@ html.is-rtl .grid {
   direction: rtl;
 }
 html.is-rtl .section-header {
-  text-align: right;
+  text-align: center;
 }
 html.is-rtl .icon-arrow,
 html.is-rtl .icon-arrow-sm {
@@ -2307,14 +2307,18 @@ html.is-rtl .service-card-link svg { transform: scaleX(-1); }
 html.is-rtl .stats-row-inline { justify-content: flex-end; }
 html.is-rtl .stats-row-inline .stat-item { text-align: right; }
 html.is-rtl .grid.grid-2 { direction: rtl; }
-html.is-rtl .hero-banner-content { text-align: right; }
+html.is-rtl .hero-banner-content { text-align: center; }
 html.is-rtl .hero-banner-title,
-html.is-rtl .hero-banner-title-lg { text-align: right; }
+html.is-rtl .hero-banner-title-lg { text-align: center; }
 html.is-rtl .hero-banner-subtitle,
-html.is-rtl .hero-banner-subtitle-lg { text-align: right; }
-html.is-rtl .section-title { text-align: right; }
-html.is-rtl .section-subtitle { text-align: right; }
+html.is-rtl .hero-banner-subtitle-lg { text-align: center; }
+html.is-rtl .section-title { text-align: center; }
+html.is-rtl .section-subtitle { text-align: center; }
 html.is-rtl .section-title.text-center { text-align: center; }
+html.is-rtl .client-logos-grid { direction: rtl; }
+html.is-rtl .client-logo-name { text-align: center; }
+html.is-rtl .sectors-grid { direction: rtl; }
+html.is-rtl .sector-name { text-align: center; }
 html.is-rtl .leader-info { text-align: right; }
 html.is-rtl .leader-details { text-align: right; }
 html.is-rtl .commitment-card { text-align: right; }
