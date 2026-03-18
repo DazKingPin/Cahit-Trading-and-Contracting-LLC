@@ -2061,6 +2061,80 @@ footer.site-footer {
   }
 }
 
+/* ==================== Hero Funnel Panel (Arabic RTL) ==================== */
+.funnel-hero-panel {
+  direction: rtl;
+  text-align: right;
+  right: 2rem;
+  left: auto;
+  width: 380px;
+  padding: 1.5rem 2rem;
+}
+.funnel-hero-panel .funnel-panel-header {
+  justify-content: flex-start;
+}
+.funnel-question-block {
+  margin-bottom: 1.25rem;
+}
+.funnel-title-ar {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+.funnel-qnum {
+  color: #0ea5e9;
+  font-weight: 800;
+  margin-left: 0.25rem;
+}
+.funnel-options-ar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.funnel-option-ar {
+  background: #f1f5f9;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  color: #334155;
+  cursor: pointer;
+  transition: all 150ms;
+  font-weight: 500;
+  text-align: right;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+.funnel-option-ar:hover {
+  border-color: #0ea5e9;
+  background: #f0f9ff;
+}
+.funnel-option-ar.selected {
+  background: #0ea5e9;
+  color: #fff;
+  border-color: #0ea5e9;
+}
+.funnel-helper-ar {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+  line-height: 1.5;
+  text-align: right;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+.funnel-q2-hidden {
+  display: none;
+}
+@media (max-width: 767px) {
+  .funnel-hero-panel {
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+  }
+}
+
 /* ==================== ARABIC / RTL ==================== */
 html.is-rtl {
   direction: ltr;

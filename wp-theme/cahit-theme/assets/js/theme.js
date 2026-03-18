@@ -611,42 +611,22 @@
   var funnelData = {};
   var funnelGlobalStep = 0;
   var funnelInactivityTimer = null;
-  var funnelSectionMap = { hero: 1, about: 3, projects: 3 };
+  var heroFunnelShown = false;
 
   function initLeadFunnel() {
     if (window.location.search.indexOf("disable_funnel=1") !== -1) return;
-    var sections = document.querySelectorAll("[data-funnel-section]");
-    if (!sections.length) return;
+    var heroSection = document.getElementById("hero-section");
+    if (!heroSection) return;
 
-    function handleSectionInteraction(section) {
-      var sectionName = section.getAttribute("data-funnel-section");
-      var stepForSection = funnelSectionMap[sectionName];
-      if (funnelGlobalStep >= 4) return;
-      if (stepForSection !== funnelGlobalStep + 1) return;
-      showFunnelStep(stepForSection);
-      resetFunnelInactivity(stepForSection);
+    function showHeroFunnel() {
+      if (heroFunnelShown || funnelGlobalStep >= 2) return;
+      heroFunnelShown = true;
+      showFunnelStep(1);
+      resetFunnelInactivity(1);
     }
 
-    sections.forEach(function (section) {
-      section.addEventListener("mousemove", function () {
-        handleSectionInteraction(section);
-      });
-      section.addEventListener("touchstart", function () {
-        handleSectionInteraction(section);
-      }, { passive: true });
-    });
-
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          handleSectionInteraction(entry.target);
-        }
-      });
-    }, { threshold: 0.3 });
-
-    sections.forEach(function (section) {
-      observer.observe(section);
-    });
+    heroSection.addEventListener("mousemove", showHeroFunnel);
+    heroSection.addEventListener("touchstart", showHeroFunnel, { passive: true });
   }
 
   function showFunnelStep(step) {
@@ -667,6 +647,36 @@
     }, 30000);
   }
 
+  window.selectHeroOption = function (groupId, btn) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    var buttons = group.querySelectorAll(".funnel-option-ar");
+    buttons.forEach(function (b) { b.classList.remove("selected"); });
+    btn.classList.add("selected");
+    funnelData[groupId] = btn.getAttribute("data-en") || btn.textContent.trim();
+    clearTimeout(funnelInactivityTimer);
+
+    if (groupId === "funnel-project-type") {
+      setTimeout(function () {
+        var q2 = document.getElementById("funnel-q2-block");
+        if (q2) {
+          q2.classList.remove("funnel-q2-hidden");
+          q2.style.display = "block";
+        }
+        resetFunnelInactivity(1);
+      }, 300);
+    } else if (groupId === "funnel-primary-goal") {
+      setTimeout(function () {
+        funnelGlobalStep = 2;
+        showFunnelStep(0);
+        var aboutSection = document.getElementById("about-section");
+        if (aboutSection) {
+          aboutSection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 400);
+    }
+  };
+
   window.selectFunnelOption = function (groupId, btn) {
     var group = document.getElementById(groupId);
     if (!group) return;
@@ -675,11 +685,6 @@
     btn.classList.add("selected");
     funnelData[groupId] = btn.textContent.trim();
     clearTimeout(funnelInactivityTimer);
-    if (groupId === "funnel-project-type") {
-      setTimeout(function () { submitFunnelStep(1); }, 400);
-    } else if (groupId === "funnel-primary-goal") {
-      setTimeout(function () { submitFunnelStep(2); }, 400);
-    }
   };
 
   window.closeFunnel = function (step) {
@@ -689,28 +694,7 @@
   };
 
   window.submitFunnelStep = function (step) {
-    if (step === 1) {
-      var projectType = funnelData["funnel-project-type"];
-      if (!projectType) {
-        alert("Please select a project type.");
-        return;
-      }
-      funnelGlobalStep = 1;
-      showFunnelStep(2);
-      resetFunnelInactivity(2);
-    } else if (step === 2) {
-      var goal = funnelData["funnel-primary-goal"];
-      if (!goal) {
-        alert("Please select a primary goal.");
-        return;
-      }
-      funnelGlobalStep = 2;
-      showFunnelStep(0);
-      var aboutSection = document.getElementById("about-section");
-      if (aboutSection) {
-        aboutSection.scrollIntoView({ behavior: "smooth" });
-      }
-    } else if (step === 3) {
+    if (step === 3) {
       var name = document.getElementById("funnel-name");
       var email = document.getElementById("funnel-email");
       var phone = document.getElementById("funnel-phone");
