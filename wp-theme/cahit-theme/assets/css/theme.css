@@ -2259,9 +2259,6 @@ html.is-rtl body {
 html.is-rtl .navbar-inner {
   flex-direction: row-reverse;
 }
-html.is-rtl .nav-links {
-  flex-direction: row-reverse;
-}
 html.is-rtl .nav-link-button {
   background: none;
   border: none;
