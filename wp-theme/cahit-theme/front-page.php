@@ -421,7 +421,6 @@
     </div>
     <p class="funnel-helper">This helps us direct you to the right service.</p>
   </div>
-  <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(1)" data-testid="funnel-submit-1">Continue</button>
 </div>
 
 <div class="funnel-panel" id="funnel-step-2" data-testid="funnel-step-2" style="display:none;">

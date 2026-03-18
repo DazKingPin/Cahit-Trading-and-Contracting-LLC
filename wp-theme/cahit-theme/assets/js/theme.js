@@ -675,6 +675,9 @@
     btn.classList.add("selected");
     funnelData[groupId] = btn.textContent.trim();
     clearTimeout(funnelInactivityTimer);
+    if (groupId === "funnel-project-type") {
+      setTimeout(function () { submitFunnelStep(1); }, 400);
+    }
   };
 
   window.closeFunnel = function (step) {
