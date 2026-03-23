@@ -1099,12 +1099,13 @@
         '<div class="form-group">' +
           '<label class="form-label">OpenAI API Key</label>' +
           '<div style="position:relative">' +
-            '<input class="form-input" type="password" id="openai-api-key" placeholder="sk-..." value="' + (localStorage.getItem('cahit_openai_key') || '') + '" data-testid="input-openai-key" style="padding-right:40px" />' +
+            '<input class="form-input" type="password" id="openai-api-key" placeholder="sk-..." data-testid="input-openai-key" style="padding-right:40px" />' +
             '<button type="button" id="toggleKeyVisibility" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;padding:4px" data-testid="button-toggle-key">' +
               '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
             '</button>' +
           '</div>' +
           '<p class="settings-row-desc" style="margin-top:6px">Required for AI Blog generation and Chatbot. Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#0ea5e9;text-decoration:underline">platform.openai.com</a></p>' +
+          '<p class="settings-row-desc" id="openai-key-status" style="margin-top:4px;color:#22c55e"></p>' +
         '</div>' +
       '</div>' +
       '<div class="settings-section">' +
@@ -1177,14 +1178,44 @@
         }
       });
     }
+    var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
+    var keyStatus = document.getElementById('openai-key-status');
+    if (keyStatus && token) {
+      fetch('/admin/api/openai-key-status', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.hasKey) {
+            keyStatus.textContent = 'Key configured: ' + d.maskedKey;
+            keyStatus.style.color = '#22c55e';
+          } else {
+            keyStatus.textContent = 'No API key configured';
+            keyStatus.style.color = '#ef4444';
+          }
+        })
+        .catch(function() {});
+    }
     var saveBtn = document.getElementById('saveSettingsBtn');
     if (saveBtn) {
       saveBtn.addEventListener('click', function() {
-        var apiKey = document.getElementById('openai-api-key');
-        if (apiKey && apiKey.value.trim()) {
-          localStorage.setItem('cahit_openai_key', apiKey.value.trim());
-        } else {
-          localStorage.removeItem('cahit_openai_key');
+        var apiKeyEl = document.getElementById('openai-api-key');
+        var apiKeyVal = apiKeyEl ? apiKeyEl.value.trim() : '';
+        var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
+        if (apiKeyVal) {
+          fetch('/admin/api/save-openai-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ key: apiKeyVal })
+          })
+          .then(function(r) { return r.json(); })
+          .then(function(d) {
+            if (d.success) {
+              var ks = document.getElementById('openai-key-status');
+              if (ks) { ks.textContent = 'Key configured: sk-...' + apiKeyVal.slice(-4); ks.style.color = '#22c55e'; }
+              apiKeyEl.value = '';
+              showToast('API key saved securely on server', 'success');
+            }
+          })
+          .catch(function() { showToast('Error saving API key', 'error'); });
         }
         showToast('Settings saved successfully', 'success');
       });

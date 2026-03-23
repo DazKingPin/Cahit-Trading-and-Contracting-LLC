@@ -343,8 +343,91 @@ app.post('/api/ajax', async (req, res) => {
   }
 });
 
-app.post('/api/chat', (req, res) => {
-  res.json({ reply: 'Thank you for your message. Our team will get back to you soon. You can also reach us at ctc@cahitcontracting.com or call +968 2411 2406.' });
+const OPENAI_KEY_FILE = path.join(__dirname, 'openai-key.json');
+function loadOpenAIKey() {
+  try {
+    if (fs.existsSync(OPENAI_KEY_FILE)) {
+      return JSON.parse(fs.readFileSync(OPENAI_KEY_FILE, 'utf8')).key || '';
+    }
+  } catch (e) {}
+  return '';
+}
+function saveOpenAIKey(key) {
+  fs.writeFileSync(OPENAI_KEY_FILE, JSON.stringify({ key }, null, 2));
+}
+
+app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+  const { key } = req.body || {};
+  saveOpenAIKey(key || '');
+  res.json({ success: true });
+});
+
+app.get('/admin/api/openai-key-status', (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false });
+  }
+  const key = loadOpenAIKey();
+  res.json({ success: true, hasKey: !!key, maskedKey: key ? 'sk-...' + key.slice(-4) : '' });
+});
+
+const CAHIT_SYSTEM_PROMPT = `You are the Cahit Assistant, a helpful AI assistant for Cahit Trading & Contracting LLC, a marine and coastal construction company based in Oman.
+
+Company Information:
+- Full name: Cahit Trading & Contracting LLC
+- Location: Khaleej Tower, 6th floor, No 603, Ghala, Muscat, Sultanate of Oman
+- Phone: +968 2411 2406 Ext: 101, +968 9096 6562 (Oman)
+- Email: ctc@cahitcontracting.com
+
+Services:
+1. Marine & Coastal Construction (sea harbors, breakwaters, groynes, revetments)
+2. Infrastructure Development (utilities, roads, industrial facilities)
+3. Earthworks (excavation, grading, leveling, compaction)
+4. Dewatering & Shoring (wellpoint systems, deep wells, sheet piling, soldier walls)
+5. MEP Works (water & wastewater treatment, pumping stations, industrial piping, irrigation)
+6. General Construction (residential, commercial, industrial building solutions)
+
+Be professional, helpful, and concise. If asked about pricing or specific project details, encourage the visitor to contact the team directly. Respond in the same language the user writes in (English or Arabic).`;
+
+const chatSessions = {};
+
+app.post('/api/chat', express.json(), async (req, res) => {
+  const { message, sessionId } = req.body || {};
+  if (!message) return res.json({ reply: 'Please type a message.' });
+
+  const apiKey = loadOpenAIKey();
+  if (!apiKey) {
+    return res.json({ reply: 'Thank you for your message. Our team will get back to you soon. You can reach us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.' });
+  }
+
+  try {
+    if (!chatSessions[sessionId]) {
+      chatSessions[sessionId] = [{ role: 'system', content: CAHIT_SYSTEM_PROMPT }];
+    }
+    chatSessions[sessionId].push({ role: 'user', content: message });
+    if (chatSessions[sessionId].length > 20) {
+      chatSessions[sessionId] = [chatSessions[sessionId][0], ...chatSessions[sessionId].slice(-10)];
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages: chatSessions[sessionId], max_tokens: 500, temperature: 0.7 })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    const reply = data.choices[0].message.content;
+    chatSessions[sessionId].push({ role: 'assistant', content: reply });
+    res.json({ reply });
+  } catch (err) {
+    res.json({ reply: 'Sorry, I\'m having trouble right now. Please contact us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.' });
+  }
 });
 
 // Admin dashboard
