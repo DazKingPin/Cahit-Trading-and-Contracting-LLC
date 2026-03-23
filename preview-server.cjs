@@ -531,7 +531,8 @@ app.post('/api/chat', express.json(), async (req, res) => {
     chatSessions[sessionId].push({ role: 'assistant', content: reply });
     res.json({ reply });
   } catch (err) {
-    res.json({ reply: 'Sorry, I\'m having trouble right now. Please contact us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.' });
+    console.error('Chat error:', err.message || err);
+    res.json({ reply: 'Sorry, I\'m having trouble right now. Please contact us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.', error: err.message || 'Unknown error' });
   }
 });
 
