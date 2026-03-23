@@ -83,6 +83,21 @@
           </ul>
         </div>
       </div>
+
+      <div class="service-card" data-testid="service-general-construction">
+        <div class="service-card-image">
+          <img src="/assets/images/general-construction.jpg" alt="General Construction" />
+        </div>
+        <div class="service-card-content">
+          <h3 class="service-card-title" data-ar="البناء العام">General Construction</h3>
+          <p class="service-card-desc" data-ar="حلول بناء شاملة للمشاريع السكنية والتجارية والصناعية:">Comprehensive residential, commercial, and industrial building solutions:</p>
+          <ul class="service-details-list">
+            <li><span class="bullet"></span> <span data-ar="قوة عاملة ماهرة مع معدات حديثة وخبرة مثبتة">Skilled workforce with modern equipment and proven expertise</span></li>
+            <li><span class="bullet"></span> <span data-ar="التزام بالسلامة والجودة والتسليم في الوقت المحدد">Commitment to safety, quality, and on-time delivery</span></li>
+            <li><span class="bullet"></span> <span data-ar="خدمات التجديد وإعادة التصميم وإدارة المشاريع">Renovation, remodeling, and project management services</span></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </section>
