@@ -346,7 +346,8 @@ app.post('/api/ajax', async (req, res) => {
 
 const OPENAI_KEY_FILE = path.join(DATA_DIR, 'openai-key.json');
 function loadOpenAIKey() {
-  if (process.env.OPENAI_API_KEY) return process.env.OPENAI_API_KEY;
+  const envKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || '';
+  if (envKey) return envKey;
   try {
     if (fs.existsSync(OPENAI_KEY_FILE)) {
       return JSON.parse(fs.readFileSync(OPENAI_KEY_FILE, 'utf8')).key || '';
@@ -354,6 +355,11 @@ function loadOpenAIKey() {
   } catch (e) {}
   return '';
 }
+
+app.get('/api/chat-status', (req, res) => {
+  const key = loadOpenAIKey();
+  res.json({ hasKey: !!key, keySource: process.env.OPENAI_API_KEY ? 'env' : (key ? 'file' : 'none'), keyPreview: key ? key.substring(0, 7) + '...' : '' });
+});
 function saveOpenAIKey(key) {
   try { fs.writeFileSync(OPENAI_KEY_FILE, JSON.stringify({ key }, null, 2)); } catch (e) {}
 }
