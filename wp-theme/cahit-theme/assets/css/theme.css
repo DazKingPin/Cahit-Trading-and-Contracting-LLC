@@ -1684,8 +1684,8 @@ html.is-rtl .footer-cta-btn {
 .chatbot-bubble {
   position: fixed;
   bottom: 1.5rem;
-  left: 1.5rem;
-  right: auto;
+  right: 1.5rem;
+  left: auto;
   z-index: 50;
   width: 3.5rem;
   height: 3.5rem;
@@ -1719,8 +1719,8 @@ html.is-rtl .footer-cta-btn {
 .chatbot-panel {
   position: fixed;
   bottom: 1.5rem;
-  left: 1.5rem;
-  right: auto;
+  right: 1.5rem;
+  left: auto;
   z-index: 50;
   width: 360px;
   height: 500px;
@@ -2388,8 +2388,8 @@ html.is-rtl .footer-contact-item { flex-direction: row-reverse; text-align: righ
 html.is-rtl .footer-contact-item svg { margin-left: 0.5rem; margin-right: 0; }
 html.is-rtl .contact-item { flex-direction: row-reverse; text-align: right; }
 html.is-rtl .contact-icon { margin-left: 1rem; margin-right: 0; }
-html.is-rtl .chatbot-bubble { left: 1.5rem; right: auto; }
-html.is-rtl .chatbot-panel { left: 1.5rem; right: auto; }
+html.is-rtl .chatbot-bubble { left: 1.5rem; right: auto !important; }
+html.is-rtl .chatbot-panel { left: 1.5rem; right: auto !important; }
 html.is-rtl .chatbot-msg-user { flex-direction: row-reverse; }
 html.is-rtl .chatbot-msg-assistant { flex-direction: row-reverse; }
 html.is-rtl .funnel-panel { left: 2rem; right: auto; }
