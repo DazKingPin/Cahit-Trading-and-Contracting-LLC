@@ -772,11 +772,7 @@
     var msg = document.getElementById("funnel-message");
     funnelData["message"] = msg ? msg.value.trim() : "";
     funnelGlobalStep = 2;
-    showFunnelStep(0);
-    var aboutSection = document.getElementById("about-section");
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
-    }
+    showFunnelStep(3);
   };
 
   window.closeFunnel = function (step) {
