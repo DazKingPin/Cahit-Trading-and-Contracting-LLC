@@ -81,6 +81,10 @@ if (defined('ABSPATH')) {
         </button>
         <div class="header-title" id="pageTitle">Dashboard</div>
         <div class="header-actions">
+          <a href="/" class="btn-back-site" data-testid="link-back-to-site" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:#0A3D6B;color:#fff;border-radius:6px;text-decoration:none;font-size:13px;font-weight:500;margin-right:12px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Back to Website
+          </a>
           <div class="header-search">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" placeholder="Search..." data-testid="input-search" />
