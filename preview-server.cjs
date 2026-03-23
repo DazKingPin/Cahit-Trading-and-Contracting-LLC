@@ -6,7 +6,8 @@ const crypto = require('crypto');
 const app = express();
 const PORT = 5000;
 
-const CREDENTIALS_FILE = path.join(__dirname, 'admin-credentials.json');
+const DATA_DIR = process.env.VERCEL ? '/tmp' : __dirname;
+const CREDENTIALS_FILE = path.join(DATA_DIR, 'admin-credentials.json');
 function loadCredentials() {
   try {
     if (fs.existsSync(CREDENTIALS_FILE)) {
@@ -16,7 +17,7 @@ function loadCredentials() {
   return { username: 'admin', password: 'cahit2024' };
 }
 function saveCredentials(creds) {
-  fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(creds, null, 2));
+  try { fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(creds, null, 2)); } catch (e) {}
 }
 const adminTokens = new Set();
 
@@ -343,7 +344,7 @@ app.post('/api/ajax', async (req, res) => {
   }
 });
 
-const OPENAI_KEY_FILE = path.join(__dirname, 'openai-key.json');
+const OPENAI_KEY_FILE = path.join(DATA_DIR, 'openai-key.json');
 function loadOpenAIKey() {
   try {
     if (fs.existsSync(OPENAI_KEY_FILE)) {
@@ -353,7 +354,7 @@ function loadOpenAIKey() {
   return '';
 }
 function saveOpenAIKey(key) {
-  fs.writeFileSync(OPENAI_KEY_FILE, JSON.stringify({ key }, null, 2));
+  try { fs.writeFileSync(OPENAI_KEY_FILE, JSON.stringify({ key }, null, 2)); } catch (e) {}
 }
 
 app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
@@ -478,8 +479,8 @@ app.get('/admin/api/verify', (req, res) => {
   }
 });
 
-const UPLOADS_DIR = path.join(THEME_DIR, 'uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+const UPLOADS_DIR = process.env.VERCEL ? '/tmp/uploads' : path.join(THEME_DIR, 'uploads');
+try { if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (e) {}
 
 app.use('/uploads', express.static(UPLOADS_DIR));
 
