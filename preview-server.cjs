@@ -19,6 +19,23 @@ function loadCredentials() {
 function saveCredentials(creds) {
   try { fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(creds, null, 2)); } catch (e) {}
 }
+const TOKEN_SECRET = process.env.SESSION_SECRET || 'cahit-admin-secret-2024';
+function createAdminToken(username) {
+  const payload = username + ':' + Date.now();
+  const sig = crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('hex');
+  return Buffer.from(payload + ':' + sig).toString('base64');
+}
+function verifyAdminToken(token) {
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf8');
+    const parts = decoded.split(':');
+    if (parts.length < 3) return false;
+    const sig = parts.pop();
+    const payload = parts.join(':');
+    const expectedSig = crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('hex');
+    return sig === expectedSig;
+  } catch (e) { return false; }
+}
 const adminTokens = new Set();
 
 const THEME_DIR = path.join(__dirname, 'wp-theme', 'cahit-theme');
@@ -367,7 +384,7 @@ function saveOpenAIKey(key) {
 app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
   const { key } = req.body || {};
@@ -378,7 +395,7 @@ app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
 app.get('/admin/api/openai-key-status', (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || ((!adminTokens.has(token) && !verifyAdminToken(token)) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
   const key = loadOpenAIKey();
@@ -440,7 +457,7 @@ function buildSystemPrompt() {
 app.get('/admin/api/chatbot-knowledge', (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
   res.json({ success: true, data: loadKnowledge() });
@@ -449,7 +466,7 @@ app.get('/admin/api/chatbot-knowledge', (req, res) => {
 app.post('/admin/api/chatbot-knowledge', express.json(), (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
   const { entries, personality, language, position } = req.body || {};
@@ -504,7 +521,7 @@ app.post('/admin/api/login', express.json(), (req, res) => {
   const { username, password } = req.body || {};
   const creds = loadCredentials();
   if ((username === creds.username || username === 'admin@cahitcontracting.com') && password === creds.password) {
-    const token = crypto.randomBytes(32).toString('hex');
+    const token = createAdminToken(username);
     adminTokens.add(token);
     res.json({ success: true, token, user: { name: 'Admin', role: 'administrator' } });
   } else {
@@ -515,7 +532,7 @@ app.post('/admin/api/login', express.json(), (req, res) => {
 app.post('/admin/api/change-credentials', express.json(), (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
   const { currentPassword, newUsername, newPassword } = req.body || {};
@@ -530,7 +547,7 @@ app.post('/admin/api/change-credentials', express.json(), (req, res) => {
   creds.password = newPassword;
   saveCredentials(creds);
   adminTokens.clear();
-  const newToken = crypto.randomBytes(32).toString('hex');
+  const newToken = createAdminToken(creds.username);
   adminTokens.add(newToken);
   res.json({ success: true, token: newToken, message: 'Credentials updated successfully' });
 });
@@ -538,7 +555,7 @@ app.post('/admin/api/change-credentials', express.json(), (req, res) => {
 app.get('/admin/api/verify', (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (token && adminTokens.has(token)) {
+  if (token && (adminTokens.has(token) || verifyAdminToken(token))) {
     res.json({ success: true });
   } else {
     res.status(401).json({ success: false });
@@ -553,7 +570,7 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 app.post('/admin/api/upload', (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 
@@ -625,7 +642,7 @@ app.post('/admin/api/upload', (req, res) => {
 app.get('/admin/api/uploads', (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
-  if (!token || !adminTokens.has(token)) {
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
   const files = fs.readdirSync(UPLOADS_DIR).map(name => {
