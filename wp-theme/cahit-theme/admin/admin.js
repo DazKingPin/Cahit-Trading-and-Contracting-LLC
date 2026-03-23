@@ -1087,6 +1087,19 @@
         '<div class="settings-row"><div><div class="settings-row-label">Blog Section</div><div class="settings-row-desc">Show blog posts on the homepage</div></div><button class="toggle on" data-setting="blog" data-testid="toggle-blog"></button></div>' +
       '</div>' +
       '<div class="settings-section">' +
+        '<div class="settings-title">API Integrations</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label">OpenAI API Key</label>' +
+          '<div style="position:relative">' +
+            '<input class="form-input" type="password" id="openai-api-key" placeholder="sk-..." value="' + (localStorage.getItem('cahit_openai_key') || '') + '" data-testid="input-openai-key" style="padding-right:40px" />' +
+            '<button type="button" id="toggleKeyVisibility" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;padding:4px" data-testid="button-toggle-key">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+            '</button>' +
+          '</div>' +
+          '<p class="settings-row-desc" style="margin-top:6px">Required for AI Blog generation and Chatbot. Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#0ea5e9;text-decoration:underline">platform.openai.com</a></p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="settings-section">' +
         '<div class="settings-title">SEO</div>' +
         '<div class="form-group"><label class="form-label">Meta Title</label><input class="form-input" value="Cahit Trading & Contracting LLC - Marine & Coastal Construction in Oman" data-testid="input-meta-title" /></div>' +
         '<div class="form-group"><label class="form-label">Meta Description</label><textarea class="form-textarea" data-testid="input-meta-desc">Leading construction and infrastructure company in Oman specializing in marine construction, earthworks, infrastructure development and industrial services since 2009.</textarea></div>' +
@@ -1101,9 +1114,30 @@
         showToast('Setting updated', 'success');
       });
     });
+    var toggleKeyBtn = document.getElementById('toggleKeyVisibility');
+    var keyInput = document.getElementById('openai-api-key');
+    if (toggleKeyBtn && keyInput) {
+      toggleKeyBtn.addEventListener('click', function() {
+        if (keyInput.type === 'password') {
+          keyInput.type = 'text';
+          toggleKeyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+        } else {
+          keyInput.type = 'password';
+          toggleKeyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+        }
+      });
+    }
     var saveBtn = document.getElementById('saveSettingsBtn');
     if (saveBtn) {
-      saveBtn.addEventListener('click', function() { showToast('Settings saved successfully', 'success'); });
+      saveBtn.addEventListener('click', function() {
+        var apiKey = document.getElementById('openai-api-key');
+        if (apiKey && apiKey.value.trim()) {
+          localStorage.setItem('cahit_openai_key', apiKey.value.trim());
+        } else {
+          localStorage.removeItem('cahit_openai_key');
+        }
+        showToast('Settings saved successfully', 'success');
+      });
     }
   }
 
