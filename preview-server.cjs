@@ -343,7 +343,35 @@ app.post('/api/ajax', async (req, res) => {
   const fields = await parseMultipart(req);
   const action = fields.action || (req.body && req.body.action) || '';
   if (action === 'cahit_chat') {
-    res.json({ success: true, data: { reply: 'Thank you for your message. Our team will get back to you soon. You can also reach us at ctc@cahitcontracting.com or call +968 2411 2406.' } });
+    const message = fields.message || '';
+    const chatSessionId = fields.sessionId || 'ajax_' + Date.now();
+    if (!message) return res.json({ success: true, data: { reply: 'Please type a message.' } });
+    const apiKey = loadOpenAIKey();
+    if (!apiKey) {
+      return res.json({ success: true, data: { reply: 'Thank you for your message. Our team will get back to you soon. You can also reach us at ctc@cahitcontracting.com or call +968 2411 2406.' } });
+    }
+    try {
+      if (!chatSessions[chatSessionId]) {
+        chatSessions[chatSessionId] = [{ role: 'system', content: buildSystemPrompt() }];
+      }
+      chatSessions[chatSessionId].push({ role: 'user', content: message });
+      if (chatSessions[chatSessionId].length > 20) {
+        chatSessions[chatSessionId] = [chatSessions[chatSessionId][0], ...chatSessions[chatSessionId].slice(-10)];
+      }
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+        body: JSON.stringify({ model: 'gpt-4o-mini', messages: chatSessions[chatSessionId], max_tokens: 500, temperature: 0.7 })
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+      const reply = data.choices[0].message.content;
+      chatSessions[chatSessionId].push({ role: 'assistant', content: reply });
+      res.json({ success: true, data: { reply } });
+    } catch (err) {
+      console.error('Ajax chat error:', err.message || err);
+      res.json({ success: true, data: { reply: 'Sorry, I\'m having trouble right now. Please contact us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.' } });
+    }
   } else {
     if (fields.name || fields.email) {
       leadsStore.push({
