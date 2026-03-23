@@ -1074,6 +1074,25 @@
         '<p class="settings-row-desc" style="margin-bottom:16px">Add custom knowledge that the AI chatbot will use when answering visitor questions. This information is combined with the default company info (services, contact details, location).</p>' +
       '</div>' +
       '<div class="settings-section">' +
+        '<div class="settings-title">Chatbot Display Settings</div>' +
+        '<div class="form-group" style="margin-bottom:16px">' +
+          '<label class="form-label">Default Language</label>' +
+          '<select class="form-input" id="chatbot-language" data-testid="select-chatbot-language" style="max-width:250px">' +
+            '<option value="en">English</option>' +
+            '<option value="ar">Arabic (العربية)</option>' +
+          '</select>' +
+          '<p class="settings-row-desc" style="margin-top:6px">The chatbot will respond in this language by default</p>' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label">Chatbot Position</label>' +
+          '<select class="form-input" id="chatbot-position" data-testid="select-chatbot-position" style="max-width:250px">' +
+            '<option value="right">Right side</option>' +
+            '<option value="left">Left side</option>' +
+          '</select>' +
+          '<p class="settings-row-desc" style="margin-top:6px">Which side of the page the chatbot bubble appears on</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="settings-section">' +
         '<div class="settings-title">Custom Knowledge Entries</div>' +
         '<div id="knowledge-entries"></div>' +
         '<button class="btn btn-primary" id="addKnowledgeBtn" data-testid="button-add-knowledge" style="margin-top:12px">' +
@@ -1110,11 +1129,17 @@
         if (d.success) {
           var entries = d.data.entries || [];
           var personality = d.data.personality || '';
+          var language = d.data.language || 'en';
+          var position = d.data.position || 'right';
           var container = document.getElementById('knowledge-entries');
           if (entries.length === 0) { addKnowledgeEntry(container, '', ''); }
           else { entries.forEach(function(e) { addKnowledgeEntry(container, e.title, e.content); }); }
           var personalityEl = document.getElementById('chatbot-personality');
           if (personalityEl) personalityEl.value = personality;
+          var langEl = document.getElementById('chatbot-language');
+          if (langEl) langEl.value = language;
+          var posEl = document.getElementById('chatbot-position');
+          if (posEl) posEl.value = position;
         }
       })
       .catch(function() {
@@ -1133,13 +1158,15 @@
         if (title || content) entries.push({ title: title, content: content });
       });
       var personality = (document.getElementById('chatbot-personality') || {}).value || '';
+      var language = (document.getElementById('chatbot-language') || {}).value || 'en';
+      var position = (document.getElementById('chatbot-position') || {}).value || 'right';
       var btn = document.getElementById('saveKnowledgeBtn');
       btn.disabled = true;
       btn.textContent = 'Saving...';
       fetch('/admin/api/chatbot-knowledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ entries: entries, personality: personality.trim() })
+        body: JSON.stringify({ entries: entries, personality: personality.trim(), language: language, position: position })
       })
       .then(function(r) { return r.json(); })
       .then(function(d) {

@@ -6,9 +6,20 @@
   var isLoading = false;
   var isOpen = false;
 
+  var chatbotSettings = { language: 'en', position: 'right' };
+
   document.addEventListener("DOMContentLoaded", function () {
     if (window.location.search.indexOf("disable_funnel=1") !== -1) return;
-    createChatWidget();
+    fetch('/api/chatbot-settings')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        chatbotSettings.language = d.language || 'en';
+        chatbotSettings.position = d.position || 'right';
+        createChatWidget();
+      })
+      .catch(function() {
+        createChatWidget();
+      });
   });
 
   function createChatWidget() {
@@ -16,6 +27,34 @@
     container.id = "cahit-chatbot";
     container.innerHTML = getChatBubbleHTML();
     document.body.appendChild(container);
+
+    var bubble = document.getElementById("chatbot-bubble");
+    var panel = document.getElementById("chatbot-panel");
+    var isRtlPage = document.documentElement.classList.contains('is-rtl');
+    var pos = chatbotSettings.position || 'right';
+    if (isRtlPage) pos = 'left';
+
+    if (pos === 'left') {
+      bubble.style.left = '1.5rem';
+      bubble.style.right = 'auto';
+      panel.style.left = '1.5rem';
+      panel.style.right = 'auto';
+    } else {
+      bubble.style.right = '1.5rem';
+      bubble.style.left = 'auto';
+      panel.style.right = '1.5rem';
+      panel.style.left = 'auto';
+    }
+
+    if (chatbotSettings.language === 'ar') {
+      panel.setAttribute('dir', 'rtl');
+      var headerTitle = panel.querySelector('.chatbot-header-title');
+      var headerSub = panel.querySelector('.chatbot-header-subtitle');
+      var inputEl = document.getElementById('chatbot-input');
+      if (headerTitle) headerTitle.textContent = 'مساعد كاهيت';
+      if (headerSub) headerSub.textContent = 'اسألنا أي شيء';
+      if (inputEl) inputEl.placeholder = 'اكتب رسالتك...';
+    }
 
     bindEvents();
   }

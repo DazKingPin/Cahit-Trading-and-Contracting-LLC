@@ -429,6 +429,11 @@ function buildSystemPrompt() {
   if (knowledge.personality) {
     prompt += '\n\nBehavior Instructions: ' + knowledge.personality;
   }
+  if (knowledge.language === 'ar') {
+    prompt += '\n\nIMPORTANT: Default to responding in Arabic unless the user writes in English.';
+  } else {
+    prompt += '\n\nIMPORTANT: Default to responding in English unless the user writes in Arabic.';
+  }
   return prompt;
 }
 
@@ -447,9 +452,14 @@ app.post('/admin/api/chatbot-knowledge', express.json(), (req, res) => {
   if (!token || !adminTokens.has(token)) {
     return res.status(401).json({ success: false });
   }
-  const { entries, personality } = req.body || {};
-  saveKnowledge({ entries: entries || [], personality: personality || '' });
+  const { entries, personality, language, position } = req.body || {};
+  saveKnowledge({ entries: entries || [], personality: personality || '', language: language || 'en', position: position || 'right' });
   res.json({ success: true });
+});
+
+app.get('/api/chatbot-settings', (req, res) => {
+  const knowledge = loadKnowledge();
+  res.json({ language: knowledge.language || 'en', position: knowledge.position || 'right' });
 });
 
 const chatSessions = {};
