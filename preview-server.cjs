@@ -363,7 +363,7 @@ app.post('/api/ajax', async (req, res) => {
 
 const OPENAI_KEY_FILE = path.join(DATA_DIR, 'openai-key.json');
 function loadOpenAIKey() {
-  const envKey = process.env.OPENAI_API_KEY || process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || '';
+  const envKey = process.env.OPENAI_API_KEY || process.env.SECRET_KEY || process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || '';
   if (envKey) return envKey;
   try {
     if (fs.existsSync(OPENAI_KEY_FILE)) {
