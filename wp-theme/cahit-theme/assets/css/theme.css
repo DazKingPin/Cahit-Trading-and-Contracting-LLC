@@ -2143,13 +2143,27 @@ html.is-rtl .footer-cta-btn {
   right: 2rem;
   left: auto;
   width: 380px;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
+  top: 5rem;
+  transform: none;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
 }
 .funnel-hero-panel .funnel-options {
   flex-direction: column;
+  gap: 0.35rem;
 }
 .funnel-hero-panel .funnel-option {
   width: 100%;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+.funnel-hero-panel .funnel-title {
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+}
+.funnel-hero-panel .funnel-question-block {
+  margin-bottom: 0.75rem;
 }
 .funnel-hero-panel .funnel-panel-header {
   justify-content: flex-end;
