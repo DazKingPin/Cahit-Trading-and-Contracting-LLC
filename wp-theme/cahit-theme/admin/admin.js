@@ -1119,7 +1119,7 @@
         '</div>' +
       '</div>' +
       '<div class="settings-section">' +
-        '<div class="settings-title">API Key</div>' +
+        '<div class="settings-title">API Integrations</div>' +
         '<div class="form-group">' +
           '<label class="form-label">OpenAI API Key</label>' +
           '<div style="position:relative">' +
@@ -1129,7 +1129,7 @@
             '</button>' +
           '</div>' +
           '<p class="settings-row-desc" id="chatbot-key-status" style="margin-top:6px;color:#22c55e"></p>' +
-          '<p class="settings-row-desc" style="margin-top:4px">Required for chatbot AI responses. Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#0ea5e9;text-decoration:underline">platform.openai.com</a></p>' +
+          '<p class="settings-row-desc" style="margin-top:4px">Powers both the AI Chatbot and AI Assistant (blog generation, content suggestions). Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#0ea5e9;text-decoration:underline">platform.openai.com</a></p>' +
         '</div>' +
       '</div>' +
       '<div style="margin-top:24px"><button class="btn btn-primary" id="saveKnowledgeBtn" data-testid="button-save-knowledge">Save All Settings</button></div>';
