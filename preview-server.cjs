@@ -673,7 +673,11 @@ app.use((req, res) => {
   res.status(404).send(executePhpTemplate(content, '404'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`WordPress theme preview server running on http://0.0.0.0:${PORT}`);
-  console.log(`Theme dir: ${THEME_DIR}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`WordPress theme preview server running on http://0.0.0.0:${PORT}`);
+    console.log(`Theme dir: ${THEME_DIR}`);
+  });
+}
+
+module.exports = app;
