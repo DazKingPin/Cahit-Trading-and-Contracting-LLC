@@ -420,17 +420,27 @@ Services:
 
 Be professional, helpful, and concise. If asked about pricing or specific project details, encourage the visitor to contact the team directly. Respond in the same language the user writes in (English or Arabic).`;
 
-const KNOWLEDGE_FILE = path.join(DATA_DIR, 'chatbot-knowledge.json');
+const KNOWLEDGE_FILE_PROJECT = path.join(__dirname, 'chatbot-knowledge.json');
+const KNOWLEDGE_FILE_TMP = path.join('/tmp', 'chatbot-knowledge.json');
 function loadKnowledge() {
+  if (process.env.CHATBOT_KNOWLEDGE) {
+    try { return JSON.parse(Buffer.from(process.env.CHATBOT_KNOWLEDGE, 'base64').toString('utf8')); } catch (e) {}
+  }
   try {
-    if (fs.existsSync(KNOWLEDGE_FILE)) {
-      return JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf8'));
+    if (fs.existsSync(KNOWLEDGE_FILE_PROJECT)) {
+      return JSON.parse(fs.readFileSync(KNOWLEDGE_FILE_PROJECT, 'utf8'));
     }
   } catch (e) {}
-  return { entries: [], personality: '' };
+  try {
+    if (fs.existsSync(KNOWLEDGE_FILE_TMP)) {
+      return JSON.parse(fs.readFileSync(KNOWLEDGE_FILE_TMP, 'utf8'));
+    }
+  } catch (e) {}
+  return { entries: [], personality: '', language: 'en', position: 'right' };
 }
 function saveKnowledge(data) {
-  try { fs.writeFileSync(KNOWLEDGE_FILE, JSON.stringify(data, null, 2)); } catch (e) {}
+  try { fs.writeFileSync(KNOWLEDGE_FILE_PROJECT, JSON.stringify(data, null, 2)); } catch (e) {}
+  try { fs.writeFileSync(KNOWLEDGE_FILE_TMP, JSON.stringify(data, null, 2)); } catch (e) {}
 }
 function buildSystemPrompt() {
   let prompt = CAHIT_BASE_PROMPT;
@@ -472,6 +482,17 @@ app.post('/admin/api/chatbot-knowledge', express.json(), (req, res) => {
   const { entries, personality, language, position } = req.body || {};
   saveKnowledge({ entries: entries || [], personality: personality || '', language: language || 'en', position: position || 'right' });
   res.json({ success: true });
+});
+
+app.get('/admin/api/chatbot-knowledge-export', (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
+    return res.status(401).json({ success: false });
+  }
+  const knowledge = loadKnowledge();
+  const encoded = Buffer.from(JSON.stringify(knowledge)).toString('base64');
+  res.json({ success: true, envValue: encoded });
 });
 
 app.get('/api/chatbot-settings', (req, res) => {

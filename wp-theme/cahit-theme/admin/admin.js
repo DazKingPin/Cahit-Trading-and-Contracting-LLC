@@ -1132,7 +1132,15 @@
           '<p class="settings-row-desc" style="margin-top:4px">Powers both the AI Chatbot and AI Assistant (blog generation, content suggestions). Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#0ea5e9;text-decoration:underline">platform.openai.com</a></p>' +
         '</div>' +
       '</div>' +
-      '<div style="margin-top:24px"><button class="btn btn-primary" id="saveKnowledgeBtn" data-testid="button-save-knowledge">Save All Settings</button></div>';
+      '<div style="margin-top:24px;display:flex;gap:12px;align-items:center">' +
+        '<button class="btn btn-primary" id="saveKnowledgeBtn" data-testid="button-save-knowledge">Save All Settings</button>' +
+        '<button class="btn" id="exportKnowledgeBtn" data-testid="button-export-knowledge" style="background:#f1f5f9;color:#334155;border:1px solid #e2e8f0">Export for Vercel</button>' +
+      '</div>' +
+      '<div id="export-result" style="display:none;margin-top:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px">' +
+        '<p class="form-label" style="margin-bottom:8px">Copy this value and add it as <strong>CHATBOT_KNOWLEDGE</strong> environment variable in Vercel:</p>' +
+        '<textarea id="export-value" class="form-textarea" rows="3" readonly style="font-family:monospace;font-size:12px"></textarea>' +
+        '<button class="btn" id="copyExportBtn" style="margin-top:8px;background:#0A3D6B;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer">Copy to Clipboard</button>' +
+      '</div>';
   }
 
   function bindChatbotActions() {
@@ -1252,6 +1260,28 @@
         btn.textContent = 'Save All Settings';
         showToast('Error saving settings', 'error');
       });
+    });
+
+    document.getElementById('exportKnowledgeBtn').addEventListener('click', function() {
+      fetch('/admin/api/chatbot-knowledge-export', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.success) {
+            document.getElementById('export-result').style.display = 'block';
+            document.getElementById('export-value').value = d.envValue;
+            showToast('Export ready — copy the value below', 'success');
+          } else {
+            showToast('Failed to export', 'error');
+          }
+        })
+        .catch(function() { showToast('Error exporting', 'error'); });
+    });
+
+    document.getElementById('copyExportBtn').addEventListener('click', function() {
+      var el = document.getElementById('export-value');
+      el.select();
+      document.execCommand('copy');
+      showToast('Copied to clipboard!', 'success');
     });
 
     document.getElementById('testChatBtn').addEventListener('click', function() {
