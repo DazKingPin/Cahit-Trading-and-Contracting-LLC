@@ -6,8 +6,18 @@ const crypto = require('crypto');
 const app = express();
 const PORT = 5000;
 
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'cahit2024';
+const CREDENTIALS_FILE = path.join(__dirname, 'admin-credentials.json');
+function loadCredentials() {
+  try {
+    if (fs.existsSync(CREDENTIALS_FILE)) {
+      return JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf8'));
+    }
+  } catch (e) {}
+  return { username: 'admin', password: 'cahit2024' };
+}
+function saveCredentials(creds) {
+  fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(creds, null, 2));
+}
 const adminTokens = new Set();
 
 const THEME_DIR = path.join(__dirname, 'wp-theme', 'cahit-theme');
@@ -342,13 +352,37 @@ const ADMIN_DIR = path.join(THEME_DIR, 'admin');
 
 app.post('/admin/api/login', express.json(), (req, res) => {
   const { username, password } = req.body || {};
-  if ((username === ADMIN_USERNAME || username === 'admin@cahitcontracting.com') && password === ADMIN_PASSWORD) {
+  const creds = loadCredentials();
+  if ((username === creds.username || username === 'admin@cahitcontracting.com') && password === creds.password) {
     const token = crypto.randomBytes(32).toString('hex');
     adminTokens.add(token);
     res.json({ success: true, token, user: { name: 'Admin', role: 'administrator' } });
   } else {
     res.status(401).json({ success: false, message: 'Invalid username or password' });
   }
+});
+
+app.post('/admin/api/change-credentials', express.json(), (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+  const { currentPassword, newUsername, newPassword } = req.body || {};
+  const creds = loadCredentials();
+  if (currentPassword !== creds.password) {
+    return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+  }
+  if (!newPassword || newPassword.length < 6) {
+    return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+  }
+  creds.username = newUsername && newUsername.trim() ? newUsername.trim() : creds.username;
+  creds.password = newPassword;
+  saveCredentials(creds);
+  adminTokens.clear();
+  const newToken = crypto.randomBytes(32).toString('hex');
+  adminTokens.add(newToken);
+  res.json({ success: true, token: newToken, message: 'Credentials updated successfully' });
 });
 
 app.get('/admin/api/verify', (req, res) => {

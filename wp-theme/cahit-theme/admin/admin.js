@@ -1087,6 +1087,14 @@
         '<div class="settings-row"><div><div class="settings-row-label">Blog Section</div><div class="settings-row-desc">Show blog posts on the homepage</div></div><button class="toggle on" data-setting="blog" data-testid="toggle-blog"></button></div>' +
       '</div>' +
       '<div class="settings-section">' +
+        '<div class="settings-title">Account Security</div>' +
+        '<div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" id="setting-username" placeholder="admin" data-testid="input-setting-username" /></div>' +
+        '<div class="form-group"><label class="form-label">Current Password</label><input class="form-input" type="password" id="setting-current-password" placeholder="Enter current password" data-testid="input-current-password" /></div>' +
+        '<div class="form-group"><label class="form-label">New Password</label><input class="form-input" type="password" id="setting-new-password" placeholder="Enter new password (min 6 characters)" data-testid="input-new-password" /></div>' +
+        '<div class="form-group"><label class="form-label">Confirm New Password</label><input class="form-input" type="password" id="setting-confirm-password" placeholder="Confirm new password" data-testid="input-confirm-password" /></div>' +
+        '<button class="btn btn-primary" id="changeCredentialsBtn" data-testid="button-change-credentials" style="margin-top:8px">Update Credentials</button>' +
+      '</div>' +
+      '<div class="settings-section">' +
         '<div class="settings-title">API Integrations</div>' +
         '<div class="form-group">' +
           '<label class="form-label">OpenAI API Key</label>' +
@@ -1114,6 +1122,48 @@
         showToast('Setting updated', 'success');
       });
     });
+    var changeCredsBtn = document.getElementById('changeCredentialsBtn');
+    if (changeCredsBtn) {
+      changeCredsBtn.addEventListener('click', function() {
+        var username = document.getElementById('setting-username').value.trim();
+        var currentPw = document.getElementById('setting-current-password').value;
+        var newPw = document.getElementById('setting-new-password').value;
+        var confirmPw = document.getElementById('setting-confirm-password').value;
+        if (!currentPw) { showToast('Please enter your current password', 'error'); return; }
+        if (!newPw || newPw.length < 6) { showToast('New password must be at least 6 characters', 'error'); return; }
+        if (newPw !== confirmPw) { showToast('New passwords do not match', 'error'); return; }
+        var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
+        changeCredsBtn.disabled = true;
+        changeCredsBtn.textContent = 'Updating...';
+        fetch('/admin/api/change-credentials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ currentPassword: currentPw, newUsername: username || undefined, newPassword: newPw })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          changeCredsBtn.disabled = false;
+          changeCredsBtn.textContent = 'Update Credentials';
+          if (d.success) {
+            if (d.token) {
+              sessionStorage.setItem('cahit_admin_token', d.token);
+              localStorage.setItem('cahit_admin_token', d.token);
+            }
+            document.getElementById('setting-current-password').value = '';
+            document.getElementById('setting-new-password').value = '';
+            document.getElementById('setting-confirm-password').value = '';
+            showToast('Credentials updated successfully', 'success');
+          } else {
+            showToast(d.message || 'Failed to update credentials', 'error');
+          }
+        })
+        .catch(function() {
+          changeCredsBtn.disabled = false;
+          changeCredsBtn.textContent = 'Update Credentials';
+          showToast('Error updating credentials', 'error');
+        });
+      });
+    }
     var toggleKeyBtn = document.getElementById('toggleKeyVisibility');
     var keyInput = document.getElementById('openai-api-key');
     if (toggleKeyBtn && keyInput) {
