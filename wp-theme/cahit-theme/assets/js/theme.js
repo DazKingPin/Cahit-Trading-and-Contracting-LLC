@@ -772,7 +772,14 @@
     var msg = document.getElementById("funnel-message");
     funnelData["message"] = msg ? msg.value.trim() : "";
     funnelGlobalStep = 2;
-    showFunnelStep(3);
+    showFunnelStep(0);
+    var servicesSection = document.getElementById("services-section");
+    if (servicesSection) {
+      servicesSection.scrollIntoView({ behavior: "smooth" });
+    }
+    setTimeout(function () {
+      showFunnelStep(3);
+    }, 800);
   };
 
   window.closeFunnel = function (step) {
@@ -826,7 +833,14 @@
         .then(function (data) {
           if (data.success === false) throw new Error(data.data || "Submission failed");
           funnelGlobalStep = 4;
-          showFunnelStep(4);
+          showFunnelStep(0);
+          var projectsSection = document.getElementById("projects-section");
+          if (projectsSection) {
+            projectsSection.scrollIntoView({ behavior: "smooth" });
+          }
+          setTimeout(function () {
+            showFunnelStep(4);
+          }, 800);
         })
         .catch(function (err) {
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Submit Request"; }
