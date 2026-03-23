@@ -87,5 +87,12 @@
   </div>
 </section>
 
+<section class="cta-section" data-testid="section-cta">
+  <div class="container text-center">
+    <h2 class="cta-title" data-ar="لنبنِ مشروعك القادم">Let's Build Your Next Project</h2>
+    <p class="cta-subtitle" data-ar="سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.">Whether planning marine infrastructure, coastal protection, or large-scale civil works, our team is ready to support your project with reliable expertise and professional execution.</p>
+    <button onclick="openContactPopup();" class="btn btn-white" data-testid="button-cta-contact" data-ar="تواصل مع فريقنا">Contact Our Team</button>
+  </div>
+</section>
 
 <?php get_footer(); ?>
