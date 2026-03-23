@@ -1,8 +1,8 @@
 <div class="footer-cta-strip" data-testid="footer-cta-strip">
   <div class="container">
-    <h3 class="footer-cta-title">لنبنِ مشروعك القادم</h3>
-    <p class="footer-cta-desc">سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.</p>
-    <button onclick="openContactPopup();" class="footer-cta-btn" data-testid="footer-cta-contact">تواصل مع فريقنا</button>
+    <h3 class="footer-cta-title" data-ar="لنبنِ مشروعك القادم">Let's Build Your Next Project</h3>
+    <p class="footer-cta-desc" data-ar="سواء كنت تخطط للبنية التحتية البحرية أو حماية السواحل أو الأعمال المدنية الكبيرة، فريقنا مستعد لدعم مشروعك بخبرة موثوقة وتنفيذ احترافي.">Whether you're planning marine infrastructure, coastal protection, or large civil works, our team is ready to support your project with trusted expertise and professional execution.</p>
+    <button onclick="openContactPopup();" class="footer-cta-btn" data-testid="footer-cta-contact" data-ar="تواصل مع فريقنا">Contact Our Team</button>
   </div>
 </div>
 

@@ -664,7 +664,7 @@
       ".detail-label, .quote-section-label, .hero-banner-title-lg, " +
       ".funnel-title, .funnel-label, .funnel-option, .funnel-helper, .funnel-step-badge, .funnel-submit, " +
       ".project-category-badge, .project-card-title, .project-card-location, .project-card-desc, " +
-      ".sector-name, .client-logo-name, .contact-label, " +
+      ".sector-name, .client-logo-name, .contact-label, .footer-cta-title, .footer-cta-desc, .footer-cta-btn, " +
       "h1, h2, h3, p, label"
     );
     els.forEach(function (el) {

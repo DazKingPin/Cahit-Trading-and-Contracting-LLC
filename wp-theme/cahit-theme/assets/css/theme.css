@@ -1395,7 +1395,6 @@ footer.site-footer {
   background: #0ea5e9;
   text-align: center;
   padding: 3rem 0;
-  direction: rtl;
   width: 100%;
 }
 .footer-cta-title {
@@ -1403,7 +1402,6 @@ footer.site-footer {
   font-weight: 700;
   color: #fff;
   margin-bottom: 0.75rem;
-  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
 .footer-cta-desc {
   font-size: 0.95rem;
@@ -1411,6 +1409,13 @@ footer.site-footer {
   max-width: 42rem;
   margin: 0 auto 1.25rem;
   line-height: 1.8;
+}
+html.is-rtl .footer-cta-strip {
+  direction: rtl;
+}
+html.is-rtl .footer-cta-title,
+html.is-rtl .footer-cta-desc,
+html.is-rtl .footer-cta-btn {
   font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
 .footer-cta-btn {
@@ -1423,7 +1428,6 @@ footer.site-footer {
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
   transition: background 150ms, transform 150ms;
 }
 .footer-cta-btn:hover {
