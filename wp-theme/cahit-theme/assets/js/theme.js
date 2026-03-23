@@ -671,12 +671,13 @@
       el.setAttribute("data-translated", "true");
       translateTextNode(el);
     });
-    var funnelPanel = document.getElementById("funnel-step-1");
-    if (funnelPanel) funnelPanel.setAttribute("dir", "rtl");
-    var funnelMsg = document.getElementById("funnel-message");
-    if (funnelMsg && funnelMsg.getAttribute("data-placeholder-ar")) {
-      funnelMsg.placeholder = funnelMsg.getAttribute("data-placeholder-ar");
-    }
+    ["funnel-step-1", "funnel-step-3", "funnel-step-4"].forEach(function (id) {
+      var panel = document.getElementById(id);
+      if (panel) panel.setAttribute("dir", "rtl");
+    });
+    document.querySelectorAll("[data-placeholder-ar]").forEach(function (el) {
+      el.placeholder = el.getAttribute("data-placeholder-ar");
+    });
     document.querySelectorAll("[data-ar-html]").forEach(function (el) {
       if (!el.getAttribute("data-en-html")) {
         el.setAttribute("data-en-html", el.innerHTML);
@@ -698,12 +699,13 @@
       }
       el.removeAttribute("data-translated");
     });
-    var funnelPanel = document.getElementById("funnel-step-1");
-    if (funnelPanel) funnelPanel.removeAttribute("dir");
-    var funnelMsg = document.getElementById("funnel-message");
-    if (funnelMsg && funnelMsg.getAttribute("data-placeholder-en")) {
-      funnelMsg.placeholder = funnelMsg.getAttribute("data-placeholder-en");
-    }
+    ["funnel-step-1", "funnel-step-3", "funnel-step-4"].forEach(function (id) {
+      var panel = document.getElementById(id);
+      if (panel) panel.removeAttribute("dir");
+    });
+    document.querySelectorAll("[data-placeholder-en]").forEach(function (el) {
+      el.placeholder = el.getAttribute("data-placeholder-en");
+    });
     swapLeadershipVideos(false);
   }
 

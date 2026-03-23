@@ -425,48 +425,48 @@
 
 <div class="funnel-panel" id="funnel-step-3" data-testid="funnel-step-3" style="display:none;">
   <div class="funnel-panel-header">
-    <div class="funnel-step-badge">Contact</div>
+    <div class="funnel-step-badge" data-ar="تواصل">Contact</div>
     <button class="funnel-close" onclick="closeFunnel(3)" aria-label="Close">&times;</button>
   </div>
-  <h3 class="funnel-title" data-translate="funnel_step3_title">Complete Your Details</h3>
+  <h3 class="funnel-title" data-ar="أكمل بياناتك">Complete Your Details</h3>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_role">Your Role</label>
+    <label class="funnel-label" data-ar="دورك">Your Role</label>
     <div class="funnel-options" id="funnel-role">
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Project Owner</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Engineer / Consultant</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Procurement / Contract Manager</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)">Other</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)" data-ar="مالك المشروع">Project Owner</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)" data-ar="مهندس / استشاري">Engineer / Consultant</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)" data-ar="مدير مشتريات / عقود">Procurement / Contract Manager</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-role', this)" data-ar="أخرى">Other</button>
     </div>
   </div>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_decision_maker">Are you the decision maker?</label>
+    <label class="funnel-label" data-ar="هل أنت صاحب القرار؟">Are you the decision maker?</label>
     <div class="funnel-options funnel-options-row" id="funnel-decision">
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)">Yes</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)">No</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)">Part of a team</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)" data-ar="نعم">Yes</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)" data-ar="لا">No</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)" data-ar="جزء من فريق">Part of a team</button>
     </div>
   </div>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_fullname">Full Name</label>
-    <input type="text" class="funnel-input" id="funnel-name" placeholder="Your full name" data-testid="funnel-input-name" />
+    <label class="funnel-label" data-ar="الاسم الكامل">Full Name</label>
+    <input type="text" class="funnel-input" id="funnel-name" placeholder="Your full name" data-placeholder-ar="اسمك الكامل" data-placeholder-en="Your full name" data-testid="funnel-input-name" />
   </div>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_email">Email Address</label>
+    <label class="funnel-label" data-ar="البريد الإلكتروني">Email Address</label>
     <input type="email" class="funnel-input" id="funnel-email" placeholder="your@email.com" data-testid="funnel-input-email" />
   </div>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_phone">Phone Number</label>
+    <label class="funnel-label" data-ar="رقم الهاتف">Phone Number</label>
     <input type="tel" class="funnel-input" id="funnel-phone" placeholder="+968 XXXX XXXX" data-testid="funnel-input-phone" />
   </div>
   <div class="funnel-field">
-    <label class="funnel-label" data-translate="funnel_consult_time">Preferred Consultation Time</label>
+    <label class="funnel-label" data-ar="وقت الاستشارة المفضل">Preferred Consultation Time</label>
     <div class="funnel-options funnel-options-row" id="funnel-time">
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)">Morning</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)">Afternoon</button>
-      <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)">Evening</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)" data-ar="صباحاً">Morning</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)" data-ar="بعد الظهر">Afternoon</button>
+      <button class="funnel-option" onclick="selectFunnelOption('funnel-time', this)" data-ar="مساءً">Evening</button>
     </div>
   </div>
-  <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(3)" data-testid="funnel-submit-3">Submit Request</button>
+  <button class="btn btn-primary btn-full funnel-submit" onclick="submitFunnelStep(3)" data-testid="funnel-submit-3" data-ar="إرسال الطلب">Submit Request</button>
 </div>
 
 <div class="funnel-panel funnel-panel-success" id="funnel-step-4" data-testid="funnel-step-4" style="display:none;">
@@ -477,8 +477,8 @@
     <div class="funnel-success-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
     </div>
-    <h3 class="funnel-title" data-translate="funnel_received">Request Received</h3>
-    <p class="funnel-success-text" data-translate="funnel_received_text">We've received your inquiry. Our team will contact you shortly to schedule your free consultation.</p>
+    <h3 class="funnel-title" data-ar="تم استلام طلبك">Request Received</h3>
+    <p class="funnel-success-text" data-ar="لقد استلمنا استفسارك. سيتواصل فريقنا معك قريباً لتحديد موعد استشارتك المجانية.">We've received your inquiry. Our team will contact you shortly to schedule your free consultation.</p>
   </div>
 </div>
 
