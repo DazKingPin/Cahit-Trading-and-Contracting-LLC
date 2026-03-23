@@ -1207,7 +1207,10 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify({ entries: entries, personality: personality.trim(), language: language, position: position })
-        }).then(function(r) { return r.json(); })
+        }).then(function(r) {
+          if (r.status === 401) return { success: false, message: 'Session expired' };
+          return r.json();
+        })
       ];
       if (apiKeyVal.trim()) {
         savePromises.push(
@@ -1215,13 +1218,22 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({ key: apiKeyVal.trim() })
-          }).then(function(r) { return r.json(); })
+          }).then(function(r) {
+            if (r.status === 401) return { success: false, message: 'Session expired' };
+            return r.json();
+          })
         );
       }
       Promise.all(savePromises)
       .then(function(results) {
         btn.disabled = false;
         btn.textContent = 'Save All Settings';
+        var hasAuthError = results.some(function(d) { return d.success === false && d.message === 'Session expired'; });
+        if (hasAuthError) {
+          showToast('Session expired. Please log in again.', 'error');
+          setTimeout(function() { window.location.href = '/admin/login'; }, 1500);
+          return;
+        }
         var allOk = results.every(function(d) { return d.success; });
         if (allOk) {
           showToast('All settings saved successfully', 'success');
@@ -1231,7 +1243,8 @@
             document.getElementById('chatbot-api-key').value = '';
           }
         } else {
-          showToast('Some settings failed to save', 'error');
+          var failedMsgs = results.filter(function(d) { return !d.success; }).map(function(d) { return d.message || 'Unknown error'; });
+          showToast('Failed: ' + failedMsgs.join(', '), 'error');
         }
       })
       .catch(function() {
