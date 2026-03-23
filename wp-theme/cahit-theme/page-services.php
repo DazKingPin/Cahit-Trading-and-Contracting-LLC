@@ -87,15 +87,5 @@
   </div>
 </section>
 
-<section class="cta-section" data-testid="section-cta">
-  <div class="container text-center">
-    <h2 class="cta-title">Let's Build Your Next Project</h2>
-    <p class="cta-subtitle">Whether planning marine infrastructure, coastal protection, or large-scale civil works, our team is ready to support your project with reliable expertise and professional execution.</p>
-    <a href="<?php echo esc_url(home_url('/')); ?>" class="btn btn-white" data-testid="button-cta-contact">
-      Contact Our Team
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    </a>
-  </div>
-</section>
 
 <?php get_footer(); ?>
