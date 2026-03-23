@@ -2194,6 +2194,12 @@ footer.site-footer {
   text-align: right;
   font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
+[dir="rtl"] .funnel-title,
+[dir="rtl"] .funnel-option,
+[dir="rtl"] .funnel-helper {
+  text-align: right;
+  font-family: 'Noto Kufi Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
 .funnel-comm-box {
   margin-top: 1rem;
   border-top: 1px solid #e2e8f0;

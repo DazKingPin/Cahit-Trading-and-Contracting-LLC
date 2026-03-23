@@ -393,33 +393,33 @@
 
 
 <!-- Lead Qualification Funnel (fixed position overlays) -->
-<div class="funnel-panel funnel-hero-panel" id="funnel-step-1" data-testid="funnel-step-1" style="display:none;" dir="rtl">
+<div class="funnel-panel funnel-hero-panel" id="funnel-step-1" data-testid="funnel-step-1" style="display:none;">
   <div class="funnel-panel-header">
     <button class="funnel-close" onclick="closeFunnel(1)" aria-label="Close">&times;</button>
   </div>
   <div class="funnel-question-block" id="funnel-q1-block">
-    <h3 class="funnel-title-ar" data-testid="funnel-q1-title"><span class="funnel-qnum">1.</span> ما نوع المشروع الذي تخطط له؟</h3>
-    <div class="funnel-options-ar" id="funnel-project-type">
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-marine" data-en="Marine Construction">بناء بحري</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-coastal" data-en="Coastal Protection">حماية ساحلية</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-seaport" data-en="Seaport Infrastructure">بنية تحتية للميناء</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-earthworks" data-en="Earthworks">أعمال حفر</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-mep" data-en="MEP Works">أعمال ميكانيكا وكهرباء وسباكة</button>
+    <h3 class="funnel-title" data-testid="funnel-q1-title" data-ar="ما نوع المشروع الذي تخطط له؟"><span class="funnel-qnum">1.</span> What type of project are you planning?</h3>
+    <div class="funnel-options" id="funnel-project-type">
+      <button class="funnel-option" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-marine" data-en="Marine Construction" data-ar="بناء بحري">Marine Construction</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-coastal" data-en="Coastal Protection" data-ar="حماية ساحلية">Coastal Protection</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-seaport" data-en="Seaport Infrastructure" data-ar="بنية تحتية للميناء">Seaport Infrastructure</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-earthworks" data-en="Earthworks" data-ar="أعمال حفر">Earthworks</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-project-type', this)" data-testid="funnel-opt-mep" data-en="MEP Works" data-ar="أعمال ميكانيكا وكهرباء وسباكة">MEP Works</button>
     </div>
-    <p class="funnel-helper-ar">هذا يساعدنا في توجيهك إلى الخدمة المناسبة</p>
+    <p class="funnel-helper" data-ar="هذا يساعدنا في توجيهك إلى الخدمة المناسبة">This helps us direct you to the right service</p>
   </div>
   <div class="funnel-question-block" id="funnel-q2-block">
-    <h3 class="funnel-title-ar" data-testid="funnel-q2-title"><span class="funnel-qnum">2.</span> ما هو الهدف الرئيسي لمشروعك؟</h3>
-    <div class="funnel-options-ar" id="funnel-primary-goal">
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-coastal" data-en="Strengthen coastal protection">تعزيز حماية السواحل</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-port" data-en="Expand port capacity">توسيع سعة الميناء</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-infra" data-en="Infrastructure development">تطوير البنية التحتية</button>
-      <button class="funnel-option-ar" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-other" data-en="Other">أخرى</button>
+    <h3 class="funnel-title" data-testid="funnel-q2-title" data-ar="ما هو الهدف الرئيسي لمشروعك؟"><span class="funnel-qnum">2.</span> What is your project's primary goal?</h3>
+    <div class="funnel-options" id="funnel-primary-goal">
+      <button class="funnel-option" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-coastal" data-en="Strengthen coastal protection" data-ar="تعزيز حماية السواحل">Strengthen coastal protection</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-port" data-en="Expand port capacity" data-ar="توسيع سعة الميناء">Expand port capacity</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-infra" data-en="Infrastructure development" data-ar="تطوير البنية التحتية">Infrastructure development</button>
+      <button class="funnel-option" onclick="selectHeroOption('funnel-primary-goal', this)" data-testid="funnel-goal-other" data-en="Other" data-ar="أخرى">Other</button>
     </div>
   </div>
   <div class="funnel-comm-box">
-    <textarea class="funnel-comm-input" id="funnel-message" placeholder="أخبرنا المزيد عن مشروعك..." data-testid="funnel-message" rows="3"></textarea>
-    <button class="funnel-comm-send" onclick="submitHeroFunnel()" data-testid="funnel-hero-submit">إرسال</button>
+    <textarea class="funnel-comm-input" id="funnel-message" placeholder="Tell us more about your project..." data-placeholder-ar="أخبرنا المزيد عن مشروعك..." data-placeholder-en="Tell us more about your project..." data-testid="funnel-message" rows="3"></textarea>
+    <button class="funnel-comm-send" onclick="submitHeroFunnel()" data-testid="funnel-hero-submit" data-ar="إرسال">Send</button>
   </div>
 </div>
 

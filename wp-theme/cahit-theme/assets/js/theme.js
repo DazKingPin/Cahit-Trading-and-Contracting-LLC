@@ -671,6 +671,12 @@
       el.setAttribute("data-translated", "true");
       translateTextNode(el);
     });
+    var funnelPanel = document.getElementById("funnel-step-1");
+    if (funnelPanel) funnelPanel.setAttribute("dir", "rtl");
+    var funnelMsg = document.getElementById("funnel-message");
+    if (funnelMsg && funnelMsg.getAttribute("data-placeholder-ar")) {
+      funnelMsg.placeholder = funnelMsg.getAttribute("data-placeholder-ar");
+    }
     document.querySelectorAll("[data-ar-html]").forEach(function (el) {
       if (!el.getAttribute("data-en-html")) {
         el.setAttribute("data-en-html", el.innerHTML);
@@ -692,6 +698,12 @@
       }
       el.removeAttribute("data-translated");
     });
+    var funnelPanel = document.getElementById("funnel-step-1");
+    if (funnelPanel) funnelPanel.removeAttribute("dir");
+    var funnelMsg = document.getElementById("funnel-message");
+    if (funnelMsg && funnelMsg.getAttribute("data-placeholder-en")) {
+      funnelMsg.placeholder = funnelMsg.getAttribute("data-placeholder-en");
+    }
     swapLeadershipVideos(false);
   }
 
