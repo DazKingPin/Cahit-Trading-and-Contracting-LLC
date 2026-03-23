@@ -385,7 +385,7 @@ app.get('/admin/api/openai-key-status', (req, res) => {
   res.json({ success: true, hasKey: !!key, maskedKey: key ? 'sk-...' + key.slice(-4) : '' });
 });
 
-const CAHIT_SYSTEM_PROMPT = `You are the Cahit Assistant, a helpful AI assistant for Cahit Trading & Contracting LLC, a marine and coastal construction company based in Oman.
+const CAHIT_BASE_PROMPT = `You are the Cahit Assistant, a helpful AI assistant for Cahit Trading & Contracting LLC, a marine and coastal construction company based in Oman.
 
 Company Information:
 - Full name: Cahit Trading & Contracting LLC
@@ -403,6 +403,55 @@ Services:
 
 Be professional, helpful, and concise. If asked about pricing or specific project details, encourage the visitor to contact the team directly. Respond in the same language the user writes in (English or Arabic).`;
 
+const KNOWLEDGE_FILE = path.join(DATA_DIR, 'chatbot-knowledge.json');
+function loadKnowledge() {
+  try {
+    if (fs.existsSync(KNOWLEDGE_FILE)) {
+      return JSON.parse(fs.readFileSync(KNOWLEDGE_FILE, 'utf8'));
+    }
+  } catch (e) {}
+  return { entries: [], personality: '' };
+}
+function saveKnowledge(data) {
+  try { fs.writeFileSync(KNOWLEDGE_FILE, JSON.stringify(data, null, 2)); } catch (e) {}
+}
+function buildSystemPrompt() {
+  let prompt = CAHIT_BASE_PROMPT;
+  const knowledge = loadKnowledge();
+  if (knowledge.entries && knowledge.entries.length > 0) {
+    prompt += '\n\nAdditional Company Knowledge:';
+    knowledge.entries.forEach(function(e) {
+      if (e.title || e.content) {
+        prompt += '\n\n' + (e.title ? '## ' + e.title + '\n' : '') + (e.content || '');
+      }
+    });
+  }
+  if (knowledge.personality) {
+    prompt += '\n\nBehavior Instructions: ' + knowledge.personality;
+  }
+  return prompt;
+}
+
+app.get('/admin/api/chatbot-knowledge', (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false });
+  }
+  res.json({ success: true, data: loadKnowledge() });
+});
+
+app.post('/admin/api/chatbot-knowledge', express.json(), (req, res) => {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token || !adminTokens.has(token)) {
+    return res.status(401).json({ success: false });
+  }
+  const { entries, personality } = req.body || {};
+  saveKnowledge({ entries: entries || [], personality: personality || '' });
+  res.json({ success: true });
+});
+
 const chatSessions = {};
 
 app.post('/api/chat', express.json(), async (req, res) => {
@@ -416,7 +465,7 @@ app.post('/api/chat', express.json(), async (req, res) => {
 
   try {
     if (!chatSessions[sessionId]) {
-      chatSessions[sessionId] = [{ role: 'system', content: CAHIT_SYSTEM_PROMPT }];
+      chatSessions[sessionId] = [{ role: 'system', content: buildSystemPrompt() }];
     }
     chatSessions[sessionId].push({ role: 'user', content: message });
     if (chatSessions[sessionId].length > 20) {

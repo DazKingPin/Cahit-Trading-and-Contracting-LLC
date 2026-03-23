@@ -96,6 +96,7 @@
       case 'media': content.innerHTML = renderMedia(); bindMediaActions(); break;
       case 'leads': content.innerHTML = renderLeads(); break;
       case 'analytics': content.innerHTML = renderAnalytics(); break;
+      case 'chatbot': content.innerHTML = renderChatbotKnowledge(); bindChatbotActions(); break;
       case 'settings': content.innerHTML = renderSettings(); bindSettingsActions(); break;
     }
   }
@@ -1064,6 +1065,156 @@
           '</table>' +
         '</div>' +
       '</div>';
+  }
+
+  function renderChatbotKnowledge() {
+    return '' +
+      '<div class="settings-section">' +
+        '<div class="settings-title">Chatbot Knowledge Base</div>' +
+        '<p class="settings-row-desc" style="margin-bottom:16px">Add custom knowledge that the AI chatbot will use when answering visitor questions. This information is combined with the default company info (services, contact details, location).</p>' +
+      '</div>' +
+      '<div class="settings-section">' +
+        '<div class="settings-title">Custom Knowledge Entries</div>' +
+        '<div id="knowledge-entries"></div>' +
+        '<button class="btn btn-primary" id="addKnowledgeBtn" data-testid="button-add-knowledge" style="margin-top:12px">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+          'Add Knowledge Entry' +
+        '</button>' +
+      '</div>' +
+      '<div class="settings-section">' +
+        '<div class="settings-title">Chatbot Personality</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label">Tone & Behavior Instructions</label>' +
+          '<textarea class="form-textarea" id="chatbot-personality" data-testid="input-chatbot-personality" rows="4" placeholder="e.g. Always greet visitors warmly. Mention ongoing promotions. Prioritize safety in all construction discussions."></textarea>' +
+          '<p class="settings-row-desc" style="margin-top:6px">Guide how the chatbot responds (tone, priorities, special instructions)</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="settings-section">' +
+        '<div class="settings-title">Test Chatbot</div>' +
+        '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px">' +
+          '<div id="test-chat-messages" style="min-height:100px;max-height:250px;overflow-y:auto;margin-bottom:12px;font-size:14px"></div>' +
+          '<div style="display:flex;gap:8px">' +
+            '<input class="form-input" id="test-chat-input" data-testid="input-test-chat" placeholder="Type a test message..." style="flex:1" />' +
+            '<button class="btn btn-primary" id="testChatBtn" data-testid="button-test-chat">Send</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="margin-top:24px"><button class="btn btn-primary" id="saveKnowledgeBtn" data-testid="button-save-knowledge">Save Knowledge Base</button></div>';
+  }
+
+  function bindChatbotActions() {
+    var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
+    fetch('/admin/api/chatbot-knowledge', { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.success) {
+          var entries = d.data.entries || [];
+          var personality = d.data.personality || '';
+          var container = document.getElementById('knowledge-entries');
+          if (entries.length === 0) { addKnowledgeEntry(container, '', ''); }
+          else { entries.forEach(function(e) { addKnowledgeEntry(container, e.title, e.content); }); }
+          var personalityEl = document.getElementById('chatbot-personality');
+          if (personalityEl) personalityEl.value = personality;
+        }
+      })
+      .catch(function() {
+        addKnowledgeEntry(document.getElementById('knowledge-entries'), '', '');
+      });
+
+    document.getElementById('addKnowledgeBtn').addEventListener('click', function() {
+      addKnowledgeEntry(document.getElementById('knowledge-entries'), '', '');
+    });
+
+    document.getElementById('saveKnowledgeBtn').addEventListener('click', function() {
+      var entries = [];
+      document.querySelectorAll('.knowledge-entry').forEach(function(el) {
+        var title = el.querySelector('.knowledge-title').value.trim();
+        var content = el.querySelector('.knowledge-content').value.trim();
+        if (title || content) entries.push({ title: title, content: content });
+      });
+      var personality = (document.getElementById('chatbot-personality') || {}).value || '';
+      var btn = document.getElementById('saveKnowledgeBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      fetch('/admin/api/chatbot-knowledge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ entries: entries, personality: personality.trim() })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        btn.disabled = false;
+        btn.textContent = 'Save Knowledge Base';
+        if (d.success) showToast('Knowledge base saved successfully', 'success');
+        else showToast(d.message || 'Failed to save', 'error');
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'Save Knowledge Base';
+        showToast('Error saving knowledge base', 'error');
+      });
+    });
+
+    document.getElementById('testChatBtn').addEventListener('click', function() {
+      var input = document.getElementById('test-chat-input');
+      var msg = input.value.trim();
+      if (!msg) return;
+      var messagesEl = document.getElementById('test-chat-messages');
+      messagesEl.innerHTML += '<div style="margin-bottom:8px;text-align:right"><span style="background:#0A3D6B;color:#fff;padding:6px 12px;border-radius:12px;display:inline-block;max-width:80%">' + escapeHtml(msg) + '</span></div>';
+      input.value = '';
+      messagesEl.innerHTML += '<div style="margin-bottom:8px" id="typing-indicator"><span style="background:#f1f5f9;padding:6px 12px;border-radius:12px;display:inline-block;color:#64748b">Typing...</span></div>';
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, sessionId: 'admin-test-' + Date.now() })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var ti = document.getElementById('typing-indicator');
+        if (ti) ti.remove();
+        messagesEl.innerHTML += '<div style="margin-bottom:8px"><span style="background:#f1f5f9;padding:6px 12px;border-radius:12px;display:inline-block;max-width:80%">' + escapeHtml(d.reply) + '</span></div>';
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      })
+      .catch(function() {
+        var ti = document.getElementById('typing-indicator');
+        if (ti) ti.remove();
+        messagesEl.innerHTML += '<div style="margin-bottom:8px"><span style="background:#fee2e2;padding:6px 12px;border-radius:12px;display:inline-block">Error getting response</span></div>';
+      });
+    });
+
+    var testInput = document.getElementById('test-chat-input');
+    if (testInput) {
+      testInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('testChatBtn').click();
+      });
+    }
+  }
+
+  function addKnowledgeEntry(container, title, content) {
+    var div = document.createElement('div');
+    div.className = 'knowledge-entry';
+    div.style.cssText = 'background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:12px;position:relative';
+    div.innerHTML = '' +
+      '<button class="knowledge-remove" style="position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;color:#ef4444;font-size:18px;padding:4px" title="Remove">&times;</button>' +
+      '<div class="form-group" style="margin-bottom:10px">' +
+        '<label class="form-label">Topic / Title</label>' +
+        '<input class="form-input knowledge-title" placeholder="e.g. Project Portfolio, Pricing Policy, Safety Standards..." value="' + escapeHtml(title) + '" />' +
+      '</div>' +
+      '<div class="form-group" style="margin-bottom:0">' +
+        '<label class="form-label">Knowledge Content</label>' +
+        '<textarea class="form-textarea knowledge-content" rows="4" placeholder="Add detailed information the chatbot should know about this topic...">' + escapeHtml(content) + '</textarea>' +
+      '</div>';
+    div.querySelector('.knowledge-remove').addEventListener('click', function() {
+      div.remove();
+    });
+    container.appendChild(div);
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
   }
 
   function renderSettings() {
