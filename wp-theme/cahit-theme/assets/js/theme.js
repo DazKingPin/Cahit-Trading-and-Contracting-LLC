@@ -749,7 +749,7 @@
   window.selectHeroOption = function (groupId, btn) {
     var group = document.getElementById(groupId);
     if (!group) return;
-    var buttons = group.querySelectorAll(".funnel-option-ar");
+    var buttons = group.querySelectorAll(".funnel-option");
     buttons.forEach(function (b) { b.classList.remove("selected"); });
     btn.classList.add("selected");
     funnelData[groupId] = btn.getAttribute("data-en") || btn.textContent.trim();

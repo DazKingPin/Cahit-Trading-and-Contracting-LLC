@@ -2142,28 +2142,45 @@ html.is-rtl .footer-cta-btn {
 .funnel-hero-panel {
   right: 2rem;
   left: auto;
-  width: 380px;
-  padding: 1.25rem 1.5rem;
-  top: 5rem;
+  width: 360px;
+  padding: 1rem 1.25rem;
+  top: 4.5rem;
   transform: none;
-  max-height: calc(100vh - 6rem);
+  max-height: calc(100vh - 5rem);
   overflow-y: auto;
 }
 .funnel-hero-panel .funnel-options {
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 .funnel-hero-panel .funnel-option {
   width: 100%;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
 }
 .funnel-hero-panel .funnel-title {
-  font-size: 0.95rem;
-  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
 }
 .funnel-hero-panel .funnel-question-block {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.funnel-hero-panel .funnel-helper {
+  font-size: 0.7rem;
+  margin-top: 0.3rem;
+}
+.funnel-hero-panel .funnel-comm-box {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+}
+.funnel-hero-panel .funnel-comm-input {
+  font-size: 0.78rem;
+  padding: 0.4rem;
+  rows: 2;
+}
+.funnel-hero-panel .funnel-comm-send {
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
 }
 .funnel-hero-panel .funnel-panel-header {
   justify-content: flex-end;
