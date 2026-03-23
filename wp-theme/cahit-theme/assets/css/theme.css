@@ -2141,6 +2141,12 @@ footer.site-footer {
   width: 380px;
   padding: 1.5rem 2rem;
 }
+.funnel-hero-panel .funnel-options {
+  flex-direction: column;
+}
+.funnel-hero-panel .funnel-option {
+  width: 100%;
+}
 .funnel-hero-panel .funnel-panel-header {
   justify-content: flex-end;
 }
