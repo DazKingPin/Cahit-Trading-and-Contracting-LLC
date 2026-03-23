@@ -1118,7 +1118,21 @@
           '</div>' +
         '</div>' +
       '</div>' +
-      '<div style="margin-top:24px"><button class="btn btn-primary" id="saveKnowledgeBtn" data-testid="button-save-knowledge">Save Knowledge Base</button></div>';
+      '<div class="settings-section">' +
+        '<div class="settings-title">API Key</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label">OpenAI API Key</label>' +
+          '<div style="position:relative">' +
+            '<input class="form-input" type="password" id="chatbot-api-key" placeholder="sk-..." data-testid="input-chatbot-api-key" style="padding-right:40px" />' +
+            '<button type="button" id="chatbotToggleKey" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;padding:4px" data-testid="button-toggle-chatbot-key">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+            '</button>' +
+          '</div>' +
+          '<p class="settings-row-desc" id="chatbot-key-status" style="margin-top:6px;color:#22c55e"></p>' +
+          '<p class="settings-row-desc" style="margin-top:4px">Required for chatbot AI responses. Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:#0ea5e9;text-decoration:underline">platform.openai.com</a></p>' +
+        '</div>' +
+      '</div>' +
+      '<div style="margin-top:24px"><button class="btn btn-primary" id="saveKnowledgeBtn" data-testid="button-save-knowledge">Save All Settings</button></div>';
   }
 
   function bindChatbotActions() {
@@ -1146,6 +1160,30 @@
         addKnowledgeEntry(document.getElementById('knowledge-entries'), '', '');
       });
 
+    fetch('/admin/api/openai-key-status', { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var ks = document.getElementById('chatbot-key-status');
+        if (ks) {
+          if (d.hasKey) { ks.textContent = 'Key configured: ' + d.maskedKey; ks.style.color = '#22c55e'; }
+          else { ks.textContent = 'No API key configured'; ks.style.color = '#ef4444'; }
+        }
+      }).catch(function() {});
+
+    var toggleKeyBtn = document.getElementById('chatbotToggleKey');
+    var keyInput = document.getElementById('chatbot-api-key');
+    if (toggleKeyBtn && keyInput) {
+      toggleKeyBtn.addEventListener('click', function() {
+        if (keyInput.type === 'password') {
+          keyInput.type = 'text';
+          toggleKeyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+        } else {
+          keyInput.type = 'password';
+          toggleKeyBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+        }
+      });
+    }
+
     document.getElementById('addKnowledgeBtn').addEventListener('click', function() {
       addKnowledgeEntry(document.getElementById('knowledge-entries'), '', '');
     });
@@ -1160,25 +1198,46 @@
       var personality = (document.getElementById('chatbot-personality') || {}).value || '';
       var language = (document.getElementById('chatbot-language') || {}).value || 'en';
       var position = (document.getElementById('chatbot-position') || {}).value || 'right';
+      var apiKeyVal = (document.getElementById('chatbot-api-key') || {}).value || '';
       var btn = document.getElementById('saveKnowledgeBtn');
       btn.disabled = true;
       btn.textContent = 'Saving...';
-      fetch('/admin/api/chatbot-knowledge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ entries: entries, personality: personality.trim(), language: language, position: position })
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
+      var savePromises = [
+        fetch('/admin/api/chatbot-knowledge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ entries: entries, personality: personality.trim(), language: language, position: position })
+        }).then(function(r) { return r.json(); })
+      ];
+      if (apiKeyVal.trim()) {
+        savePromises.push(
+          fetch('/admin/api/save-openai-key', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ key: apiKeyVal.trim() })
+          }).then(function(r) { return r.json(); })
+        );
+      }
+      Promise.all(savePromises)
+      .then(function(results) {
         btn.disabled = false;
-        btn.textContent = 'Save Knowledge Base';
-        if (d.success) showToast('Knowledge base saved successfully', 'success');
-        else showToast(d.message || 'Failed to save', 'error');
+        btn.textContent = 'Save All Settings';
+        var allOk = results.every(function(d) { return d.success; });
+        if (allOk) {
+          showToast('All settings saved successfully', 'success');
+          if (apiKeyVal.trim()) {
+            var ks = document.getElementById('chatbot-key-status');
+            if (ks) { ks.textContent = 'Key configured: sk-...' + apiKeyVal.trim().slice(-4); ks.style.color = '#22c55e'; }
+            document.getElementById('chatbot-api-key').value = '';
+          }
+        } else {
+          showToast('Some settings failed to save', 'error');
+        }
       })
       .catch(function() {
         btn.disabled = false;
-        btn.textContent = 'Save Knowledge Base';
-        showToast('Error saving knowledge base', 'error');
+        btn.textContent = 'Save All Settings';
+        showToast('Error saving settings', 'error');
       });
     });
 
