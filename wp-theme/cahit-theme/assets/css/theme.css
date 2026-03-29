@@ -2399,9 +2399,10 @@ html.is-rtl .footer-admin-link { justify-content: flex-end; }
 html.is-rtl .modal-header-row { flex-direction: row-reverse; }
 html.is-rtl .modal-title { text-align: right; }
 html.is-rtl .contact-list { direction: rtl; }
-html.is-rtl .contact-item { flex-direction: row-reverse; text-align: right; }
+html.is-rtl .contact-item { flex-direction: row-reverse; text-align: right; justify-content: flex-end; }
+html.is-rtl .contact-item > div { text-align: right; }
 html.is-rtl .contact-icon { margin-left: 1rem; margin-right: 0; }
-html.is-rtl .contact-value { direction: ltr; text-align: right; }
+html.is-rtl .contact-value { direction: ltr; text-align: right; display: inline-block; width: 100%; }
 html.is-rtl .chatbot-bubble { left: 1.5rem; right: auto !important; }
 html.is-rtl .chatbot-panel { left: 1.5rem; right: auto !important; }
 html.is-rtl .chatbot-msg-user { flex-direction: row-reverse; }
