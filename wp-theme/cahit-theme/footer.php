@@ -29,6 +29,7 @@
           <li><a href="<?php echo esc_url(home_url('/services')); ?>">Earthworks</a></li>
           <li><a href="<?php echo esc_url(home_url('/services')); ?>">Dewatering & Shoring</a></li>
           <li><a href="<?php echo esc_url(home_url('/services')); ?>">MEP Works</a></li>
+          <li><a href="<?php echo esc_url(home_url('/services')); ?>">General Construction</a></li>
         </ul>
       </div>
 
