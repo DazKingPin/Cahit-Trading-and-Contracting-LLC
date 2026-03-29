@@ -3,6 +3,45 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { Pool } = require('pg');
+
+const dbPool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL.includes('sslmode=disable') ? false : { rejectUnauthorized: false } }) : null;
+
+async function dbQuery(text, params) {
+  if (!dbPool) return null;
+  try { const r = await dbPool.query(text, params); return r; } catch (e) { console.error('DB error:', e.message); return null; }
+}
+
+async function dbGetSetting(key, fallback) {
+  const r = await dbQuery('SELECT value FROM site_settings WHERE key = $1', [key]);
+  return (r && r.rows.length > 0) ? r.rows[0].value : (fallback || '');
+}
+
+async function dbSetSetting(key, value) {
+  await dbQuery('INSERT INTO site_settings (key, value, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (key) DO UPDATE SET value = $2, updated_at = NOW()', [key, value]);
+}
+
+async function dbGetKnowledgeEntries() {
+  const r = await dbQuery('SELECT id, title, content FROM chatbot_knowledge ORDER BY sort_order, id');
+  return r ? r.rows : [];
+}
+
+async function dbSaveKnowledgeEntries(entries) {
+  await dbQuery('DELETE FROM chatbot_knowledge');
+  for (let i = 0; i < entries.length; i++) {
+    await dbQuery('INSERT INTO chatbot_knowledge (title, content, sort_order) VALUES ($1, $2, $3)', [entries[i].title || '', entries[i].content || '', i]);
+  }
+}
+
+async function dbSaveLead(lead) {
+  const r = await dbQuery('INSERT INTO leads (name, email, phone, service_type, details, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [lead.name, lead.email, lead.phone || '', lead.service_type || '', lead.details || '', 'new']);
+  return r ? r.rows[0] : lead;
+}
+
+async function dbGetLeads() {
+  const r = await dbQuery('SELECT * FROM leads ORDER BY created_at DESC');
+  return r ? r.rows : [];
+}
 
 const app = express();
 const PORT = 5000;
@@ -402,13 +441,13 @@ app.post('/api/ajax', async (req, res) => {
     const message = fields.message || '';
     const chatSessionId = fields.sessionId || 'ajax_' + Date.now();
     if (!message) return res.json({ success: true, data: { reply: 'Please type a message.' } });
-    const apiKey = loadOpenAIKey();
+    const apiKey = await loadOpenAIKeyAsync();
     if (!apiKey) {
       return res.json({ success: true, data: { reply: 'Thank you for your message. Our team will get back to you soon. You can also reach us at ctc@cahitcontracting.com or call +968 2411 2406.' } });
     }
     try {
       if (!chatSessions[chatSessionId]) {
-        chatSessions[chatSessionId] = [{ role: 'system', content: buildSystemPrompt() }];
+        chatSessions[chatSessionId] = [{ role: 'system', content: await buildSystemPrompt() }];
       }
       chatSessions[chatSessionId].push({ role: 'user', content: message });
       if (chatSessions[chatSessionId].length > 20) {
@@ -440,48 +479,54 @@ app.post('/api/ajax', async (req, res) => {
         status: 'new',
         created_at: new Date().toISOString().split('T')[0]
       };
-      leadsStore.push(lead);
-      sendLeadEmail(lead);
+      if (dbPool) {
+        const saved = await dbSaveLead(lead);
+        sendLeadEmail(saved || lead);
+      } else {
+        leadsStore.push(lead);
+        sendLeadEmail(lead);
+      }
     }
     res.json({ success: true, data: { id: leadsStore.length } });
   }
 });
 
 const OPENAI_KEY_FILE = path.join(DATA_DIR, 'openai-key.json');
-function loadOpenAIKey() {
+let cachedApiKey = null;
+async function loadOpenAIKeyAsync() {
   const envKey = process.env.OPENAI_API_KEY || process.env.SECRET_KEY || process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || '';
   if (envKey) return envKey;
+  if (cachedApiKey) return cachedApiKey;
+  const dbKey = await dbGetSetting('openai_api_key');
+  if (dbKey) { cachedApiKey = dbKey; return dbKey; }
   try {
     if (fs.existsSync(OPENAI_KEY_FILE)) {
       return JSON.parse(fs.readFileSync(OPENAI_KEY_FILE, 'utf8')).key || '';
     }
   } catch (e) {}
+  return '';
+}
+function loadOpenAIKey() {
+  const envKey = process.env.OPENAI_API_KEY || process.env.SECRET_KEY || process.env.OPENAI_KEY || process.env.OPEN_AI_KEY || '';
+  if (envKey) return envKey;
+  if (cachedApiKey) return cachedApiKey;
   try {
-    const knowledgeFile = path.join(__dirname, 'chatbot-knowledge.json');
-    if (fs.existsSync(knowledgeFile)) {
-      const kd = JSON.parse(fs.readFileSync(knowledgeFile, 'utf8'));
-      if (kd.apiKey) return kd.apiKey;
-    }
-  } catch (e) {}
-  try {
-    const knowledgeTmp = path.join('/tmp', 'chatbot-knowledge.json');
-    if (fs.existsSync(knowledgeTmp)) {
-      const kd = JSON.parse(fs.readFileSync(knowledgeTmp, 'utf8'));
-      if (kd.apiKey) return kd.apiKey;
+    if (fs.existsSync(OPENAI_KEY_FILE)) {
+      return JSON.parse(fs.readFileSync(OPENAI_KEY_FILE, 'utf8')).key || '';
     }
   } catch (e) {}
   return '';
 }
 
-app.get('/api/chat-status', (req, res) => {
-  const key = loadOpenAIKey();
-  res.json({ hasKey: !!key, keySource: process.env.OPENAI_API_KEY ? 'env' : (key ? 'file' : 'none'), keyPreview: key ? key.substring(0, 7) + '...' : '' });
+app.get('/api/chat-status', async (req, res) => {
+  const key = await loadOpenAIKeyAsync();
+  res.json({ hasKey: !!key, keySource: process.env.OPENAI_API_KEY ? 'env' : (key ? 'db' : 'none'), keyPreview: key ? key.substring(0, 7) + '...' : '' });
 });
 function saveOpenAIKey(key) {
   try { fs.writeFileSync(OPENAI_KEY_FILE, JSON.stringify({ key }, null, 2)); } catch (e) {}
 }
 
-app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
+app.post('/admin/api/save-openai-key', express.json(), async (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
   if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
@@ -489,19 +534,18 @@ app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
   }
   const { key } = req.body || {};
   saveOpenAIKey(key || '');
-  const knowledge = loadKnowledge();
-  knowledge.apiKey = key || '';
-  saveKnowledge(knowledge);
+  await dbSetSetting('openai_api_key', key || '');
+  cachedApiKey = key || null;
   res.json({ success: true });
 });
 
-app.get('/admin/api/openai-key-status', (req, res) => {
+app.get('/admin/api/openai-key-status', async (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
   if (!token || ((!adminTokens.has(token) && !verifyAdminToken(token)) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
-  const key = loadOpenAIKey();
+  const key = await loadOpenAIKeyAsync();
   res.json({ success: true, hasKey: !!key, maskedKey: key ? 'sk-...' + key.slice(-4) : '' });
 });
 
@@ -545,21 +589,33 @@ function saveKnowledge(data) {
   try { fs.writeFileSync(KNOWLEDGE_FILE_PROJECT, JSON.stringify(data, null, 2)); } catch (e) {}
   try { fs.writeFileSync(KNOWLEDGE_FILE_TMP, JSON.stringify(data, null, 2)); } catch (e) {}
 }
-function buildSystemPrompt() {
+async function buildSystemPrompt() {
   let prompt = CAHIT_BASE_PROMPT;
-  const knowledge = loadKnowledge();
-  if (knowledge.entries && knowledge.entries.length > 0) {
+  let entries = [];
+  let personality = '';
+  let language = 'en';
+  if (dbPool) {
+    entries = await dbGetKnowledgeEntries();
+    personality = await dbGetSetting('chatbot_personality', '');
+    language = await dbGetSetting('chatbot_language', 'en');
+  } else {
+    const knowledge = loadKnowledge();
+    entries = knowledge.entries || [];
+    personality = knowledge.personality || '';
+    language = knowledge.language || 'en';
+  }
+  if (entries.length > 0) {
     prompt += '\n\nAdditional Company Knowledge:';
-    knowledge.entries.forEach(function(e) {
+    entries.forEach(function(e) {
       if (e.title || e.content) {
         prompt += '\n\n' + (e.title ? '## ' + e.title + '\n' : '') + (e.content || '');
       }
     });
   }
-  if (knowledge.personality) {
-    prompt += '\n\nBehavior Instructions: ' + knowledge.personality;
+  if (personality) {
+    prompt += '\n\nBehavior Instructions: ' + personality;
   }
-  if (knowledge.language === 'ar') {
+  if (language === 'ar') {
     prompt += '\n\nIMPORTANT: Default to responding in Arabic unless the user writes in English.';
   } else {
     prompt += '\n\nIMPORTANT: Default to responding in English unless the user writes in Arabic.';
@@ -567,40 +623,69 @@ function buildSystemPrompt() {
   return prompt;
 }
 
-app.get('/admin/api/chatbot-knowledge', (req, res) => {
+app.get('/admin/api/chatbot-knowledge', async (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
   if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
-  res.json({ success: true, data: loadKnowledge() });
+  if (dbPool) {
+    const entries = await dbGetKnowledgeEntries();
+    const personality = await dbGetSetting('chatbot_personality', '');
+    const language = await dbGetSetting('chatbot_language', 'en');
+    const position = await dbGetSetting('chatbot_position', 'right');
+    res.json({ success: true, data: { entries, personality, language, position } });
+  } else {
+    res.json({ success: true, data: loadKnowledge() });
+  }
 });
 
-app.post('/admin/api/chatbot-knowledge', express.json(), (req, res) => {
+app.post('/admin/api/chatbot-knowledge', express.json(), async (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
   if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
   const { entries, personality, language, position } = req.body || {};
+  if (dbPool) {
+    await dbSaveKnowledgeEntries(entries || []);
+    await dbSetSetting('chatbot_personality', personality || '');
+    await dbSetSetting('chatbot_language', language || 'en');
+    await dbSetSetting('chatbot_position', position || 'right');
+  }
   saveKnowledge({ entries: entries || [], personality: personality || '', language: language || 'en', position: position || 'right' });
   res.json({ success: true });
 });
 
-app.get('/admin/api/chatbot-knowledge-export', (req, res) => {
+app.get('/admin/api/chatbot-knowledge-export', async (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
   if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false });
   }
-  const knowledge = loadKnowledge();
+  let knowledge;
+  if (dbPool) {
+    const entries = await dbGetKnowledgeEntries();
+    const personality = await dbGetSetting('chatbot_personality', '');
+    const language = await dbGetSetting('chatbot_language', 'en');
+    const position = await dbGetSetting('chatbot_position', 'right');
+    knowledge = { entries, personality, language, position };
+  } else {
+    knowledge = loadKnowledge();
+  }
   const encoded = Buffer.from(JSON.stringify(knowledge)).toString('base64');
   res.json({ success: true, envValue: encoded });
 });
 
-app.get('/api/chatbot-settings', (req, res) => {
-  const knowledge = loadKnowledge();
-  res.json({ language: knowledge.language || 'en', position: knowledge.position || 'right' });
+app.get('/api/chatbot-settings', async (req, res) => {
+  if (dbPool) {
+    const language = await dbGetSetting('chatbot_language', 'en');
+    const position = await dbGetSetting('chatbot_position', 'right');
+    res.json({ language, position });
+  } else {
+    const knowledge = loadKnowledge();
+    res.json({ language: knowledge.language || 'en', position: knowledge.position || 'right' });
+  }
 });
 
 const chatSessions = {};
@@ -609,14 +694,14 @@ app.post('/api/chat', express.json(), async (req, res) => {
   const { message, sessionId } = req.body || {};
   if (!message) return res.json({ reply: 'Please type a message.' });
 
-  const apiKey = loadOpenAIKey();
+  const apiKey = await loadOpenAIKeyAsync();
   if (!apiKey) {
     return res.json({ reply: 'Thank you for your message. Our team will get back to you soon. You can reach us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.' });
   }
 
   try {
     if (!chatSessions[sessionId]) {
-      chatSessions[sessionId] = [{ role: 'system', content: buildSystemPrompt() }];
+      chatSessions[sessionId] = [{ role: 'system', content: await buildSystemPrompt() }];
     }
     chatSessions[sessionId].push({ role: 'user', content: message });
     if (chatSessions[sessionId].length > 20) {
@@ -642,9 +727,14 @@ app.post('/api/chat', express.json(), async (req, res) => {
 // Admin dashboard
 const ADMIN_DIR = path.join(THEME_DIR, 'admin');
 
-app.post('/admin/api/login', express.json(), (req, res) => {
+app.post('/admin/api/login', express.json(), async (req, res) => {
   const { username, password } = req.body || {};
-  const creds = loadCredentials();
+  let creds = loadCredentials();
+  if (dbPool) {
+    const dbUser = await dbGetSetting('admin_username', creds.username);
+    const dbPass = await dbGetSetting('admin_password', creds.password);
+    creds = { username: dbUser, password: dbPass };
+  }
   if ((username === creds.username || username === 'admin@cahitcontracting.com') && password === creds.password) {
     const token = createAdminToken(username);
     adminTokens.add(token);
@@ -654,14 +744,18 @@ app.post('/admin/api/login', express.json(), (req, res) => {
   }
 });
 
-app.post('/admin/api/change-credentials', express.json(), (req, res) => {
+app.post('/admin/api/change-credentials', express.json(), async (req, res) => {
   const auth = req.headers.authorization || '';
   const token = auth.replace('Bearer ', '');
   if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
   const { currentPassword, newUsername, newPassword } = req.body || {};
-  const creds = loadCredentials();
+  let creds = loadCredentials();
+  if (dbPool) {
+    creds.username = await dbGetSetting('admin_username', creds.username);
+    creds.password = await dbGetSetting('admin_password', creds.password);
+  }
   if (currentPassword !== creds.password) {
     return res.status(400).json({ success: false, message: 'Current password is incorrect' });
   }
@@ -671,6 +765,10 @@ app.post('/admin/api/change-credentials', express.json(), (req, res) => {
   creds.username = newUsername && newUsername.trim() ? newUsername.trim() : creds.username;
   creds.password = newPassword;
   saveCredentials(creds);
+  if (dbPool) {
+    await dbSetSetting('admin_username', creds.username);
+    await dbSetSetting('admin_password', creds.password);
+  }
   adminTokens.clear();
   const newToken = createAdminToken(creds.username);
   adminTokens.add(newToken);
@@ -804,11 +902,16 @@ app.get('/admin', (req, res) => {
   res.send(content);
 });
 
-app.get('/admin/api/leads', (req, res) => {
-  res.json({ success: true, data: leadsStore });
+app.get('/admin/api/leads', async (req, res) => {
+  if (dbPool) {
+    const leads = await dbGetLeads();
+    res.json({ success: true, data: leads });
+  } else {
+    res.json({ success: true, data: leadsStore });
+  }
 });
 
-app.post('/admin/api/leads', express.json(), (req, res) => {
+app.post('/admin/api/leads', express.json(), async (req, res) => {
   const lead = {
     id: leadsStore.length + 1,
     name: req.body.name || '',
@@ -819,9 +922,15 @@ app.post('/admin/api/leads', express.json(), (req, res) => {
     status: 'new',
     created_at: new Date().toISOString().split('T')[0]
   };
-  leadsStore.push(lead);
-  sendLeadEmail(lead);
-  res.json({ success: true, data: lead });
+  if (dbPool) {
+    const saved = await dbSaveLead(lead);
+    sendLeadEmail(saved || lead);
+    res.json({ success: true, data: saved || lead });
+  } else {
+    leadsStore.push(lead);
+    sendLeadEmail(lead);
+    res.json({ success: true, data: lead });
+  }
 });
 
 app.get('/admin/api/pages', (req, res) => {
@@ -883,11 +992,26 @@ app.use((req, res) => {
   res.status(404).send(executePhpTemplate(content, '404'));
 });
 
+async function initDatabase() {
+  if (!dbPool) return;
+  try {
+    await dbQuery(`CREATE TABLE IF NOT EXISTS site_settings (key VARCHAR(100) PRIMARY KEY, value TEXT NOT NULL DEFAULT '', updated_at TIMESTAMP DEFAULT NOW())`);
+    await dbQuery(`CREATE TABLE IF NOT EXISTS chatbot_knowledge (id SERIAL PRIMARY KEY, title VARCHAR(500) NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '', sort_order INT DEFAULT 0, created_at TIMESTAMP DEFAULT NOW())`);
+    await dbQuery(`CREATE TABLE IF NOT EXISTS leads (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL DEFAULT '', email VARCHAR(255) NOT NULL DEFAULT '', phone VARCHAR(100) DEFAULT '', service_type VARCHAR(255) DEFAULT '', details TEXT DEFAULT '', status VARCHAR(50) DEFAULT 'new', created_at TIMESTAMP DEFAULT NOW())`);
+    console.log('Database tables initialized');
+  } catch (e) { console.error('DB init error:', e.message); }
+}
+
 if (!process.env.VERCEL) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`WordPress theme preview server running on http://0.0.0.0:${PORT}`);
-    console.log(`Theme dir: ${THEME_DIR}`);
+  initDatabase().then(() => {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`WordPress theme preview server running on http://0.0.0.0:${PORT}`);
+      console.log(`Theme dir: ${THEME_DIR}`);
+      console.log(`Database: ${dbPool ? 'PostgreSQL connected' : 'File-based fallback'}`);
+    });
   });
+} else {
+  initDatabase();
 }
 
 module.exports = app;
