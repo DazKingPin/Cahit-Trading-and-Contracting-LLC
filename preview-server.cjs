@@ -5,7 +5,8 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { Pool } = require('pg');
 
-const dbPool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_URL.includes('sslmode=disable') ? false : { rejectUnauthorized: false } }) : null;
+const DB_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || '';
+const dbPool = DB_URL ? new Pool({ connectionString: DB_URL, ssl: DB_URL.includes('sslmode=disable') ? false : { rejectUnauthorized: false } }) : null;
 
 async function dbQuery(text, params) {
   if (!dbPool) return null;
