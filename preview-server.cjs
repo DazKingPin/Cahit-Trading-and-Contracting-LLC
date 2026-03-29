@@ -456,6 +456,20 @@ function loadOpenAIKey() {
       return JSON.parse(fs.readFileSync(OPENAI_KEY_FILE, 'utf8')).key || '';
     }
   } catch (e) {}
+  try {
+    const knowledgeFile = path.join(__dirname, 'chatbot-knowledge.json');
+    if (fs.existsSync(knowledgeFile)) {
+      const kd = JSON.parse(fs.readFileSync(knowledgeFile, 'utf8'));
+      if (kd.apiKey) return kd.apiKey;
+    }
+  } catch (e) {}
+  try {
+    const knowledgeTmp = path.join('/tmp', 'chatbot-knowledge.json');
+    if (fs.existsSync(knowledgeTmp)) {
+      const kd = JSON.parse(fs.readFileSync(knowledgeTmp, 'utf8'));
+      if (kd.apiKey) return kd.apiKey;
+    }
+  } catch (e) {}
   return '';
 }
 
@@ -475,6 +489,9 @@ app.post('/admin/api/save-openai-key', express.json(), (req, res) => {
   }
   const { key } = req.body || {};
   saveOpenAIKey(key || '');
+  const knowledge = loadKnowledge();
+  knowledge.apiKey = key || '';
+  saveKnowledge(knowledge);
   res.json({ success: true });
 });
 
