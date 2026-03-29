@@ -713,9 +713,9 @@
   }
 
   var funnelData = {};
-  var funnelGlobalStep = 0;
+  var funnelGlobalStep = sessionStorage.getItem('cahit-funnel-completed') === '1' ? 99 : 0;
   var funnelInactivityTimer = null;
-  var heroFunnelShown = false;
+  var heroFunnelShown = funnelGlobalStep >= 99;
 
   function initLeadFunnel() {
     if (window.location.search.indexOf("disable_funnel=1") !== -1) return;
@@ -839,6 +839,7 @@
         .then(function (data) {
           if (data.success === false) throw new Error(data.data || "Submission failed");
           funnelGlobalStep = 4;
+          sessionStorage.setItem('cahit-funnel-completed', '1');
           showFunnelStep(0);
           var projectsSection = document.getElementById("projects-section");
           if (projectsSection) {

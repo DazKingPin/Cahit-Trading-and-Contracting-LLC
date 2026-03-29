@@ -78,7 +78,7 @@ function executePhpTemplate(phpContent, currentPage) {
     { id: 'earthworks', name: 'Earthworks', image: 'hMZPCXiHvRhErvHk.gif', desc: 'Bulk excavation, grading, compaction, and large-scale site preparation using modern heavy equipment.' },
     { id: 'dewatering', name: 'Dewatering & Shoring', image: 'NHQbvhqluSlDGrrN.png', desc: 'Advanced groundwater control systems and structural support solutions ensuring safe and stable construction environments.' },
     { id: 'mep', name: 'MEP Works', image: 'qZRtUjMizSFySgTf.png', desc: 'Mechanical, electrical and plumbing systems supporting industrial facilities, infrastructure and utility projects.' },
-    { id: 'general', name: 'General Construction', image: 'gvWLawWCNocSINuR.jpeg', desc: 'Comprehensive residential, commercial, and industrial building solutions. Skilled workforce with modern equipment and proven expertise. Commitment to safety, quality, and on-time delivery. Renovation, remodeling, and project management services.' },
+    { id: 'general', name: 'General Construction', image: '/assets/images/general-construction.jpg', localImage: true, desc: 'Comprehensive residential, commercial, and industrial building solutions. Skilled workforce with modern equipment and proven expertise. Commitment to safety, quality, and on-time delivery. Renovation, remodeling, and project management services.' },
   ];
 
   let capabilities = [
@@ -132,7 +132,7 @@ function executePhpTemplate(phpContent, currentPage) {
     services.forEach(service => {
       result += `<div class="service-card" data-testid="card-service-${service.id}">
         <div class="service-card-image">
-          <img src="${base_url}${service.image}" alt="${service.name}" />
+          <img src="${service.localImage ? service.image : base_url + service.image}" alt="${service.name}" />
         </div>
         <div class="service-card-body">
           <h3 class="service-card-title">${service.name}</h3>

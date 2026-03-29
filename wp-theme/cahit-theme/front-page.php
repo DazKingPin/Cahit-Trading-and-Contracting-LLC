@@ -19,7 +19,7 @@
           Marine &amp; Coastal Construction Experts
         </p>
         <div class="hero-buttons">
-          <button class="btn btn-white" data-testid="button-hero-consultation" onclick="if(typeof showFunnelStep==='function'){showFunnelStep(1);}">
+          <button class="btn btn-white" data-testid="button-hero-consultation" onclick="if(typeof openConsultation==='function'){openConsultation();}">
             Schedule Consultation
             <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </button>
@@ -161,13 +161,13 @@
         array('id' => 'earthworks', 'name' => 'Earthworks', 'image' => 'hMZPCXiHvRhErvHk.gif', 'desc' => 'Bulk excavation, grading, compaction, and large-scale site preparation using modern heavy equipment.'),
         array('id' => 'dewatering', 'name' => 'Dewatering & Shoring', 'image' => 'NHQbvhqluSlDGrrN.png', 'desc' => 'Advanced groundwater control systems and structural support solutions ensuring safe and stable construction environments.'),
         array('id' => 'mep', 'name' => 'MEP Works', 'image' => 'qZRtUjMizSFySgTf.png', 'desc' => 'Mechanical, electrical and plumbing systems supporting industrial facilities, infrastructure and utility projects.'),
-        array('id' => 'general', 'name' => 'General Construction', 'image' => 'gvWLawWCNocSINuR.jpeg', 'desc' => 'Comprehensive residential, commercial, and industrial building solutions. Skilled workforce with modern equipment and proven expertise. Commitment to safety, quality, and on-time delivery. Renovation, remodeling, and project management services.'),
+        array('id' => 'general', 'name' => 'General Construction', 'image' => '/assets/images/general-construction.jpg', 'local' => true, 'desc' => 'Comprehensive residential, commercial, and industrial building solutions. Skilled workforce with modern equipment and proven expertise. Commitment to safety, quality, and on-time delivery. Renovation, remodeling, and project management services.'),
       );
       foreach ($services as $service) :
       ?>
       <div class="service-card" data-testid="card-service-<?php echo $service['id']; ?>">
         <div class="service-card-image">
-          <img src="<?php echo $base_url . $service['image']; ?>" alt="<?php echo esc_attr($service['name']); ?>" />
+          <img src="<?php echo isset($service['local']) && $service['local'] ? $service['image'] : $base_url . $service['image']; ?>" alt="<?php echo esc_attr($service['name']); ?>" />
         </div>
         <div class="service-card-body">
           <h3 class="service-card-title"><?php echo esc_html($service['name']); ?></h3>
@@ -480,5 +480,83 @@
     <p class="funnel-success-text" data-ar="لقد استلمنا استفسارك. سيتواصل فريقنا معك قريباً لتحديد موعد استشارتك المجانية.">We've received your inquiry. Our team will contact you shortly to schedule your free consultation.</p>
   </div>
 </div>
+
+<div id="consultation-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;max-width:480px;width:90%;padding:32px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    <button onclick="document.getElementById('consultation-overlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b" data-testid="button-close-consultation">&times;</button>
+    <h3 style="margin:0 0 4px;font-size:22px;color:#0A3D6B" data-testid="text-consultation-title">Schedule a Consultation</h3>
+    <p style="margin:0 0 20px;color:#64748b;font-size:14px">Fill in your details and our team will contact you shortly.</p>
+    <form id="consultationForm" data-testid="form-consultation">
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Full Name *</label>
+        <input type="text" name="name" required style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box" data-testid="input-consult-name" />
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Email *</label>
+        <input type="email" name="email" required style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box" data-testid="input-consult-email" />
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Phone</label>
+        <input type="tel" name="phone" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box" data-testid="input-consult-phone" />
+      </div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Service Interest</label>
+        <select name="service_type" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff" data-testid="select-consult-service">
+          <option value="">Select a service...</option>
+          <option value="Marine & Coastal Construction">Marine & Coastal Construction</option>
+          <option value="Infrastructure Development">Infrastructure Development</option>
+          <option value="Earthworks">Earthworks</option>
+          <option value="Dewatering & Shoring">Dewatering & Shoring</option>
+          <option value="MEP Works">MEP Works</option>
+          <option value="General Construction">General Construction</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Message</label>
+        <textarea name="details" rows="3" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box;resize:vertical" data-testid="input-consult-details"></textarea>
+      </div>
+      <button type="submit" style="width:100%;padding:12px;background:#0A3D6B;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer" data-testid="button-consult-submit">Send Request</button>
+    </form>
+    <div id="consultation-success" style="display:none;text-align:center;padding:20px 0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <h3 style="margin:12px 0 4px;color:#0A3D6B" data-testid="text-consult-success">Thank You!</h3>
+      <p style="color:#64748b;font-size:14px">We've received your request. Our team will contact you shortly to schedule your consultation.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  window.openConsultation = function() {
+    var overlay = document.getElementById('consultation-overlay');
+    if (overlay) { overlay.style.display = 'flex'; }
+  };
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('consultationForm');
+    if (!form) return;
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      var formData = new FormData(form);
+      formData.append('action', 'consultation');
+      var ajaxUrl = (typeof cahitData !== 'undefined' && cahitData.ajaxUrl) || '/api/ajax';
+      fetch(ajaxUrl, { method: 'POST', body: formData })
+        .then(function(r) { return r.json(); })
+        .then(function() {
+          form.style.display = 'none';
+          document.getElementById('consultation-success').style.display = 'block';
+        })
+        .catch(function() {
+          btn.disabled = false;
+          btn.textContent = 'Send Request';
+          alert('Something went wrong. Please try again.');
+        });
+    });
+  });
+})();
+</script>
 
 <?php get_footer(); ?>
