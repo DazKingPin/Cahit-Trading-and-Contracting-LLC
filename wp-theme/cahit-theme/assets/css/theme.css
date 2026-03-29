@@ -2384,8 +2384,11 @@ html.is-rtl .footer-bottom { text-align: right; }
 html.is-rtl .footer-copyright { text-align: right; }
 html.is-rtl .footer-tagline { text-align: right; }
 html.is-rtl .footer-admin-link svg { margin-left: 6px; margin-right: 0; }
-html.is-rtl .footer-contact-item { flex-direction: row-reverse; text-align: right; }
+html.is-rtl .footer-heading { text-align: right; }
+html.is-rtl .footer-contact { text-align: right; }
+html.is-rtl .footer-contact-item { flex-direction: row-reverse; text-align: right; justify-content: flex-start; }
 html.is-rtl .footer-contact-item svg { margin-left: 0.5rem; margin-right: 0; }
+html.is-rtl .footer-admin-link { justify-content: flex-end; }
 html.is-rtl .contact-item { flex-direction: row-reverse; text-align: right; }
 html.is-rtl .contact-icon { margin-left: 1rem; margin-right: 0; }
 html.is-rtl .chatbot-bubble { left: 1.5rem; right: auto !important; }
