@@ -484,44 +484,44 @@
 <div id="consultation-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:12px;max-width:480px;width:90%;padding:32px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
     <button onclick="document.getElementById('consultation-overlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b" data-testid="button-close-consultation">&times;</button>
-    <h3 style="margin:0 0 4px;font-size:22px;color:#0A3D6B" data-testid="text-consultation-title">Schedule a Consultation</h3>
-    <p style="margin:0 0 20px;color:#64748b;font-size:14px">Fill in your details and our team will contact you shortly.</p>
+    <h3 style="margin:0 0 4px;font-size:22px;color:#0A3D6B" data-testid="text-consultation-title" data-ar="جدولة استشارة">Schedule a Consultation</h3>
+    <p style="margin:0 0 20px;color:#64748b;font-size:14px" data-ar="املأ بياناتك وسيتواصل فريقنا معك قريباً.">Fill in your details and our team will contact you shortly.</p>
     <form id="consultationForm" data-testid="form-consultation">
       <div style="margin-bottom:14px">
-        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Full Name *</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px" data-ar="الاسم الكامل *">Full Name *</label>
         <input type="text" name="name" required style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box" data-testid="input-consult-name" />
       </div>
       <div style="margin-bottom:14px">
-        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Email *</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px" data-ar="البريد الإلكتروني *">Email *</label>
         <input type="email" name="email" required style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box" data-testid="input-consult-email" />
       </div>
       <div style="margin-bottom:14px">
-        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Phone</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px" data-ar="الهاتف">Phone</label>
         <input type="tel" name="phone" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box" data-testid="input-consult-phone" />
       </div>
       <div style="margin-bottom:14px">
-        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Service Interest</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px" data-ar="الخدمة المطلوبة">Service Interest</label>
         <select name="service_type" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box;background:#fff" data-testid="select-consult-service">
-          <option value="">Select a service...</option>
-          <option value="Marine & Coastal Construction">Marine & Coastal Construction</option>
-          <option value="Infrastructure Development">Infrastructure Development</option>
-          <option value="Earthworks">Earthworks</option>
-          <option value="Dewatering & Shoring">Dewatering & Shoring</option>
-          <option value="MEP Works">MEP Works</option>
-          <option value="General Construction">General Construction</option>
-          <option value="Other">Other</option>
+          <option value="" data-ar="اختر خدمة...">Select a service...</option>
+          <option value="Marine & Coastal Construction" data-ar="البناء البحري والساحلي">Marine & Coastal Construction</option>
+          <option value="Infrastructure Development" data-ar="تطوير البنية التحتية">Infrastructure Development</option>
+          <option value="Earthworks" data-ar="أعمال الحفر والردم">Earthworks</option>
+          <option value="Dewatering & Shoring" data-ar="نزح المياه والتدعيم">Dewatering & Shoring</option>
+          <option value="MEP Works" data-ar="الأعمال الكهروميكانيكية">MEP Works</option>
+          <option value="General Construction" data-ar="البناء العام">General Construction</option>
+          <option value="Other" data-ar="أخرى">Other</option>
         </select>
       </div>
       <div style="margin-bottom:20px">
-        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px">Message</label>
+        <label style="display:block;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px" data-ar="الرسالة">Message</label>
         <textarea name="details" rows="3" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;box-sizing:border-box;resize:vertical" data-testid="input-consult-details"></textarea>
       </div>
-      <button type="submit" style="width:100%;padding:12px;background:#0A3D6B;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer" data-testid="button-consult-submit">Send Request</button>
+      <button type="submit" style="width:100%;padding:12px;background:#0A3D6B;color:#fff;border:none;border-radius:6px;font-size:15px;font-weight:600;cursor:pointer" data-testid="button-consult-submit" data-ar="إرسال الطلب">Send Request</button>
     </form>
     <div id="consultation-success" style="display:none;text-align:center;padding:20px 0">
       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <h3 style="margin:12px 0 4px;color:#0A3D6B" data-testid="text-consult-success">Thank You!</h3>
-      <p style="color:#64748b;font-size:14px">We've received your request. Our team will contact you shortly to schedule your consultation.</p>
+      <h3 style="margin:12px 0 4px;color:#0A3D6B" data-testid="text-consult-success" data-ar="شكراً لك!">Thank You!</h3>
+      <p style="color:#64748b;font-size:14px" data-ar="لقد استلمنا طلبك. سيتواصل فريقنا معك قريباً لتحديد موعد استشارتك.">We've received your request. Our team will contact you shortly to schedule your consultation.</p>
     </div>
   </div>
 </div>
