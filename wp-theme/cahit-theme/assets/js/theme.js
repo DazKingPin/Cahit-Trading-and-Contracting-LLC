@@ -713,7 +713,13 @@
   }
 
   var funnelData = {};
-  var funnelGlobalStep = sessionStorage.getItem('cahit-funnel-completed') === '1' ? 99 : 0;
+  var funnelCompleted = (function() {
+    var ts = localStorage.getItem('cahit-funnel-completed-ts');
+    if (ts && (Date.now() - parseInt(ts, 10)) < 3600000) return true;
+    localStorage.removeItem('cahit-funnel-completed-ts');
+    return false;
+  })();
+  var funnelGlobalStep = funnelCompleted ? 99 : 0;
   var funnelInactivityTimer = null;
   var heroFunnelShown = funnelGlobalStep >= 99;
 
@@ -839,7 +845,7 @@
         .then(function (data) {
           if (data.success === false) throw new Error(data.data || "Submission failed");
           funnelGlobalStep = 4;
-          sessionStorage.setItem('cahit-funnel-completed', '1');
+          localStorage.setItem('cahit-funnel-completed-ts', Date.now().toString());
           showFunnelStep(0);
           var projectsSection = document.getElementById("projects-section");
           if (projectsSection) {
