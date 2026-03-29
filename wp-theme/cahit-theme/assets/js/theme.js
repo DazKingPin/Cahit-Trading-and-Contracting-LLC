@@ -668,7 +668,7 @@
       ".funnel-title, .funnel-label, .funnel-option, .funnel-helper, .funnel-step-badge, .funnel-submit, " +
       ".project-category-badge, .project-card-title, .project-card-location, .project-card-desc, " +
       ".sector-name, .client-logo-name, .contact-label, .footer-cta-title, .footer-cta-desc, .footer-cta-btn, " +
-      "h1, h2, h3, p, label"
+      "h1, h2, h3, p, label, li, span[data-ar], option[data-ar]"
     );
     els.forEach(function (el) {
       el.setAttribute("data-translated", "true");
