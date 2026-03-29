@@ -7,8 +7,8 @@
   <div class="hero-banner-overlay"></div>
   <div class="hero-banner-content">
     <div class="container">
-      <h1 class="hero-banner-title" data-testid="text-services-heading">Our Services</h1>
-      <p class="hero-banner-subtitle">Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.</p>
+      <h1 class="hero-banner-title" data-testid="text-services-heading" data-ar="خدماتنا">Our Services</h1>
+      <p class="hero-banner-subtitle" data-ar="خبرتنا المتنوعة تمكننا من دعم مشاريع البنية التحتية المعقدة عبر قطاعات متعددة.">Our diverse expertise allows us to support complex infrastructure projects across multiple sectors.</p>
     </div>
   </div>
 </section>
@@ -21,13 +21,13 @@
           <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/eErINryfjAMBHdEq.png" alt="Marine &amp; Coastal Construction" />
         </div>
         <div class="service-card-content">
-          <h3 class="service-card-title">Marine &amp; Coastal Construction</h3>
-          <p class="service-card-desc">Cahit Trading &amp; Contracting LLC provides specialized marine construction services including:</p>
+          <h3 class="service-card-title" data-ar="البناء البحري والساحلي">Marine &amp; Coastal Construction</h3>
+          <p class="service-card-desc" data-ar="تقدم شركة كاهيت للتجارة والمقاولات خدمات بناء بحري متخصصة تشمل:">Cahit Trading &amp; Contracting LLC provides specialized marine construction services including:</p>
           <ul class="service-details-list">
-            <li><span class="bullet"></span> Sea Harbors</li>
-            <li><span class="bullet"></span> Breakwaters</li>
-            <li><span class="bullet"></span> Groynes</li>
-            <li><span class="bullet"></span> Revetments</li>
+            <li><span class="bullet"></span> <span data-ar="الموانئ البحرية">Sea Harbors</span></li>
+            <li><span class="bullet"></span> <span data-ar="حواجز الأمواج">Breakwaters</span></li>
+            <li><span class="bullet"></span> <span data-ar="الحواجز الشاطئية">Groynes</span></li>
+            <li><span class="bullet"></span> <span data-ar="الجدران الاستنادية الساحلية">Revetments</span></li>
           </ul>
         </div>
       </div>
@@ -37,8 +37,8 @@
           <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/gvWLawWCNocSINuR.jpeg" alt="Infrastructure Development" />
         </div>
         <div class="service-card-content">
-          <h3 class="service-card-title">Infrastructure Development</h3>
-          <p class="service-card-desc">Infrastructure projects today require innovative engineering solutions and advanced construction techniques. Cahit delivers infrastructure solutions including utilities, roads and industrial facilities.</p>
+          <h3 class="service-card-title" data-ar="تطوير البنية التحتية">Infrastructure Development</h3>
+          <p class="service-card-desc" data-ar="تتطلب مشاريع البنية التحتية اليوم حلول هندسية مبتكرة وتقنيات بناء متقدمة. تقدم كاهيت حلول البنية التحتية بما في ذلك المرافق والطرق والمنشآت الصناعية.">Infrastructure projects today require innovative engineering solutions and advanced construction techniques. Cahit delivers infrastructure solutions including utilities, roads and industrial facilities.</p>
         </div>
       </div>
 
@@ -47,8 +47,8 @@
           <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/hMZPCXiHvRhErvHk.gif" alt="Earthworks" />
         </div>
         <div class="service-card-content">
-          <h3 class="service-card-title">Earthworks</h3>
-          <p class="service-card-desc">We provide comprehensive earthworks services including excavation, grading, leveling and compaction for infrastructure projects and construction sites.</p>
+          <h3 class="service-card-title" data-ar="أعمال الحفر والردم">Earthworks</h3>
+          <p class="service-card-desc" data-ar="نقدم خدمات أعمال ترابية شاملة تشمل الحفر والتسوية والتمهيد والدمك لمشاريع البنية التحتية ومواقع البناء.">We provide comprehensive earthworks services including excavation, grading, leveling and compaction for infrastructure projects and construction sites.</p>
         </div>
       </div>
 
@@ -57,13 +57,13 @@
           <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/eErINryfjAMBHdEq.png" alt="Dewatering &amp; Shoring" />
         </div>
         <div class="service-card-content">
-          <h3 class="service-card-title">Dewatering &amp; Shoring</h3>
-          <p class="service-card-desc">We design and implement advanced groundwater control systems including:</p>
+          <h3 class="service-card-title" data-ar="نزح المياه والتدعيم">Dewatering &amp; Shoring</h3>
+          <p class="service-card-desc" data-ar="نصمم وننفذ أنظمة متقدمة للتحكم في المياه الجوفية تشمل:">We design and implement advanced groundwater control systems including:</p>
           <ul class="service-details-list">
-            <li><span class="bullet"></span> Wellpoint systems</li>
-            <li><span class="bullet"></span> Deep wells</li>
-            <li><span class="bullet"></span> Sheet piling</li>
-            <li><span class="bullet"></span> Soldier walls</li>
+            <li><span class="bullet"></span> <span data-ar="أنظمة نقاط الآبار">Wellpoint systems</span></li>
+            <li><span class="bullet"></span> <span data-ar="الآبار العميقة">Deep wells</span></li>
+            <li><span class="bullet"></span> <span data-ar="الستائر المعدنية">Sheet piling</span></li>
+            <li><span class="bullet"></span> <span data-ar="الجدران الاستنادية">Soldier walls</span></li>
           </ul>
         </div>
       </div>
@@ -73,13 +73,13 @@
           <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/qZRtUjMizSFySgTf.png" alt="MEP Works" />
         </div>
         <div class="service-card-content">
-          <h3 class="service-card-title">MEP Works</h3>
-          <p class="service-card-desc">Our MEP services include:</p>
+          <h3 class="service-card-title" data-ar="الأعمال الكهروميكانيكية">MEP Works</h3>
+          <p class="service-card-desc" data-ar="تشمل خدماتنا الكهروميكانيكية:">Our MEP services include:</p>
           <ul class="service-details-list">
-            <li><span class="bullet"></span> Water &amp; Wastewater Treatment</li>
-            <li><span class="bullet"></span> Pumping Stations</li>
-            <li><span class="bullet"></span> Industrial Piping</li>
-            <li><span class="bullet"></span> Irrigation Systems</li>
+            <li><span class="bullet"></span> <span data-ar="معالجة المياه والصرف الصحي">Water &amp; Wastewater Treatment</span></li>
+            <li><span class="bullet"></span> <span data-ar="محطات الضخ">Pumping Stations</span></li>
+            <li><span class="bullet"></span> <span data-ar="الأنابيب الصناعية">Industrial Piping</span></li>
+            <li><span class="bullet"></span> <span data-ar="أنظمة الري">Irrigation Systems</span></li>
           </ul>
         </div>
       </div>

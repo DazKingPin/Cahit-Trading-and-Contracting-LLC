@@ -5,8 +5,8 @@
   <div class="hero-banner-overlay"></div>
   <div class="hero-banner-content">
     <div class="container">
-      <h1 class="hero-banner-title hero-banner-title-lg" data-testid="text-blog-heading"><?php esc_html_e('Blog', 'cahit-theme'); ?></h1>
-      <p class="hero-banner-subtitle hero-banner-subtitle-lg"><?php esc_html_e('Insights, news, and updates from the Cahit Trading & Contracting team.', 'cahit-theme'); ?></p>
+      <h1 class="hero-banner-title hero-banner-title-lg" data-testid="text-blog-heading" data-ar="المدونة"><?php esc_html_e('Blog', 'cahit-theme'); ?></h1>
+      <p class="hero-banner-subtitle hero-banner-subtitle-lg" data-ar="رؤى وأخبار وتحديثات من فريق كاهيت للتجارة والمقاولات."><?php esc_html_e('Insights, news, and updates from the Cahit Trading & Contracting team.', 'cahit-theme'); ?></p>
     </div>
   </div>
 </section>
@@ -14,8 +14,8 @@
 <section class="section bg-white" data-testid="section-blog-posts">
   <div class="container">
     <div class="section-header">
-      <h2 class="section-title"><?php esc_html_e('Latest Posts', 'cahit-theme'); ?></h2>
-      <p class="section-subtitle"><?php esc_html_e('Stay up to date with our latest projects, industry insights, and company news.', 'cahit-theme'); ?></p>
+      <h2 class="section-title" data-ar="أحدث المقالات"><?php esc_html_e('Latest Posts', 'cahit-theme'); ?></h2>
+      <p class="section-subtitle" data-ar="ابقَ على اطلاع بأحدث مشاريعنا ورؤى الصناعة وأخبار الشركة."><?php esc_html_e('Stay up to date with our latest projects, industry insights, and company news.', 'cahit-theme'); ?></p>
     </div>
 
     <?php
@@ -67,9 +67,9 @@
           </div>
           <div class="blog-card-content">
             <span class="blog-card-date"><?php echo esc_html(date_i18n('F Y')); ?></span>
-            <h3 class="blog-card-title"><?php esc_html_e('Marine Infrastructure: Building Oman\'s Coastal Future', 'cahit-theme'); ?></h3>
-            <p class="blog-card-excerpt"><?php esc_html_e('An overview of recent marine construction developments and Cahit\'s role in delivering critical coastal infrastructure across Oman.', 'cahit-theme'); ?></p>
-            <a href="#" class="service-card-link"><?php esc_html_e('Read More', 'cahit-theme'); ?> <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+            <h3 class="blog-card-title" data-ar="البنية التحتية البحرية: بناء مستقبل عُمان الساحلي"><?php esc_html_e('Marine Infrastructure: Building Oman\'s Coastal Future', 'cahit-theme'); ?></h3>
+            <p class="blog-card-excerpt" data-ar="نظرة عامة على أحدث تطورات البناء البحري ودور كاهيت في تقديم البنية التحتية الساحلية الحيوية في جميع أنحاء عُمان."><?php esc_html_e('An overview of recent marine construction developments and Cahit\'s role in delivering critical coastal infrastructure across Oman.', 'cahit-theme'); ?></p>
+            <a href="#" class="service-card-link" data-ar="اقرأ المزيد"><?php esc_html_e('Read More', 'cahit-theme'); ?> <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
           </div>
         </div>
         <div class="blog-card" data-testid="card-blog-2">
@@ -78,9 +78,9 @@
           </div>
           <div class="blog-card-content">
             <span class="blog-card-date"><?php echo esc_html(date_i18n('F Y', strtotime('-1 month'))); ?></span>
-            <h3 class="blog-card-title"><?php esc_html_e('Infrastructure Development Trends in the GCC', 'cahit-theme'); ?></h3>
-            <p class="blog-card-excerpt"><?php esc_html_e('Exploring the latest trends in infrastructure development across the Gulf Cooperation Council region and what they mean for the industry.', 'cahit-theme'); ?></p>
-            <a href="#" class="service-card-link"><?php esc_html_e('Read More', 'cahit-theme'); ?> <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+            <h3 class="blog-card-title" data-ar="اتجاهات تطوير البنية التحتية في دول مجلس التعاون الخليجي"><?php esc_html_e('Infrastructure Development Trends in the GCC', 'cahit-theme'); ?></h3>
+            <p class="blog-card-excerpt" data-ar="استكشاف أحدث الاتجاهات في تطوير البنية التحتية عبر منطقة مجلس التعاون الخليجي وتأثيرها على الصناعة."><?php esc_html_e('Exploring the latest trends in infrastructure development across the Gulf Cooperation Council region and what they mean for the industry.', 'cahit-theme'); ?></p>
+            <a href="#" class="service-card-link" data-ar="اقرأ المزيد"><?php esc_html_e('Read More', 'cahit-theme'); ?> <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
           </div>
         </div>
         <div class="blog-card" data-testid="card-blog-3">
@@ -89,9 +89,9 @@
           </div>
           <div class="blog-card-content">
             <span class="blog-card-date"><?php echo esc_html(date_i18n('F Y', strtotime('-2 months'))); ?></span>
-            <h3 class="blog-card-title"><?php esc_html_e('Coastal Protection: Safeguarding Oman\'s Shoreline', 'cahit-theme'); ?></h3>
-            <p class="blog-card-excerpt"><?php esc_html_e('How modern engineering techniques are being applied to protect and enhance Oman\'s valuable coastal environments.', 'cahit-theme'); ?></p>
-            <a href="#" class="service-card-link"><?php esc_html_e('Read More', 'cahit-theme'); ?> <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+            <h3 class="blog-card-title" data-ar="حماية السواحل: صون شواطئ عُمان"><?php esc_html_e('Coastal Protection: Safeguarding Oman\'s Shoreline', 'cahit-theme'); ?></h3>
+            <p class="blog-card-excerpt" data-ar="كيف يتم تطبيق تقنيات الهندسة الحديثة لحماية وتعزيز البيئات الساحلية القيّمة في عُمان."><?php esc_html_e('How modern engineering techniques are being applied to protect and enhance Oman\'s valuable coastal environments.', 'cahit-theme'); ?></p>
+            <a href="#" class="service-card-link" data-ar="اقرأ المزيد"><?php esc_html_e('Read More', 'cahit-theme'); ?> <svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
           </div>
         </div>
       </div>
