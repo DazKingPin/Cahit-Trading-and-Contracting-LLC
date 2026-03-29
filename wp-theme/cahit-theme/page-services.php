@@ -25,9 +25,9 @@
           <p class="service-card-desc" data-ar="تقدم شركة كاهيت للتجارة والمقاولات خدمات بناء بحري متخصصة تشمل:">Cahit Trading &amp; Contracting LLC provides specialized marine construction services including:</p>
           <ul class="service-details-list">
             <li><span class="bullet"></span> <span data-ar="الموانئ البحرية">Sea Harbors</span></li>
-            <li><span class="bullet"></span> <span data-ar="حواجز الأمواج">Breakwaters</span></li>
-            <li><span class="bullet"></span> <span data-ar="الحواجز الشاطئية">Groynes</span></li>
-            <li><span class="bullet"></span> <span data-ar="الجدران الاستنادية الساحلية">Revetments</span></li>
+            <li><span class="bullet"></span> <span data-ar="الحواجز البحرية">Breakwaters</span></li>
+            <li><span class="bullet"></span> <span data-ar="اللسانات البحرية">Groynes</span></li>
+            <li><span class="bullet"></span> <span data-ar="التدعيمات الساحلية">Revetments</span></li>
           </ul>
         </div>
       </div>
@@ -60,10 +60,10 @@
           <h3 class="service-card-title" data-ar="نزح المياه والتدعيم">Dewatering &amp; Shoring</h3>
           <p class="service-card-desc" data-ar="نصمم وننفذ أنظمة متقدمة للتحكم في المياه الجوفية تشمل:">We design and implement advanced groundwater control systems including:</p>
           <ul class="service-details-list">
-            <li><span class="bullet"></span> <span data-ar="أنظمة نقاط الآبار">Wellpoint systems</span></li>
+            <li><span class="bullet"></span> <span data-ar="أنظمة الآبار الجوفية">Wellpoint systems</span></li>
             <li><span class="bullet"></span> <span data-ar="الآبار العميقة">Deep wells</span></li>
-            <li><span class="bullet"></span> <span data-ar="الستائر المعدنية">Sheet piling</span></li>
-            <li><span class="bullet"></span> <span data-ar="الجدران الاستنادية">Soldier walls</span></li>
+            <li><span class="bullet"></span> <span data-ar="الخوازيق المعدنية">Sheet piling</span></li>
+            <li><span class="bullet"></span> <span data-ar="الجدران الداعمة">Soldier walls</span></li>
           </ul>
         </div>
       </div>
@@ -76,7 +76,7 @@
           <h3 class="service-card-title" data-ar="الأعمال الكهروميكانيكية">MEP Works</h3>
           <p class="service-card-desc" data-ar="تشمل خدماتنا الكهروميكانيكية:">Our MEP services include:</p>
           <ul class="service-details-list">
-            <li><span class="bullet"></span> <span data-ar="معالجة المياه والصرف الصحي">Water &amp; Wastewater Treatment</span></li>
+            <li><span class="bullet"></span> <span data-ar="معالجة المياه ومياه الصرف">Water &amp; Wastewater Treatment</span></li>
             <li><span class="bullet"></span> <span data-ar="محطات الضخ">Pumping Stations</span></li>
             <li><span class="bullet"></span> <span data-ar="الأنابيب الصناعية">Industrial Piping</span></li>
             <li><span class="bullet"></span> <span data-ar="أنظمة الري">Irrigation Systems</span></li>
@@ -92,7 +92,7 @@
           <h3 class="service-card-title" data-ar="البناء العام">General Construction</h3>
           <p class="service-card-desc" data-ar="حلول بناء شاملة للمشاريع السكنية والتجارية والصناعية:">Comprehensive residential, commercial, and industrial building solutions:</p>
           <ul class="service-details-list">
-            <li><span class="bullet"></span> <span data-ar="قوة عاملة ماهرة مع معدات حديثة وخبرة مثبتة">Skilled workforce with modern equipment and proven expertise</span></li>
+            <li><span class="bullet"></span> <span data-ar="قوى عاملة ماهرة مجهزة بأحدث المعدات وخبرة مثبتة">Skilled workforce with modern equipment and proven expertise</span></li>
             <li><span class="bullet"></span> <span data-ar="التزام بالسلامة والجودة والتسليم في الوقت المحدد">Commitment to safety, quality, and on-time delivery</span></li>
             <li><span class="bullet"></span> <span data-ar="خدمات التجديد وإعادة التصميم وإدارة المشاريع">Renovation, remodeling, and project management services</span></li>
           </ul>
