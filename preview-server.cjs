@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = 5000;
@@ -340,6 +341,60 @@ function parseMultipart(req) {
 
 const leadsStore = [];
 
+function getEmailTransporter() {
+  const host = process.env.SMTP_HOST;
+  const port = parseInt(process.env.SMTP_PORT || '587');
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  if (!host || !user || !pass) return null;
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: { user, pass }
+  });
+}
+
+async function sendLeadEmail(lead) {
+  const transporter = getEmailTransporter();
+  if (!transporter) {
+    console.log('SMTP not configured — skipping email notification for lead:', lead.name);
+    return;
+  }
+  const subject = `New Lead: ${lead.name} — ${lead.service_type || 'General Inquiry'}`;
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+      <div style="background:#0A3D6B;color:#fff;padding:20px;border-radius:8px 8px 0 0">
+        <h2 style="margin:0">New Contact Form Submission</h2>
+        <p style="margin:5px 0 0;opacity:0.8">Cahit Trading & Contracting LLC</p>
+      </div>
+      <div style="padding:20px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 8px 8px">
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;font-weight:bold;color:#0A3D6B;width:120px">Name:</td><td style="padding:8px 0">${lead.name}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:bold;color:#0A3D6B">Email:</td><td style="padding:8px 0"><a href="mailto:${lead.email}">${lead.email}</a></td></tr>
+          <tr><td style="padding:8px 0;font-weight:bold;color:#0A3D6B">Phone:</td><td style="padding:8px 0">${lead.phone || 'Not provided'}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:bold;color:#0A3D6B">Service:</td><td style="padding:8px 0">${lead.service_type || 'Not specified'}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:bold;color:#0A3D6B">Details:</td><td style="padding:8px 0">${lead.details || 'No additional details'}</td></tr>
+          <tr><td style="padding:8px 0;font-weight:bold;color:#0A3D6B">Date:</td><td style="padding:8px 0">${lead.created_at}</td></tr>
+        </table>
+        <hr style="margin:20px 0;border:none;border-top:1px solid #e2e8f0">
+        <p style="color:#64748b;font-size:13px;margin:0">This lead was submitted via the Cahit website contact form.</p>
+      </div>
+    </div>`;
+  const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
+  try {
+    await transporter.sendMail({
+      from: `"Cahit Website" <${fromEmail}>`,
+      to: 'ctc@cahitcontracting.com',
+      subject,
+      html
+    });
+    console.log('Lead email sent to ctc@cahitcontracting.com for:', lead.name);
+  } catch (err) {
+    console.error('Failed to send lead email:', err.message);
+  }
+}
+
 app.post('/api/ajax', async (req, res) => {
   const fields = await parseMultipart(req);
   const action = fields.action || (req.body && req.body.action) || '';
@@ -375,7 +430,7 @@ app.post('/api/ajax', async (req, res) => {
     }
   } else {
     if (fields.name || fields.email) {
-      leadsStore.push({
+      const lead = {
         id: leadsStore.length + 1,
         name: fields.name || '',
         email: fields.email || '',
@@ -384,7 +439,9 @@ app.post('/api/ajax', async (req, res) => {
         details: fields.details || '',
         status: 'new',
         created_at: new Date().toISOString().split('T')[0]
-      });
+      };
+      leadsStore.push(lead);
+      sendLeadEmail(lead);
     }
     res.json({ success: true, data: { id: leadsStore.length } });
   }
@@ -746,6 +803,7 @@ app.post('/admin/api/leads', express.json(), (req, res) => {
     created_at: new Date().toISOString().split('T')[0]
   };
   leadsStore.push(lead);
+  sendLeadEmail(lead);
   res.json({ success: true, data: lead });
 });
 
