@@ -70,13 +70,13 @@
           <p class="contact-value contact-address" data-ar-html="برج الخليج، الطابق السادس، رقم 603<br>غلا، مسقط، سلطنة عُمان">Khaleej Tower, 6th floor, No 603<br>Ghala, Muscat, Sultanate of Oman</p>
         </div>
       </div>
-      <a href="tel:+96824112406" class="contact-item">
+      <a href="tel:+96824062411" class="contact-item">
         <span class="contact-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         </span>
         <div>
           <p class="contact-label" data-ar="اتصل بنا">Call Us</p>
-          <p class="contact-value">+968 2411 2406 Ext: 101</p>
+          <p class="contact-value" dir="ltr">+968 24062411 Ext: 101</p>
         </div>
       </a>
       <a href="tel:+96890966562" class="contact-item">
@@ -85,7 +85,7 @@
         </span>
         <div>
           <p class="contact-label" data-ar="هاتف عُمان">Oman</p>
-          <p class="contact-value">+968 9096 6562</p>
+          <p class="contact-value" dir="ltr">+968 90966562</p>
         </div>
       </a>
       <a href="mailto:ctc@cahitcontracting.com" class="contact-item">
