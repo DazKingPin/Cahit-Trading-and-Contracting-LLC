@@ -182,7 +182,7 @@
     </div>
     <div class="text-center mt-10">
       <a href="<?php echo home_url('/services'); ?>">
-        <button class="btn btn-white-sky" data-testid="button-view-all-services" data-ar="عرض جميع الخدمات">
+        <button class="btn btn-white-sky" data-testid="button-view-all-services" data-ar-html="عرض جميع الخدمات <svg class='icon-arrow' xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14'/><path d='m12 5 7 7-7 7'/></svg>">
           View All Services
           <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
