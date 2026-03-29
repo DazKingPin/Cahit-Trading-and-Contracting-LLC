@@ -19,12 +19,10 @@
           Marine &amp; Coastal Construction Experts
         </p>
         <div class="hero-buttons">
-          <a href="<?php echo home_url('/services'); ?>">
-            <button class="btn btn-white" data-testid="button-hero-consultation">
-              Schedule Consultation
-              <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </button>
-          </a>
+          <button class="btn btn-white" data-testid="button-hero-consultation" onclick="if(typeof showFunnelStep==='function'){showFunnelStep(1);}">
+            Schedule Consultation
+            <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
           <a href="<?php echo home_url('/projects'); ?>">
             <button class="btn btn-outline-white" data-testid="button-hero-portfolio">
               View Portfolio

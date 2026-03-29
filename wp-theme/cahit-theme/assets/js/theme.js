@@ -733,6 +733,7 @@
     heroSection.addEventListener("touchstart", showHeroFunnel, { passive: true });
   }
 
+  window.showFunnelStep = showFunnelStep;
   function showFunnelStep(step) {
     for (var i = 1; i <= 4; i++) {
       var panel = document.getElementById("funnel-step-" + i);
