@@ -4,6 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
 
 const DB_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || '';
 const dbPool = DB_URL ? new Pool({ connectionString: DB_URL, ssl: DB_URL.includes('sslmode=disable') ? false : { rejectUnauthorized: false } }) : null;
@@ -47,37 +48,620 @@ async function dbGetLeads() {
 const app = express();
 const PORT = 5000;
 
+// ===== SEO =====
+const SITE_URL = process.env.SITE_URL || 'https://cahitcontracting.com';
+const DEFAULT_OG_IMAGE = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/EILLLBYLeCNrUbzF.png';
+
+const SEO_PAGES = {
+  '/': {
+    title: 'Marine & Coastal Construction Company in Oman | Cahit Trading & Contracting LLC',
+    description: 'Cahit Trading & Contracting LLC — leading marine and coastal construction company in Oman. Breakwaters, quay walls, dredging, dewatering, civil infrastructure and MEP across the Sultanate of Oman. Based in Muscat since 2009.'
+  },
+  '/about': {
+    title: 'About Us | Marine Construction Contractor in Oman | Cahit Contracting',
+    description: 'Learn about Cahit Trading & Contracting LLC — a marine and coastal construction company headquartered in Muscat, Oman, delivering infrastructure projects across the Sultanate since 2009.'
+  },
+  '/services': {
+    title: 'Marine & Coastal Construction Services in Oman | Breakwaters, Dredging, Dewatering',
+    description: 'Marine construction, coastal protection, dredging, earthworks, dewatering, civil infrastructure and MEP services across Oman. Request a quote from Cahit Trading & Contracting LLC.'
+  },
+  '/projects': {
+    title: 'Marine & Civil Construction Projects in Oman | Cahit Contracting Portfolio',
+    description: 'Selected marine, coastal and civil construction projects delivered by Cahit Trading & Contracting across the Sultanate of Oman — breakwaters, quay walls, dredging and infrastructure.'
+  },
+  '/clients': {
+    title: 'Our Clients | Cahit Trading & Contracting LLC – Oman',
+    description: 'Trusted by leading government bodies, oil & gas operators and developers across Oman for marine, coastal and civil construction.'
+  },
+  '/blog': {
+    title: 'Insights on Marine & Coastal Construction in Oman | Cahit Blog',
+    description: 'Articles, case studies and insights on marine, coastal and civil construction in the Sultanate of Oman from Cahit Trading & Contracting LLC.'
+  },
+  '/careers': {
+    title: 'Careers at Cahit Trading & Contracting | Construction Jobs in Oman',
+    description: 'Join Cahit Contracting — explore engineering and construction career opportunities in Muscat and across the Sultanate of Oman.'
+  }
+};
+
+function escSeo(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function buildJsonLd(route) {
+  const org = {
+    '@context': 'https://schema.org',
+    '@type': 'GeneralContractor',
+    '@id': SITE_URL + '/#organization',
+    name: 'Cahit Trading & Contracting LLC',
+    alternateName: 'Cahit Contracting',
+    url: SITE_URL,
+    logo: DEFAULT_OG_IMAGE,
+    image: DEFAULT_OG_IMAGE,
+    description: 'Marine and coastal construction company in Oman specialising in breakwaters, quay walls, dredging, dewatering, civil infrastructure and MEP.',
+    foundingDate: '2009',
+    telephone: '+968 24062411',
+    email: 'ctc@cahitcontracting.com',
+    priceRange: '$$$',
+    areaServed: [
+      { '@type': 'Country', name: 'Oman' },
+      { '@type': 'AdministrativeArea', name: 'Muscat Governorate' }
+    ],
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Khaleej Tower, 6th Floor No. 603, Ghala',
+      addressLocality: 'Muscat',
+      addressRegion: 'Muscat Governorate',
+      postalCode: '',
+      addressCountry: 'OM'
+    },
+    geo: { '@type': 'GeoCoordinates', latitude: 23.5859, longitude: 58.4059 },
+    sameAs: [],
+    knowsAbout: [
+      'Marine construction', 'Coastal construction', 'Breakwater construction',
+      'Quay wall construction', 'Dredging', 'Dewatering',
+      'Civil infrastructure', 'Earthworks', 'MEP'
+    ],
+    serviceArea: { '@type': 'Country', name: 'Oman' }
+  };
+
+  const website = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': SITE_URL + '/#website',
+    url: SITE_URL,
+    name: 'Cahit Trading & Contracting LLC',
+    publisher: { '@id': SITE_URL + '/#organization' },
+    inLanguage: ['en', 'ar']
+  };
+
+  const blocks = [org, website];
+
+  // Breadcrumbs
+  if (route && route !== '/') {
+    const seg = route.split('/').filter(Boolean);
+    const crumbs = [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL + '/' }];
+    let acc = '';
+    seg.forEach((s, i) => {
+      acc += '/' + s;
+      crumbs.push({
+        '@type': 'ListItem',
+        position: i + 2,
+        name: s.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        item: SITE_URL + acc
+      });
+    });
+    blocks.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs });
+  }
+
+  // Services list on /services
+  if (route === '/services') {
+    const services = [
+      { name: 'Marine Construction', description: 'Breakwaters, quay walls, revetments and coastal protection in Oman.' },
+      { name: 'Civil Infrastructure', description: 'Civil infrastructure development across the Sultanate of Oman.' },
+      { name: 'Earthworks', description: 'Bulk excavation, grading, compaction and site preparation.' },
+      { name: 'Dewatering', description: 'Site dewatering services for marine and civil projects in Oman.' },
+      { name: 'MEP', description: 'Mechanical, electrical and plumbing for industrial and infrastructure projects.' }
+    ];
+    services.forEach(s => blocks.push({
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: s.name,
+      description: s.description,
+      provider: { '@id': SITE_URL + '/#organization' },
+      areaServed: { '@type': 'Country', name: 'Oman' }
+    }));
+  }
+
+  return blocks.map(b => `<script type="application/ld+json">${JSON.stringify(b)}</script>`).join('\n');
+}
+
+function injectSeo(html, route, overrides) {
+  const cfg = Object.assign({}, SEO_PAGES[route] || SEO_PAGES['/'], overrides || {});
+  const title = escSeo(cfg.title);
+  const desc = escSeo(cfg.description);
+  const canonical = SITE_URL + route;
+  const image = cfg.image || DEFAULT_OG_IMAGE;
+
+  // Replace <title>
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + '</title>');
+  // Replace meta description
+  html = html.replace(/<meta\s+name="description"[^>]*>/i, '<meta name="description" content="' + desc + '">');
+  // Replace canonical
+  html = html.replace(/<link\s+rel="canonical"[^>]*>/i, '<link rel="canonical" href="' + canonical + '">');
+  // Replace OG title/description/url
+  html = html.replace(/<meta\s+property="og:title"[^>]*>/i, '<meta property="og:title" content="' + title + '">');
+  html = html.replace(/<meta\s+property="og:description"[^>]*>/i, '<meta property="og:description" content="' + desc + '">');
+  html = html.replace(/<meta\s+property="og:url"[^>]*>/i, '<meta property="og:url" content="' + canonical + '">');
+  html = html.replace(/<meta\s+property="og:image"[^>]*>/i, '<meta property="og:image" content="' + image + '">');
+  // Replace Twitter
+  html = html.replace(/<meta\s+name="twitter:title"[^>]*>/i, '<meta name="twitter:title" content="' + title + '">');
+  html = html.replace(/<meta\s+name="twitter:description"[^>]*>/i, '<meta name="twitter:description" content="' + desc + '">');
+  html = html.replace(/<meta\s+name="twitter:image"[^>]*>/i, '<meta name="twitter:image" content="' + image + '">');
+  // Replace hreflang
+  html = html.replace(/<link\s+rel="alternate"\s+hreflang="en"[^>]*>/i, '<link rel="alternate" hreflang="en" href="' + canonical + '">');
+  html = html.replace(/<link\s+rel="alternate"\s+hreflang="ar"[^>]*>/i, '<link rel="alternate" hreflang="ar" href="' + canonical + '">');
+  html = html.replace(/<link\s+rel="alternate"\s+hreflang="x-default"[^>]*>/i, '<link rel="alternate" hreflang="x-default" href="' + canonical + '">');
+
+  // Inject JSON-LD just before </head>
+  const ld = buildJsonLd(route);
+  html = html.replace(/<\/head>/i, ld + '\n</head>');
+
+  return html;
+}
+// ===== /SEO =====
+
+
 const DATA_DIR = process.env.VERCEL ? '/tmp' : __dirname;
 const CREDENTIALS_FILE = path.join(DATA_DIR, 'admin-credentials.json');
+const BCRYPT_ROUNDS = 10;
+const DEFAULT_ADMIN_PASSWORD = 'cahit2024';
+
+function isBcryptHash(s) {
+  return typeof s === 'string' && /^\$2[aby]?\$\d{2}\$/.test(s);
+}
+function hashPassword(plain) {
+  return bcrypt.hashSync(String(plain), BCRYPT_ROUNDS);
+}
+function verifyPassword(plain, stored) {
+  if (!stored || typeof plain !== 'string') return false;
+  if (isBcryptHash(stored)) {
+    try { return bcrypt.compareSync(plain, stored); } catch (e) { return false; }
+  }
+  return plain === stored;
+}
+
 function loadCredentials() {
+  let raw = null;
   try {
     if (fs.existsSync(CREDENTIALS_FILE)) {
-      return JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf8'));
+      raw = JSON.parse(fs.readFileSync(CREDENTIALS_FILE, 'utf8'));
     }
   } catch (e) {}
-  return { username: 'admin', password: 'cahit2024' };
+  if (!raw || typeof raw !== 'object') raw = {};
+  const username = raw.username || 'admin';
+  let passwordHash = raw.passwordHash;
+  // Migrate legacy plaintext password field on read.
+  if (!passwordHash && raw.password) {
+    passwordHash = isBcryptHash(raw.password) ? raw.password : hashPassword(raw.password);
+    saveCredentials({ username, passwordHash });
+  }
+  if (!passwordHash) {
+    passwordHash = hashPassword(DEFAULT_ADMIN_PASSWORD);
+  }
+  return { username, passwordHash };
 }
 function saveCredentials(creds) {
-  try { fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(creds, null, 2)); } catch (e) {}
-}
-const TOKEN_SECRET = process.env.SESSION_SECRET || 'cahit-admin-secret-2024';
-function createAdminToken(username) {
-  const payload = username + ':' + Date.now();
-  const sig = crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('hex');
-  return Buffer.from(payload + ':' + sig).toString('base64');
-}
-function verifyAdminToken(token) {
   try {
-    const decoded = Buffer.from(token, 'base64').toString('utf8');
-    const parts = decoded.split(':');
-    if (parts.length < 3) return false;
-    const sig = parts.pop();
-    const payload = parts.join(':');
-    const expectedSig = crypto.createHmac('sha256', TOKEN_SECRET).update(payload).digest('hex');
-    return sig === expectedSig;
-  } catch (e) { return false; }
+    const out = { username: creds.username, passwordHash: creds.passwordHash };
+    fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(out, null, 2));
+  } catch (e) {}
 }
-const adminTokens = new Set();
+const TOKEN_SECRET_FILE = path.join(DATA_DIR, 'admin-token-secret.json');
+// Token-signing secret. Order of preference:
+//   1. process.env.SESSION_SECRET (preferred for prod)
+//   2. site_settings.admin_token_secret in the DB (shared across all serverless
+//      instances on Vercel — critical, since /tmp is per-instance)
+//   3. admin-token-secret.json on disk (local dev only)
+//   4. Newly generated random hex, persisted back to DB AND file
+// Loaded lazily so the DB is reachable before we try to read.
+let _cachedTokenSecret = null;
+let _tokenSecretPromise = null;
+function readTokenSecretFromFile() {
+  try {
+    if (fs.existsSync(TOKEN_SECRET_FILE)) {
+      const j = JSON.parse(fs.readFileSync(TOKEN_SECRET_FILE, 'utf8'));
+      if (j && typeof j.secret === 'string' && j.secret.length >= 32) return j.secret;
+    }
+  } catch (e) {}
+  return null;
+}
+function writeTokenSecretToFile(secret) {
+  try {
+    fs.writeFileSync(TOKEN_SECRET_FILE, JSON.stringify({ secret }, null, 2), { mode: 0o600 });
+    try { fs.chmodSync(TOKEN_SECRET_FILE, 0o600); } catch (e) {}
+  } catch (e) {}
+}
+async function loadOrCreateTokenSecret() {
+  const envSecret = process.env.SESSION_SECRET;
+  if (envSecret && envSecret.trim().length >= 16) return envSecret.trim();
+  if (envSecret && envSecret.trim().length > 0) {
+    console.error('[admin-auth] SESSION_SECRET is set but too short (need >= 16 chars).');
+    // Don't exit — fall through to DB/file/generated so the site stays up.
+  }
+  // Try the DB first — this is what makes Vercel cold-starts share a secret.
+  if (dbPool) {
+    try {
+      const dbSecret = await dbGetSetting('admin_token_secret', null);
+      if (dbSecret && dbSecret.length >= 32) return dbSecret;
+    } catch (e) {}
+    // Promote the on-disk secret to the DB if present (local→prod migration).
+    const fileSecret = readTokenSecretFromFile();
+    const candidate = fileSecret || crypto.randomBytes(48).toString('hex');
+    // Atomic insert-if-absent so concurrent cold starts CONVERGE on the same
+    // secret instead of last-writer-wins. After insert, always read back what
+    // is actually in the DB — that is the authoritative shared value.
+    try {
+      await dbQuery(
+        "INSERT INTO site_settings (key, value, updated_at) VALUES ('admin_token_secret', $1, NOW()) ON CONFLICT (key) DO NOTHING",
+        [candidate]
+      );
+      const finalSecret = await dbGetSetting('admin_token_secret', null);
+      if (finalSecret && finalSecret.length >= 32) {
+        // Mirror to file for local dev / debug; non-fatal if the disk is RO.
+        if (!fileSecret || fileSecret !== finalSecret) writeTokenSecretToFile(finalSecret);
+        if (!fileSecret) {
+          console.warn('[admin-auth] SESSION_SECRET not set; generated and stored a random secret in the database. For best practice, set SESSION_SECRET as an environment variable.');
+        }
+        return finalSecret;
+      }
+    } catch (e) {
+      console.error('[admin-auth] Failed to bootstrap token secret in DB:', e.message);
+      // Fall through; we will fail loudly below rather than silently use a
+      // per-instance secret in production (that is the bug we just fixed).
+    }
+    // DB is configured but unreachable / write failed. Refuse to mint
+    // ephemeral secrets in this case — it would re-introduce the cold-start
+    // logout bug. Throwing here makes admin auth fail closed; the next request
+    // will retry secret loading once the DB recovers.
+    throw new Error('admin token secret unavailable: DB configured but secret could not be loaded or persisted');
+  }
+  // No DB at all (pure local dev). File-backed secret is fine.
+  const fileSecret = readTokenSecretFromFile();
+  if (fileSecret) return fileSecret;
+  const generated = crypto.randomBytes(48).toString('hex');
+  writeTokenSecretToFile(generated);
+  console.warn('[admin-auth] SESSION_SECRET not set and no DB available; generated a file-backed secret for local dev. Set SESSION_SECRET in production.');
+  return generated;
+}
+async function getTokenSecret() {
+  if (_cachedTokenSecret) return _cachedTokenSecret;
+  if (!_tokenSecretPromise) {
+    _tokenSecretPromise = loadOrCreateTokenSecret().then(function(s) {
+      _cachedTokenSecret = s;
+      return s;
+    }).catch(function(err) {
+      _tokenSecretPromise = null;
+      throw err;
+    });
+  }
+  return _tokenSecretPromise;
+}
+const TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days max lifetime
+const TOKEN_VERSION_FILE = path.join(DATA_DIR, 'admin-token-version.json');
+const TOKEN_SESSIONS_FILE = path.join(DATA_DIR, 'admin-sessions.json');
+
+// Token revocation has two layers:
+//
+//   1. A monotonically increasing "version" number (per-installation). Every
+//      issued token embeds the version current at issue time; bumping the
+//      version invalidates every previously-issued token at once. Used by
+//      change-credentials so a password change kicks every device off.
+//
+//   2. A per-token allow-list ("sessions") keyed by a random token id embedded
+//      in each token. Logout removes only the calling token's id from the
+//      allow-list, leaving sessions on other devices intact. Sessions are
+//      persisted (DB when available, JSON file fallback) so revocation
+//      survives restarts; expired rows are pruned opportunistically.
+let cachedTokenVersion = null;
+function loadTokenVersionFromFile() {
+  try {
+    if (fs.existsSync(TOKEN_VERSION_FILE)) {
+      const j = JSON.parse(fs.readFileSync(TOKEN_VERSION_FILE, 'utf8'));
+      if (typeof j.version === 'number' && j.version >= 1) return j.version;
+    }
+  } catch (e) {}
+  return 1;
+}
+function saveTokenVersionToFile(v) {
+  try { fs.writeFileSync(TOKEN_VERSION_FILE, JSON.stringify({ version: v }, null, 2)); } catch (e) {}
+}
+async function getCurrentTokenVersion() {
+  if (dbPool) {
+    const v = await dbGetSetting('admin_token_version', null);
+    const n = v == null ? NaN : parseInt(v, 10);
+    if (Number.isFinite(n) && n >= 1) {
+      cachedTokenVersion = n;
+      return n;
+    }
+  }
+  if (cachedTokenVersion == null) cachedTokenVersion = loadTokenVersionFromFile();
+  return cachedTokenVersion;
+}
+async function bumpTokenVersion() {
+  const cur = await getCurrentTokenVersion();
+  const next = cur + 1;
+  cachedTokenVersion = next;
+  saveTokenVersionToFile(next);
+  if (dbPool) await dbSetSetting('admin_token_version', String(next));
+  return next;
+}
+
+// ---------- Per-token session allow-list ----------
+
+function normalizeSessionEntry(v) {
+  // Backwards compat: legacy entries were a bare expires-ms number.
+  if (Number.isFinite(v)) return { expiresMs: v };
+  if (v && typeof v === 'object') return v;
+  return null;
+}
+function loadSessionsFromFile() {
+  try {
+    if (fs.existsSync(TOKEN_SESSIONS_FILE)) {
+      const j = JSON.parse(fs.readFileSync(TOKEN_SESSIONS_FILE, 'utf8'));
+      if (j && typeof j.sessions === 'object' && j.sessions) return j.sessions;
+    }
+  } catch (e) {}
+  return {};
+}
+function saveSessionsToFile(sessions) {
+  try { fs.writeFileSync(TOKEN_SESSIONS_FILE, JSON.stringify({ sessions }, null, 2)); } catch (e) {}
+}
+
+function clientIpFromReq(req) {
+  if (!req) return '';
+  const fwd = (req.headers && req.headers['x-forwarded-for']) || '';
+  if (fwd) return String(fwd).split(',')[0].trim();
+  return (req.ip || (req.connection && req.connection.remoteAddress) || '').toString();
+}
+function clientUaFromReq(req) {
+  if (!req || !req.headers) return '';
+  return String(req.headers['user-agent'] || '').slice(0, 500);
+}
+
+async function pruneExpiredSessions() {
+  const now = Date.now();
+  if (dbPool) {
+    await dbQuery('DELETE FROM admin_sessions WHERE expires_at < $1', [new Date(now)]);
+    return;
+  }
+  const sessions = loadSessionsFromFile();
+  let changed = false;
+  for (const id of Object.keys(sessions)) {
+    const e = normalizeSessionEntry(sessions[id]);
+    if (!e || !Number.isFinite(e.expiresMs) || e.expiresMs < now) {
+      delete sessions[id];
+      changed = true;
+    }
+  }
+  if (changed) saveSessionsToFile(sessions);
+}
+
+async function recordAdminSession(tokenId, username, expiresMs, req) {
+  const ip = clientIpFromReq(req);
+  const ua = clientUaFromReq(req);
+  const now = Date.now();
+  if (dbPool) {
+    await dbQuery(
+      'INSERT INTO admin_sessions (token_id, username, expires_at, last_seen_at, last_ip, last_user_agent, created_ip, created_user_agent) ' +
+      'VALUES ($1, $2, $3, NOW(), $4, $5, $4, $5) ' +
+      'ON CONFLICT (token_id) DO UPDATE SET username = $2, expires_at = $3, last_seen_at = NOW(), last_ip = $4, last_user_agent = $5',
+      [tokenId, username, new Date(expiresMs), ip, ua]
+    );
+    return;
+  }
+  const sessions = loadSessionsFromFile();
+  const prev = normalizeSessionEntry(sessions[tokenId]) || {};
+  sessions[tokenId] = {
+    expiresMs: expiresMs,
+    username: username,
+    createdAt: prev.createdAt || now,
+    createdIp: prev.createdIp || ip,
+    createdUa: prev.createdUa || ua,
+    lastSeenAt: now,
+    lastIp: ip,
+    lastUa: ua
+  };
+  saveSessionsToFile(sessions);
+}
+
+async function touchAdminSession(tokenId, req) {
+  if (!tokenId) return;
+  const ip = clientIpFromReq(req);
+  const ua = clientUaFromReq(req);
+  if (dbPool) {
+    try {
+      await dbQuery(
+        'UPDATE admin_sessions SET last_seen_at = NOW(), last_ip = $2, last_user_agent = $3 WHERE token_id = $1',
+        [tokenId, ip, ua]
+      );
+    } catch (e) {}
+    return;
+  }
+  const sessions = loadSessionsFromFile();
+  const e = normalizeSessionEntry(sessions[tokenId]);
+  if (!e) return;
+  e.lastSeenAt = Date.now();
+  if (ip) e.lastIp = ip;
+  if (ua) e.lastUa = ua;
+  sessions[tokenId] = e;
+  saveSessionsToFile(sessions);
+}
+
+async function isSessionActive(tokenId, expiresMs) {
+  if (Date.now() > expiresMs) return false;
+  if (dbPool) {
+    const r = await dbQuery(
+      'SELECT 1 FROM admin_sessions WHERE token_id = $1 AND expires_at > NOW()',
+      [tokenId]
+    );
+    return !!(r && r.rows.length);
+  }
+  const sessions = loadSessionsFromFile();
+  const e = normalizeSessionEntry(sessions[tokenId]);
+  return !!(e && Number.isFinite(e.expiresMs) && e.expiresMs > Date.now());
+}
+
+async function revokeAdminSession(tokenId) {
+  if (dbPool) {
+    await dbQuery('DELETE FROM admin_sessions WHERE token_id = $1', [tokenId]);
+    return;
+  }
+  const sessions = loadSessionsFromFile();
+  if (sessions[tokenId] != null) {
+    delete sessions[tokenId];
+    saveSessionsToFile(sessions);
+  }
+}
+
+// Sign-out every active session for a given username (used when an admin
+// resets another admin's password — the target must be kicked off all devices
+// so the old password can't be used to ride an existing token).
+async function revokeAdminSessionsForUser(username) {
+  if (!username) return;
+  const u = String(username).toLowerCase();
+  if (dbPool) {
+    try { await dbQuery('DELETE FROM admin_sessions WHERE LOWER(username) = $1', [u]); } catch (e) {}
+    return;
+  }
+  const sessions = loadSessionsFromFile();
+  let changed = false;
+  for (const id of Object.keys(sessions)) {
+    const e = normalizeSessionEntry(sessions[id]);
+    if (e && String(e.username || '').toLowerCase() === u) {
+      delete sessions[id];
+      changed = true;
+    }
+  }
+  if (changed) saveSessionsToFile(sessions);
+}
+
+async function listAdminSessions() {
+  if (dbPool) {
+    const r = await dbQuery(
+      'SELECT token_id, username, created_at, expires_at, last_seen_at, last_ip, last_user_agent, created_ip, created_user_agent ' +
+      'FROM admin_sessions WHERE expires_at > NOW() ORDER BY last_seen_at DESC NULLS LAST, created_at DESC',
+      []
+    );
+    return (r.rows || []).map(function(row) {
+      return {
+        tokenId: row.token_id,
+        username: row.username || '',
+        createdAt: row.created_at ? new Date(row.created_at).toISOString() : null,
+        expiresAt: row.expires_at ? new Date(row.expires_at).toISOString() : null,
+        lastSeenAt: row.last_seen_at ? new Date(row.last_seen_at).toISOString() : null,
+        lastIp: row.last_ip || '',
+        lastUserAgent: row.last_user_agent || '',
+        createdIp: row.created_ip || '',
+        createdUserAgent: row.created_user_agent || ''
+      };
+    });
+  }
+  const now = Date.now();
+  const sessions = loadSessionsFromFile();
+  const out = [];
+  for (const id of Object.keys(sessions)) {
+    const e = normalizeSessionEntry(sessions[id]);
+    if (!e || !Number.isFinite(e.expiresMs) || e.expiresMs < now) continue;
+    out.push({
+      tokenId: id,
+      username: e.username || '',
+      createdAt: e.createdAt ? new Date(e.createdAt).toISOString() : null,
+      expiresAt: new Date(e.expiresMs).toISOString(),
+      lastSeenAt: e.lastSeenAt ? new Date(e.lastSeenAt).toISOString() : null,
+      lastIp: e.lastIp || '',
+      lastUserAgent: e.lastUa || '',
+      createdIp: e.createdIp || '',
+      createdUserAgent: e.createdUa || ''
+    });
+  }
+  out.sort(function(a, b) {
+    const av = a.lastSeenAt || a.createdAt || '';
+    const bv = b.lastSeenAt || b.createdAt || '';
+    return bv.localeCompare(av);
+  });
+  return out;
+}
+
+function newTokenId() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+async function createAdminToken(username, version, tokenId) {
+  const secret = await getTokenSecret();
+  const issued = Date.now();
+  const expires = issued + TOKEN_TTL_MS;
+  const payload = [username, issued, expires, version, tokenId].join('|');
+  const sig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  return { token: Buffer.from(payload + '|' + sig).toString('base64'), tokenId, expires };
+}
+async function decodeAdminToken(token) {
+  try {
+    const secret = await getTokenSecret();
+    const decoded = Buffer.from(token, 'base64').toString('utf8');
+    const parts = decoded.split('|');
+    // Expected fields: username, issued, expires, version, tokenId, sig (>= 6 parts)
+    if (parts.length < 6) return null;
+    const sig = parts.pop();
+    const payload = parts.join('|');
+    const expectedSig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    const sigBuf = Buffer.from(sig, 'hex');
+    const expBuf = Buffer.from(expectedSig, 'hex');
+    if (sigBuf.length !== expBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
+    const tokenId = parts[parts.length - 1];
+    const version = parseInt(parts[parts.length - 2], 10);
+    const expires = parseInt(parts[parts.length - 3], 10);
+    const issued = parseInt(parts[parts.length - 4], 10);
+    const username = parts.slice(0, parts.length - 4).join('|');
+    if (!Number.isFinite(issued) || !Number.isFinite(expires) || !Number.isFinite(version)) return null;
+    if (!tokenId) return null;
+    return { username, issued, expires, version, tokenId };
+  } catch (e) { return null; }
+}
+async function verifyAdminToken(token) {
+  const data = await decodeAdminToken(token);
+  if (!data) return false;
+  if (Date.now() > data.expires) return false;
+  const cur = await getCurrentTokenVersion();
+  if (data.version !== cur) return false;
+  if (!(await isSessionActive(data.tokenId, data.expires))) return false;
+  return data;
+}
+async function decodeAdminTokenFromHeader(req) {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  return token ? await decodeAdminToken(token) : null;
+}
+
+// Auth guard for admin API routes. Every /admin/api/* route should be guarded
+// with this middleware EXCEPT:
+//   - POST /admin/api/login         (used to obtain a token)
+//   - POST /admin/api/leads         (public lead submission from the site forms)
+// /admin/api/logout MUST be guarded — without it, any anonymous caller could
+// pass a stolen/guessed token id and force-revoke an admin session.
+async function requireAdminAuth(req, res, next) {
+  const auth = req.headers.authorization || '';
+  const token = auth.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ success: false, message: 'Unauthorized' });
+  const data = await verifyAdminToken(token);
+  if (!data) return res.status(401).json({ success: false, message: 'Unauthorized' });
+  req.adminToken = data;
+  // Best-effort: keep the per-session "last seen" / IP / user-agent fresh so
+  // the Active Sessions panel shows useful info. Don't await — failures here
+  // must not break the request.
+  touchAdminSession(data.tokenId, req).catch(function() {});
+  next();
+}
 
 const THEME_DIR = path.join(__dirname, 'wp-theme', 'cahit-theme');
 const BASE_URL = 'https://files.manuscdn.com/user_upload_by_module/session_file/310419663029149863/';
@@ -448,7 +1032,7 @@ app.post('/api/track', express.json(), async (req, res) => {
   } catch (e) { res.json({ ok: true }); }
 });
 
-app.get('/admin/api/analytics', async (req, res) => {
+app.get('/admin/api/analytics', requireAdminAuth, async (req, res) => {
   try {
     if (!dbPool) return res.json({ success: true, data: {} });
 
@@ -604,25 +1188,24 @@ function saveOpenAIKey(key) {
   try { fs.writeFileSync(OPENAI_KEY_FILE, JSON.stringify({ key }, null, 2)); } catch (e) {}
 }
 
-app.post('/admin/api/save-openai-key', express.json(), async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+app.post('/admin/api/save-openai-key', requireAdminAuth, express.json(), async (req, res) => {
+  const { key, clear } = req.body || {};
+  const trimmed = (key == null ? '' : String(key)).trim();
+  // Refuse to silently wipe an existing key. Caller must pass `clear: true` to clear it.
+  if (!trimmed && clear !== true) {
+    return res.status(400).json({ success: false, message: 'Empty key. Pass {clear:true} to explicitly remove the stored key.' });
   }
-  const { key } = req.body || {};
-  saveOpenAIKey(key || '');
-  await dbSetSetting('openai_api_key', key || '');
-  cachedApiKey = key || null;
+  // Basic sanity check: OpenAI keys start with "sk-" and are at least ~20 chars.
+  if (trimmed && (!/^sk-/.test(trimmed) || trimmed.length < 20)) {
+    return res.status(400).json({ success: false, message: 'That does not look like a valid OpenAI API key (should start with "sk-" and be at least 20 characters).' });
+  }
+  saveOpenAIKey(trimmed);
+  await dbSetSetting('openai_api_key', trimmed);
+  cachedApiKey = trimmed || null;
   res.json({ success: true });
 });
 
-app.get('/admin/api/openai-key-status', async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || ((!adminTokens.has(token) && !verifyAdminToken(token)) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false });
-  }
+app.get('/admin/api/openai-key-status', requireAdminAuth, async (req, res) => {
   const key = await loadOpenAIKeyAsync();
   res.json({ success: true, hasKey: !!key, maskedKey: key ? 'sk-...' + key.slice(-4) : '' });
 });
@@ -701,12 +1284,7 @@ async function buildSystemPrompt() {
   return prompt;
 }
 
-app.get('/admin/api/chatbot-knowledge', async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false });
-  }
+app.get('/admin/api/chatbot-knowledge', requireAdminAuth, async (req, res) => {
   if (dbPool) {
     const entries = await dbGetKnowledgeEntries();
     const personality = await dbGetSetting('chatbot_personality', '');
@@ -718,12 +1296,7 @@ app.get('/admin/api/chatbot-knowledge', async (req, res) => {
   }
 });
 
-app.post('/admin/api/chatbot-knowledge', express.json(), async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false });
-  }
+app.post('/admin/api/chatbot-knowledge', requireAdminAuth, express.json(), async (req, res) => {
   const { entries, personality, language, position } = req.body || {};
   if (dbPool) {
     await dbSaveKnowledgeEntries(entries || []);
@@ -735,12 +1308,7 @@ app.post('/admin/api/chatbot-knowledge', express.json(), async (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/admin/api/chatbot-knowledge-export', async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false });
-  }
+app.get('/admin/api/chatbot-knowledge-export', requireAdminAuth, async (req, res) => {
   let knowledge;
   if (dbPool) {
     const entries = await dbGetKnowledgeEntries();
@@ -802,7 +1370,42 @@ app.post('/api/chat', express.json(), async (req, res) => {
   }
 });
 
-app.post('/admin/api/ai-blog-generate', express.json(), async (req, res) => {
+// Translate arbitrary text snippets between English and Arabic. Used by the
+// EN→AR helper buttons in the Service Detail and Project Detail editors.
+app.post('/admin/api/translate', requireAdminAuth, express.json(), async (req, res) => {
+  const text = (req.body && typeof req.body.text === 'string') ? req.body.text : '';
+  const target = (req.body && req.body.target === 'en') ? 'en' : 'ar';
+  if (!text.trim()) return res.json({ success: false, error: 'No text provided' });
+  const apiKey = await loadOpenAIKeyAsync();
+  if (!apiKey) return res.json({ success: false, error: 'No OpenAI API key configured. Add one in Admin → Settings.' });
+  const targetName = target === 'ar' ? 'Arabic (Modern Standard Arabic, formal, suitable for a marine & coastal construction company website)' : 'English (clear, professional)';
+  const systemMsg = 'You are a professional translator for Cahit Trading & Contracting LLC, a marine and coastal construction company in Oman. Translate text accurately while preserving meaning, tone, and any HTML tags exactly as they appear (do not translate tag names or attributes — translate only the text inside tags). Output ONLY the translation, with no commentary, no quotes, no preamble.';
+  const userMsg = 'Translate the following to ' + targetName + '. Preserve all HTML markup, list structure, and line breaks.\n\n---\n' + text;
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemMsg },
+          { role: 'user', content: userMsg }
+        ],
+        max_tokens: 3000,
+        temperature: 0.3
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    const translated = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+    res.json({ success: true, translated: translated.trim() });
+  } catch (err) {
+    console.error('Translate error:', err.message || err);
+    res.json({ success: false, error: err.message || 'Translation failed' });
+  }
+});
+
+app.post('/admin/api/ai-blog-generate', requireAdminAuth, express.json(), async (req, res) => {
   const { topic, type, language, sourceText } = req.body || {};
   if (!topic && !sourceText) return res.json({ success: false, error: 'Please provide a topic or source text' });
 
@@ -858,7 +1461,7 @@ app.post('/admin/api/ai-blog-generate', express.json(), async (req, res) => {
   }
 });
 
-app.post('/admin/api/ai-blog-image', express.json(), async (req, res) => {
+app.post('/admin/api/ai-blog-image', requireAdminAuth, express.json(), async (req, res) => {
   const { prompt } = req.body || {};
   if (!prompt) return res.json({ success: false, error: 'Please provide an image prompt' });
 
@@ -876,13 +1479,42 @@ app.post('/admin/api/ai-blog-image', express.json(), async (req, res) => {
         prompt: prompt,
         n: 1,
         size: '1792x1024',
-        quality: 'standard'
+        quality: 'standard',
+        response_format: 'b64_json'
       })
     });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    const imageUrl = data.data[0].url;
-    res.json({ success: true, url: imageUrl });
+
+    let buffer = null;
+    let mime = 'image/png';
+    const b64 = data.data && data.data[0] && data.data[0].b64_json;
+    if (b64) {
+      buffer = Buffer.from(b64, 'base64');
+    } else if (data.data && data.data[0] && data.data[0].url) {
+      const imgRes = await fetch(data.data[0].url);
+      if (!imgRes.ok) throw new Error('Failed to download generated image');
+      const arr = await imgRes.arrayBuffer();
+      buffer = Buffer.from(arr);
+      const ct = (imgRes.headers.get('content-type') || '').toLowerCase();
+      if (ct.includes('jpeg') || ct.includes('jpg')) mime = 'image/jpeg';
+      else if (ct.includes('webp')) mime = 'image/webp';
+      else if (ct.includes('gif')) mime = 'image/gif';
+    } else {
+      throw new Error('No image data returned');
+    }
+
+    if (dbPool) {
+      const ins = await dbQuery('INSERT INTO blog_images (mime_type, data) VALUES ($1, $2) RETURNING id', [mime, buffer]);
+      const imgId = ins.rows[0].id;
+      res.json({ success: true, url: '/blog-image/' + imgId });
+    } else {
+      try { if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (e) {}
+      const ext = mime === 'image/jpeg' ? '.jpg' : mime === 'image/webp' ? '.webp' : mime === 'image/gif' ? '.gif' : '.png';
+      const safeName = 'ai-' + Date.now() + '-' + crypto.randomBytes(4).toString('hex') + ext;
+      fs.writeFileSync(path.join(UPLOADS_DIR, safeName), buffer);
+      res.json({ success: true, url: '/uploads/' + safeName });
+    }
   } catch (err) {
     console.error('AI image generation error:', err.message || err);
     res.json({ success: false, error: err.message || 'Image generation failed' });
@@ -892,61 +1524,492 @@ app.post('/admin/api/ai-blog-image', express.json(), async (req, res) => {
 // Admin dashboard
 const ADMIN_DIR = path.join(THEME_DIR, 'admin');
 
+// Resolve current admin credentials, preferring the DB hash when available and
+// transparently migrating legacy plaintext values to bcrypt hashes on read.
+async function resolveAdminCredentials() {
+  const fileCreds = loadCredentials();
+  let username = fileCreds.username;
+  let passwordHash = fileCreds.passwordHash;
+  if (dbPool) {
+    username = await dbGetSetting('admin_username', username);
+    let dbHash = await dbGetSetting('admin_password_hash', null);
+    if (!dbHash) {
+      // Legacy: a plaintext password may live under admin_password. Migrate it.
+      const legacyPlain = await dbGetSetting('admin_password', null);
+      if (legacyPlain) {
+        dbHash = isBcryptHash(legacyPlain) ? legacyPlain : hashPassword(legacyPlain);
+        await dbSetSetting('admin_password_hash', dbHash);
+        await dbSetSetting('admin_password', '');
+      }
+    }
+    if (dbHash) passwordHash = dbHash;
+  }
+  return { username, passwordHash };
+}
+
+async function persistAdminCredentials(username, passwordHash) {
+  saveCredentials({ username, passwordHash });
+  if (dbPool) {
+    await dbSetSetting('admin_username', username);
+    await dbSetSetting('admin_password_hash', passwordHash);
+    // Ensure no plaintext leftover lingers in the DB.
+    await dbSetSetting('admin_password', '');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Multi-admin support
+// ---------------------------------------------------------------------------
+// The original system stored a single "primary" admin in
+// site_settings.admin_username + admin_password_hash. Additional admins are
+// stored as a JSON array under site_settings.admin_extra_users:
+//   [ { username: 'cosstech@gmail.com', passwordHash: '<bcrypt>' }, ... ]
+// findAdminByUsername() is the single lookup point used by the login route.
+async function readExtraAdmins() {
+  if (!dbPool) return [];
+  try {
+    const raw = await dbGetSetting('admin_extra_users', null);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) { return []; }
+}
+async function writeExtraAdmins(list) {
+  await dbSetSetting('admin_extra_users', JSON.stringify(list || []));
+}
+async function findAdminByUsername(supplied) {
+  const u = String(supplied || '').trim();
+  if (!u) return null;
+  const primary = await resolveAdminCredentials();
+  if (u === primary.username || u === 'admin@cahitcontracting.com') {
+    return { username: primary.username, passwordHash: primary.passwordHash, primary: true };
+  }
+  const extras = await readExtraAdmins();
+  const match = extras.find((e) => e && e.username && e.username.toLowerCase() === u.toLowerCase());
+  if (match) return { username: match.username, passwordHash: match.passwordHash, primary: false };
+  return null;
+}
+async function upsertExtraAdmin(username, plainPassword) {
+  const extras = await readExtraAdmins();
+  const idx = extras.findIndex((e) => e && e.username && e.username.toLowerCase() === username.toLowerCase());
+  const entry = { username: username, passwordHash: hashPassword(plainPassword) };
+  if (idx >= 0) extras[idx] = entry; else extras.push(entry);
+  await writeExtraAdmins(extras);
+}
+
+// Bootstrap the secondary admin requested by the site owner. Runs once on
+// startup; if the account already exists we DO NOT overwrite their password.
+async function bootstrapSecondaryAdmin() {
+  if (!dbPool) return;
+  try {
+    const username = 'cosstech@gmail.com';
+    const extras = await readExtraAdmins();
+    if (extras.find((e) => e && e.username && e.username.toLowerCase() === username.toLowerCase())) return;
+    await upsertExtraAdmin(username, 'TOMOKOnote76$');
+    console.log('[admin] bootstrapped secondary admin: ' + username);
+  } catch (e) {
+    console.error('[admin] bootstrapSecondaryAdmin failed:', e.message);
+  }
+}
+bootstrapSecondaryAdmin().catch(() => {});
+
 app.post('/admin/api/login', express.json(), async (req, res) => {
   const { username, password } = req.body || {};
-  let creds = loadCredentials();
-  if (dbPool) {
-    const dbUser = await dbGetSetting('admin_username', creds.username);
-    const dbPass = await dbGetSetting('admin_password', creds.password);
-    creds = { username: dbUser, password: dbPass };
-  }
-  if ((username === creds.username || username === 'admin@cahitcontracting.com') && password === creds.password) {
-    const token = createAdminToken(username);
-    adminTokens.add(token);
-    res.json({ success: true, token, user: { name: 'Admin', role: 'administrator' } });
+  const account = await findAdminByUsername(username);
+  const passOk = !!account && verifyPassword(password || '', account.passwordHash);
+  if (account && passOk) {
+    // Opportunistic upgrade: if the stored value wasn't a bcrypt hash (legacy
+    // plaintext that happened to match), persist a hashed version now. Only
+    // applies to the primary admin — extras are always written as bcrypt.
+    if (account.primary && !isBcryptHash(account.passwordHash)) {
+      try { await persistAdminCredentials(account.username, hashPassword(password)); } catch (e) {}
+    }
+    const version = await getCurrentTokenVersion();
+    const tokenId = newTokenId();
+    const issued = await createAdminToken(account.username, version, tokenId);
+    await recordAdminSession(tokenId, account.username, issued.expires, req);
+    pruneExpiredSessions().catch(() => {});
+    res.json({ success: true, token: issued.token, user: { name: account.username, role: 'administrator' } });
   } else {
     res.status(401).json({ success: false, message: 'Invalid username or password' });
   }
 });
 
-app.post('/admin/api/change-credentials', express.json(), async (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
+app.post('/admin/api/change-credentials', requireAdminAuth, express.json(), async (req, res) => {
   const { currentPassword, newUsername, newPassword } = req.body || {};
-  let creds = loadCredentials();
-  if (dbPool) {
-    creds.username = await dbGetSetting('admin_username', creds.username);
-    creds.password = await dbGetSetting('admin_password', creds.password);
-  }
-  if (currentPassword !== creds.password) {
+  const creds = await resolveAdminCredentials();
+  if (!verifyPassword(currentPassword || '', creds.passwordHash)) {
     return res.status(400).json({ success: false, message: 'Current password is incorrect' });
   }
   if (!newPassword || newPassword.length < 6) {
     return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
   }
-  creds.username = newUsername && newUsername.trim() ? newUsername.trim() : creds.username;
-  creds.password = newPassword;
-  saveCredentials(creds);
+  const nextUsername = newUsername && newUsername.trim() ? newUsername.trim() : creds.username;
+  const nextHash = hashPassword(newPassword);
+  await persistAdminCredentials(nextUsername, nextHash);
+  const newVersion = await bumpTokenVersion();
+  // Bumping the version invalidates all old tokens; also clear the per-token
+  // allow-list so stale rows don't accumulate.
   if (dbPool) {
-    await dbSetSetting('admin_username', creds.username);
-    await dbSetSetting('admin_password', creds.password);
+    await dbQuery('DELETE FROM admin_sessions', []);
+  } else {
+    saveSessionsToFile({});
   }
-  adminTokens.clear();
-  const newToken = createAdminToken(creds.username);
-  adminTokens.add(newToken);
-  res.json({ success: true, token: newToken, message: 'Credentials updated successfully' });
+  const newTokenIdValue = newTokenId();
+  const issued = await createAdminToken(nextUsername, newVersion, newTokenIdValue);
+  await recordAdminSession(newTokenIdValue, nextUsername, issued.expires, req);
+  res.json({ success: true, token: issued.token, message: 'Credentials updated successfully' });
 });
 
-app.get('/admin/api/verify', (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (token && (adminTokens.has(token) || verifyAdminToken(token))) {
-    res.json({ success: true });
-  } else {
-    res.status(401).json({ success: false });
+app.get('/admin/api/verify', requireAdminAuth, (req, res) => {
+  res.json({ success: true });
+});
+
+// ---------------------------------------------------------------------------
+// Multi-admin recovery: list admin users and let any signed-in admin reset
+// another admin's password (after re-confirming their own current password).
+// This is the lock-out recovery feature — if one admin forgets their password
+// the other admin can reset it for them.
+// ---------------------------------------------------------------------------
+app.get('/admin/api/recovery-emails', requireAdminAuth, async (req, res) => {
+  try {
+    const emails = await getRecoveryEmails();
+    res.json({ success: true, emails: emails, defaults: DEFAULT_RECOVERY_EMAILS });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.post('/admin/api/recovery-emails', requireAdminAuth, express.json(), async (req, res) => {
+  try {
+    const raw = String((req.body && req.body.emails) || '');
+    const parts = raw.split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean);
+    const bad = parts.filter((e) => !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e));
+    if (bad.length) return res.status(400).json({ success: false, message: 'Invalid email(s): ' + bad.join(', ') });
+    if (!parts.length) return res.status(400).json({ success: false, message: 'At least one recovery email is required.' });
+    await dbSetSetting('admin_recovery_emails', parts.join(','));
+    res.json({ success: true, emails: parts });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/admin/api/admin-users', requireAdminAuth, async (req, res) => {
+  try {
+    const primary = await resolveAdminCredentials();
+    const extras = await readExtraAdmins();
+    const me = (req.adminToken && req.adminToken.username) || '';
+    const users = [{ username: primary.username, primary: true, isMe: me === primary.username }];
+    extras.forEach((e) => {
+      if (e && e.username) users.push({ username: e.username, primary: false, isMe: me === e.username });
+    });
+    res.json({ success: true, users });
+  } catch (e) { res.json({ success: false, error: e.message }); }
+});
+
+// ---------------------------------------------------------------------------
+// Self-serve "Forgot password" via emailed reset link. Designed so the client
+// is NEVER locked out: clicking the link on the login page emails a one-time
+// reset token to a list of recovery emails (configurable, defaults below).
+// ---------------------------------------------------------------------------
+const DEFAULT_RECOVERY_EMAILS = ['ctc@cahitcontracting.com', 'twolf.om@gmail.com'];
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+async function getRecoveryEmails() {
+  const raw = (await dbGetSetting('admin_recovery_emails', '')) || '';
+  const parts = String(raw).split(/[,;\s]+/).map((s) => s.trim()).filter(Boolean);
+  return parts.length ? parts : DEFAULT_RECOVERY_EMAILS.slice();
+}
+
+function makeResetToken() {
+  return require('crypto').randomBytes(32).toString('hex');
+}
+function hashResetToken(token) {
+  return require('crypto').createHash('sha256').update(String(token)).digest('hex');
+}
+// SECURITY: Reset links MUST come from a trusted origin only. Never derive from
+// the request's Host/X-Forwarded-Host headers — an attacker could submit a
+// forgot-password request with a forged Host and steer the emailed token to a
+// site they control. We honour PUBLIC_BASE_URL env, then an admin-configured
+// setting, then an explicit allowlist of known production hosts, and finally
+// fall back to the literal preview host (which is fine for dev).
+const TRUSTED_PUBLIC_HOSTS = [
+  'https://cahitcontracting.com',
+  'https://www.cahitcontracting.com'
+];
+async function trustedPublicBaseUrl(req) {
+  const env = process.env.PUBLIC_BASE_URL || process.env.SITE_URL || '';
+  if (env) return env.replace(/\/$/, '');
+  try {
+    const configured = (await dbGetSetting('public_base_url', '')) || '';
+    if (configured) return String(configured).replace(/\/$/, '');
+  } catch (_) {}
+  // Match request host against allowlist (case-insensitive, scheme-stripped).
+  const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https').toString().split(',')[0];
+  const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString().toLowerCase();
+  const candidate = (proto + '://' + host).replace(/\/$/, '');
+  for (const allowed of TRUSTED_PUBLIC_HOSTS) {
+    if (candidate === allowed.toLowerCase()) return allowed;
+  }
+  // Not on the allowlist — assume production domain so emailed links always
+  // point to the real site rather than a forged host.
+  return TRUSTED_PUBLIC_HOSTS[0];
+}
+
+// Simple in-memory rate limiter for the public reset endpoints. Keyed by
+// IP and (separately) by username — whichever limit hits first wins.
+const RESET_RATE = { ip: new Map(), user: new Map() };
+const RESET_RATE_WINDOW_MS = 15 * 60 * 1000; // 15 min
+const RESET_RATE_MAX_IP = 8;
+const RESET_RATE_MAX_USER = 4;
+function checkResetRate(key, bucket, max) {
+  const now = Date.now();
+  const arr = (bucket.get(key) || []).filter((t) => now - t < RESET_RATE_WINDOW_MS);
+  if (arr.length >= max) { bucket.set(key, arr); return false; }
+  arr.push(now); bucket.set(key, arr);
+  // Opportunistic cleanup
+  if (bucket.size > 500) {
+    for (const [k, v] of bucket) {
+      const fresh = v.filter((t) => now - t < RESET_RATE_WINDOW_MS);
+      if (!fresh.length) bucket.delete(k); else bucket.set(k, fresh);
+    }
+  }
+  return true;
+}
+
+async function sendResetEmail(toList, resetUrl, username) {
+  const { getResendClient } = require('./server/resendClient.cjs');
+  const { client, fromEmail } = await getResendClient();
+  const from = fromEmail || 'Cahit Admin <onboarding@resend.dev>';
+  const subject = 'Cahit Admin — Password reset link';
+  const text = [
+    'A password reset was requested for the Cahit admin account (' + username + ').',
+    '',
+    'Click the link below within the next hour to set a new password:',
+    resetUrl,
+    '',
+    'If you did NOT request this, you can safely ignore this email — the link will expire and no change will be made.',
+    '',
+    '— Cahit CRM'
+  ].join('\n');
+  const html = [
+    '<div style="font-family:Inter,Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#0f172a">',
+      '<div style="background:#0A3D6B;color:#fff;padding:18px 22px;border-radius:10px 10px 0 0;font-size:18px;font-weight:600">Cahit Admin — Password reset</div>',
+      '<div style="border:1px solid #e2e8f0;border-top:0;border-radius:0 0 10px 10px;padding:22px;background:#fff">',
+        '<p style="margin:0 0 14px">A password reset was requested for the admin account <strong>', escapeHtml(username), '</strong>.</p>',
+        '<p style="margin:0 0 18px">Click the button below within the next hour to set a new password:</p>',
+        '<p style="margin:0 0 18px"><a href="', resetUrl, '" style="display:inline-block;background:#0ea5e9;color:#fff;padding:11px 22px;border-radius:8px;text-decoration:none;font-weight:600">Reset my password</a></p>',
+        '<p style="margin:0 0 12px;font-size:13px;color:#64748b">Or copy and paste this link:<br><span style="color:#0f172a;word-break:break-all">', resetUrl, '</span></p>',
+        '<hr style="border:0;border-top:1px solid #e2e8f0;margin:18px 0">',
+        '<p style="margin:0;font-size:12px;color:#64748b">If you did NOT request this, ignore this email — the link will expire and no change will be made.</p>',
+      '</div>',
+    '</div>'
+  ].join('');
+  return client.emails.send({ from: from, to: toList, subject: subject, text: text, html: html });
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+  });
+}
+
+// Public — no auth (admin is locked out). Always returns success=true to avoid
+// leaking which usernames exist. Quietly no-ops for unknown users.
+app.post('/admin/api/forgot-password', express.json(), async (req, res) => {
+  const recoveryEmails = await getRecoveryEmails().catch(() => DEFAULT_RECOVERY_EMAILS.slice());
+  // Always return the same generic ack — never leak account existence, rate
+  // limit state, or email delivery success/failure to the public caller.
+  const ack = { success: true, message: 'If that account exists, a reset link has been sent to the recovery email(s) on file.', sentTo: recoveryEmails.length };
+  try {
+    const supplied = String((req.body && req.body.username) || '').trim();
+    const ip = clientIpFromReq(req) || 'unknown';
+    // Per-IP throttle first (cheap, blocks flood attempts).
+    if (!checkResetRate(ip, RESET_RATE.ip, RESET_RATE_MAX_IP)) {
+      console.warn('[forgot-password] rate-limited ip=' + ip);
+      return res.json(ack);
+    }
+    if (!supplied) return res.json(ack);
+    const account = await findAdminByUsername(supplied);
+    if (!account) return res.json(ack);
+    // Per-username throttle so an attacker can't burn through tokens for a known account.
+    if (!checkResetRate(account.username.toLowerCase(), RESET_RATE.user, RESET_RATE_MAX_USER)) {
+      console.warn('[forgot-password] rate-limited user=' + account.username);
+      return res.json(ack);
+    }
+    if (!dbPool) {
+      console.error('[forgot-password] DB unavailable — cannot issue token');
+      return res.json(ack); // do not leak DB state
+    }
+    const token = makeResetToken();
+    const tokenHash = hashResetToken(token);
+    const expiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+    const baseUrl = await trustedPublicBaseUrl(req);
+    const resetUrl = baseUrl + '/admin/reset-password?token=' + encodeURIComponent(token);
+    // Try the email send FIRST. Only after delivery succeeds do we (a) wipe
+    // any prior unused tokens for this user and (b) record the new one. This
+    // way a transient Resend outage can never invalidate a working reset link
+    // the admin already has in their inbox.
+    try {
+      await sendResetEmail(recoveryEmails, resetUrl, account.username);
+    } catch (mailErr) {
+      console.error('[forgot-password] email send failed:', mailErr && mailErr.message);
+      return res.json(ack); // generic ack — don't leak delivery state
+    }
+    await dbQuery('DELETE FROM admin_password_resets WHERE username = $1 AND used_at IS NULL', [account.username]);
+    await dbQuery(
+      'INSERT INTO admin_password_resets (token_hash, username, expires_at, requester_ip) VALUES ($1, $2, $3, $4)',
+      [tokenHash, account.username, expiresAt, ip]
+    );
+    res.json(ack);
+  } catch (e) {
+    console.error('[forgot-password] error', e);
+    res.json(ack); // generic ack on any error path
+  }
+});
+
+// Public — token-gated. Validates the one-time token and sets a new password.
+app.post('/admin/api/forgot-password/confirm', express.json(), async (req, res) => {
+  try {
+    const ip = clientIpFromReq(req) || 'unknown';
+    if (!checkResetRate('confirm:' + ip, RESET_RATE.ip, RESET_RATE_MAX_IP * 2)) {
+      return res.status(429).json({ success: false, message: 'Too many attempts. Please wait a few minutes and try again.' });
+    }
+    const { token, newPassword } = req.body || {};
+    if (!token || !newPassword) return res.status(400).json({ success: false, message: 'Token and new password are required.' });
+    if (String(newPassword).length < 6) return res.status(400).json({ success: false, message: 'Password must be at least 6 characters.' });
+    if (!dbPool) return res.status(503).json({ success: false, message: 'Password reset requires database access.' });
+    const tokenHash = hashResetToken(token);
+    const r = await dbQuery(
+      'SELECT username, expires_at, used_at FROM admin_password_resets WHERE token_hash = $1',
+      [tokenHash]
+    );
+    const row = r && r.rows && r.rows[0];
+    if (!row) return res.status(400).json({ success: false, message: 'Invalid or expired reset link.' });
+    if (row.used_at) return res.status(400).json({ success: false, message: 'This reset link has already been used.' });
+    if (new Date(row.expires_at).getTime() < Date.now()) {
+      return res.status(400).json({ success: false, message: 'This reset link has expired. Request a new one.' });
+    }
+    const account = await findAdminByUsername(row.username);
+    if (!account) return res.status(400).json({ success: false, message: 'Account no longer exists.' });
+    if (account.primary) {
+      await persistAdminCredentials(account.username, hashPassword(newPassword));
+    } else {
+      await upsertExtraAdmin(account.username, newPassword);
+    }
+    await dbQuery('UPDATE admin_password_resets SET used_at = NOW() WHERE token_hash = $1', [tokenHash]);
+    // Kick all sessions for this user so old tokens stop working.
+    await revokeAdminSessionsForUser(account.username);
+    res.json({ success: true, message: 'Password reset. You can now sign in with your new password.', username: account.username });
+  } catch (e) {
+    console.error('[forgot-password/confirm] error', e);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Public reset-password page (linked from the email).
+app.get('/admin/reset-password', (req, res) => {
+  const token = String((req.query && req.query.token) || '');
+  const safeToken = escapeHtml(token);
+  res.send(`<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reset Password — Cahit Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0f172a;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;color:#0f172a}
+.wrap{width:100%;max-width:420px}
+.brand{text-align:center;margin-bottom:24px;color:#fff}
+.brand .ic{width:56px;height:56px;background:#0ea5e9;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;color:#fff;margin-bottom:14px}
+.brand h1{font-size:22px;font-weight:600}
+.card{background:#fff;border-radius:12px;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.card h2{font-size:19px;margin-bottom:6px}
+.card p.sub{color:#64748b;font-size:14px;margin-bottom:20px}
+label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;color:#334155}
+input{width:100%;padding:11px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:#0f172a;margin-bottom:14px}
+input:focus{border-color:#0ea5e9;box-shadow:0 0 0 3px rgba(14,165,233,.1)}
+button{width:100%;padding:12px;background:#0ea5e9;color:#fff;border:0;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+button:hover{background:#0284c7}
+button:disabled{opacity:.6;cursor:not-allowed}
+.msg{padding:11px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none}
+.msg.show{display:block}
+.msg.err{background:#fef2f2;border:1px solid #fecaca;color:#dc2626}
+.msg.ok{background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46}
+.foot{text-align:center;margin-top:20px}
+.foot a{color:#94a3b8;font-size:13px;text-decoration:none}
+</style></head><body>
+<div class="wrap">
+  <div class="brand"><div class="ic">C</div><h1>Cahit Admin</h1></div>
+  <div class="card">
+    <h2>Set a new password</h2>
+    <p class="sub">Pick a strong password you'll remember. The link expires in 1 hour and works only once.</p>
+    <div id="msg" class="msg"></div>
+    <form id="f">
+      <label>New password</label>
+      <input id="p1" type="password" minlength="6" required autocomplete="new-password">
+      <label>Confirm new password</label>
+      <input id="p2" type="password" minlength="6" required autocomplete="new-password">
+      <button id="b" type="submit">Reset password</button>
+    </form>
+  </div>
+  <div class="foot"><a href="/admin/login">&larr; Back to login</a></div>
+</div>
+<script>
+(function(){
+  var token=${JSON.stringify(token)};
+  var msg=document.getElementById('msg'),f=document.getElementById('f'),b=document.getElementById('b');
+  function showMsg(t,k){msg.textContent=t;msg.className='msg show '+k;}
+  if(!token){showMsg('Missing reset token. Use the link from your email.','err');b.disabled=true;return;}
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var p1=document.getElementById('p1').value,p2=document.getElementById('p2').value;
+    if(p1.length<6){showMsg('Password must be at least 6 characters.','err');return;}
+    if(p1!==p2){showMsg('Passwords do not match.','err');return;}
+    b.disabled=true;b.textContent='Resetting…';msg.className='msg';
+    fetch('/admin/api/forgot-password/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,newPassword:p1})})
+      .then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})})
+      .then(function(res){
+        if(res.ok&&res.d.success){showMsg('Password reset. Redirecting to login…','ok');setTimeout(function(){window.location.href='/admin/login';},1600);}
+        else{showMsg(res.d.message||'Reset failed.','err');b.disabled=false;b.textContent='Reset password';}
+      })
+      .catch(function(){showMsg('Network error.','err');b.disabled=false;b.textContent='Reset password';});
+  });
+})();
+</script></body></html>`);
+});
+
+app.post('/admin/api/admin-users/reset-password', requireAdminAuth, express.json(), async (req, res) => {
+  try {
+    const { targetUsername, currentPassword, newPassword } = req.body || {};
+    if (!targetUsername || !currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'targetUsername, currentPassword and newPassword are required' });
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+    }
+    // Re-verify the caller's own password (acts as a re-auth confirmation so a
+    // stolen token alone can't reset other admins' passwords).
+    const myUsername = (req.adminToken && req.adminToken.username) || '';
+    const me = await findAdminByUsername(myUsername);
+    if (!me || !verifyPassword(currentPassword, me.passwordHash)) {
+      return res.status(400).json({ success: false, message: 'Your current password is incorrect' });
+    }
+    const target = await findAdminByUsername(targetUsername);
+    if (!target) return res.status(404).json({ success: false, message: 'Admin user not found' });
+    // This endpoint is the recovery path for *another* admin. Self-changes
+    // must go through Account Security (change-credentials) which handles
+    // your own token rotation cleanly.
+    if (String(target.username).toLowerCase() === String(me.username).toLowerCase()) {
+      return res.status(400).json({ success: false, message: 'Use Account Security to change your own password' });
+    }
+    if (target.primary) {
+      await persistAdminCredentials(target.username, hashPassword(newPassword));
+    } else {
+      await upsertExtraAdmin(target.username, newPassword);
+    }
+    // Kick the target off every active session (DB rows and file fallback)
+    // so the old password can't be used to ride an existing token. Caller's
+    // own token is unaffected.
+    await revokeAdminSessionsForUser(target.username);
+    res.json({ success: true, message: 'Password reset for ' + target.username });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
   }
 });
 
@@ -955,13 +2018,42 @@ try { if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: tr
 
 app.use('/uploads', express.static(UPLOADS_DIR));
 
-app.post('/admin/api/upload', (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+app.get('/blog-image/:id', async (req, res) => {
+  if (!dbPool) return res.status(404).send('Not found');
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).send('Bad id');
+    const r = await dbQuery('SELECT mime_type, data FROM blog_images WHERE id=$1', [id]);
+    if (!r.rows.length) return res.status(404).send('Not found');
+    const row = r.rows[0];
+    res.setHeader('Content-Type', row.mime_type || 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.end(row.data);
+  } catch (e) {
+    console.error('blog-image error:', e.message);
+    res.status(500).send('Error');
   }
+});
 
+app.get('/blog-media/:id', async (req, res) => {
+  if (!dbPool) return res.status(404).send('Not found');
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).send('Bad id');
+    const r = await dbQuery('SELECT mime_type, data FROM blog_media WHERE id=$1', [id]);
+    if (!r.rows.length) return res.status(404).send('Not found');
+    const row = r.rows[0];
+    res.setHeader('Content-Type', row.mime_type || 'application/octet-stream');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.end(row.data);
+  } catch (e) {
+    console.error('blog-media error:', e.message);
+    res.status(500).send('Error');
+  }
+});
+
+app.post('/admin/api/upload', requireAdminAuth, (req, res) => {
   const contentType = req.headers['content-type'] || '';
   if (!contentType.includes('multipart/form-data')) {
     return res.status(400).json({ success: false, message: 'Expected multipart/form-data' });
@@ -972,9 +2064,23 @@ app.post('/admin/api/upload', (req, res) => {
     return res.status(400).json({ success: false, message: 'No boundary found' });
   }
 
+  const MAX_BYTES = 25 * 1024 * 1024;
   const chunks = [];
-  req.on('data', chunk => chunks.push(chunk));
-  req.on('end', () => {
+  let total = 0;
+  let aborted = false;
+  req.on('data', chunk => {
+    if (aborted) return;
+    total += chunk.length;
+    if (total > MAX_BYTES) {
+      aborted = true;
+      try { res.status(413).json({ success: false, message: 'File too large (max 25 MB). For larger videos, host on YouTube/Vimeo and embed the link.' }); } catch(e) {}
+      try { req.destroy(); } catch(e) {}
+      return;
+    }
+    chunks.push(chunk);
+  });
+  req.on('end', async () => {
+    if (aborted) return;
     const buffer = Buffer.concat(chunks);
     const boundaryBuf = Buffer.from('--' + boundary);
     const parts = [];
@@ -1011,39 +2117,161 @@ app.post('/admin/api/upload', (req, res) => {
       return res.status(400).json({ success: false, message: 'No file found in upload' });
     }
 
-    const ext = path.extname(originalName) || '.bin';
-    const safeName = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + ext;
-    const filePath = path.join(UPLOADS_DIR, safeName);
-    fs.writeFileSync(filePath, fileBuffer);
+    const isImage = /^image\//i.test(mimeType);
+    const isVideo = /^video\//i.test(mimeType);
+    if (!isImage && !isVideo) {
+      return res.status(400).json({ success: false, message: 'Only image and video files are allowed' });
+    }
 
-    const fileUrl = '/uploads/' + safeName;
-    res.json({
-      success: true,
-      url: fileUrl,
-      name: originalName,
-      size: fileBuffer.length,
-      type: mimeType
-    });
+    if (process.env.VERCEL && dbPool) {
+      try {
+        const ins = await dbQuery(
+          'INSERT INTO blog_media (mime_type, original_name, data) VALUES ($1, $2, $3) RETURNING id',
+          [mimeType, originalName.slice(0, 500), fileBuffer]
+        );
+        const mediaId = ins.rows[0].id;
+        return res.json({
+          success: true,
+          url: '/blog-media/' + mediaId,
+          name: originalName,
+          size: fileBuffer.length,
+          type: mimeType,
+          kind: isVideo ? 'video' : 'image'
+        });
+      } catch (e) {
+        console.error('blog_media insert failed:', e.message);
+        return res.status(500).json({ success: false, message: 'Failed to store file' });
+      }
+    }
+
+    try {
+      const ext = path.extname(originalName) || '.bin';
+      const safeName = Date.now() + '-' + crypto.randomBytes(4).toString('hex') + ext;
+      const filePath = path.join(UPLOADS_DIR, safeName);
+      fs.writeFileSync(filePath, fileBuffer);
+      return res.json({
+        success: true,
+        url: '/uploads/' + safeName,
+        name: originalName,
+        size: fileBuffer.length,
+        type: mimeType,
+        kind: isVideo ? 'video' : 'image'
+      });
+    } catch (e) {
+      console.error('upload write failed:', e.message);
+      return res.status(500).json({ success: false, message: 'Failed to save file' });
+    }
   });
 });
 
-app.get('/admin/api/uploads', (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false });
+app.get('/admin/api/uploads', requireAdminAuth, async (req, res) => {
+  const files = [];
+  try {
+    if (fs.existsSync(UPLOADS_DIR)) {
+      fs.readdirSync(UPLOADS_DIR).forEach(name => {
+        try {
+          const stat = fs.statSync(path.join(UPLOADS_DIR, name));
+          const ext = (name.split('.').pop() || '').toLowerCase();
+          const isVid = ['mp4','mov','webm','avi','m4v','ogv'].indexOf(ext) !== -1;
+          const isImg = ['png','jpg','jpeg','gif','webp','svg','bmp','avif'].indexOf(ext) !== -1;
+          files.push({
+            name, url: '/uploads/' + name,
+            size: stat.size,
+            date: stat.mtime.toISOString().split('T')[0],
+            type: isVid ? ('video/' + ext) : (isImg ? ('image/' + (ext === 'jpg' ? 'jpeg' : ext)) : 'application/octet-stream'),
+            kind: isVid ? 'video' : (isImg ? 'image' : 'file')
+          });
+        } catch (e) {}
+      });
+    }
+  } catch (e) {}
+
+  if (dbPool) {
+    try {
+      const r = await dbQuery("SELECT id, mime_type, original_name, octet_length(data) AS size, created_at FROM blog_media ORDER BY id DESC LIMIT 500");
+      r.rows.forEach(row => {
+        const mime = row.mime_type || 'application/octet-stream';
+        const kind = /^video\//i.test(mime) ? 'video' : (/^image\//i.test(mime) ? 'image' : 'file');
+        files.push({
+          name: row.original_name || ('media-' + row.id),
+          url: '/blog-media/' + row.id,
+          size: Number(row.size) || 0,
+          date: row.created_at ? new Date(row.created_at).toISOString().split('T')[0] : '',
+          type: mime,
+          kind: kind
+        });
+      });
+    } catch (e) { console.error('blog_media list failed:', e.message); }
   }
-  const files = fs.readdirSync(UPLOADS_DIR).map(name => {
-    const stat = fs.statSync(path.join(UPLOADS_DIR, name));
-    return { name, url: '/uploads/' + name, size: stat.size, date: stat.mtime.toISOString().split('T')[0] };
-  });
+
+  files.sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
   res.json({ success: true, files });
 });
 
-app.post('/admin/api/logout', express.json(), (req, res) => {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  adminTokens.delete(token);
+app.get('/admin/api/sessions', requireAdminAuth, async (req, res) => {
+  try {
+    await pruneExpiredSessions();
+    const sessions = await listAdminSessions();
+    const currentTokenId = (req.adminToken && req.adminToken.tokenId) || '';
+    res.json({ success: true, currentTokenId: currentTokenId, sessions: sessions });
+  } catch (e) {
+    console.error('list sessions error:', e.message);
+    res.status(500).json({ success: false, message: 'Failed to list sessions' });
+  }
+});
+
+app.delete('/admin/api/sessions/:tokenId', requireAdminAuth, async (req, res) => {
+  // Lets an admin remotely sign out any other device they're signed in on.
+  // Revoking your own current token is allowed too — the next request will
+  // 401 and force a fresh login on this device.
+  try {
+    const tid = String(req.params.tokenId || '').trim();
+    if (!tid) return res.status(400).json({ success: false, message: 'Missing token id' });
+    await revokeAdminSession(tid);
+    const isSelf = !!(req.adminToken && req.adminToken.tokenId === tid);
+    res.json({ success: true, revokedSelf: isSelf });
+  } catch (e) {
+    console.error('revoke session error:', e.message);
+    res.status(500).json({ success: false, message: 'Failed to revoke session' });
+  }
+});
+
+app.post('/admin/api/sessions/logout-others', requireAdminAuth, async (req, res) => {
+  // One-click "sign out everywhere else" — revokes every session for the
+  // caller's account EXCEPT the one making the request. Useful when the
+  // admin sees stale "Browser on Unknown OS" rows and wants to clear them
+  // all at once without clicking Sign Out on each row individually.
+  try {
+    const me = req.adminToken && req.adminToken.username;
+    const myTokenId = req.adminToken && req.adminToken.tokenId;
+    if (!me) return res.status(401).json({ success: false, message: 'Unauthorized' });
+    if (!dbPool) {
+      // No DB: nothing persistent to revoke beyond our own JSON fallback
+      return res.json({ success: true, revoked: 0 });
+    }
+    const r = await dbQuery(
+      'DELETE FROM admin_sessions WHERE username = $1 AND token_id <> $2 RETURNING token_id',
+      [me, myTokenId]
+    );
+    const revoked = (r && r.rows && r.rows.length) || 0;
+    pruneExpiredSessions().catch(() => {});
+    res.json({ success: true, revoked: revoked });
+  } catch (e) {
+    console.error('logout-others error:', e.message);
+    res.status(500).json({ success: false, message: 'Failed to sign out other devices' });
+  }
+});
+
+app.post('/admin/api/logout', requireAdminAuth, express.json(), async (req, res) => {
+  // Per-token revocation: remove only the calling session's id from the
+  // allow-list, leaving any other devices the admin is signed in on intact.
+  // Sessions are persisted (DB or JSON fallback) so the revocation survives
+  // process restarts. Change-credentials remains the heavy hammer that wipes
+  // every session at once.
+  if (req.adminToken && req.adminToken.tokenId) {
+    await revokeAdminSession(req.adminToken.tokenId);
+  }
+  pruneExpiredSessions().catch(() => {});
   res.json({ success: true });
 });
 
@@ -1068,7 +2296,7 @@ app.get('/admin', (req, res) => {
   res.send(content);
 });
 
-app.get('/admin/api/leads', async (req, res) => {
+app.get('/admin/api/leads', requireAdminAuth, async (req, res) => {
   if (dbPool) {
     const leads = await dbGetLeads();
     res.json({ success: true, data: leads });
@@ -1098,16 +2326,6 @@ app.post('/admin/api/leads', express.json(), async (req, res) => {
     res.json({ success: true, data: lead });
   }
 });
-
-// Admin auth guard for blog routes
-function requireAdminAuth(req, res, next) {
-  const auth = req.headers.authorization || '';
-  const token = auth.replace('Bearer ', '');
-  if (!token || (!adminTokens.has(token) && !verifyAdminToken(token))) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
-  next();
-}
 
 // Plain-text HTML escaper for non-RTE fields (title, excerpt, attribute values)
 function escapeHtmlSafe(str) {
@@ -1234,7 +2452,12 @@ async function getServiceCards() {
 
 function renderProjectCardsHtml(cards) {
   const arrowSvg = '<svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
-  return cards.map(c => `<div class="project-card" data-testid="card-project-${c.slug}">
+  return cards.map(c => {
+    const desc = c.desc || '';
+    const descIsHtml = /<[a-z][\s\S]*>/i.test(desc);
+    const descHtml = descIsHtml ? desc : ('<p>' + desc + '</p>');
+    const arAttr = c.descAr ? ' data-ar-html="'+String(c.descAr).replace(/"/g,'&quot;')+'"' : '';
+    return `<div class="project-card" data-testid="card-project-${c.slug}">
     <div class="project-card-image">
       <img src="${c.img || ''}" alt="${(c.title||'').replace(/"/g,'&quot;')}" />
       <span class="project-category-badge">${c.badge || ''}</span>
@@ -1242,35 +2465,43 @@ function renderProjectCardsHtml(cards) {
     <div class="project-card-content">
       <h3 class="project-card-title">${c.title || ''}</h3>
       <p class="project-card-location">${c.location || ''}</p>
-      <p class="project-card-desc">${c.desc || ''}</p>
+      <div class="project-card-desc"${arAttr}>${descHtml}</div>
       <a href="/projects/${c.slug}" class="service-card-link" data-ar="\u0627\u0642\u0631\u0623 \u0627\u0644\u0645\u0632\u064a\u062f">Read More ${arrowSvg}</a>
     </div>
-  </div>`).join('\n');
+  </div>`;
+  }).join('\n');
 }
 
 function renderServiceCardsHtml(cards) {
   const arrowSvg = '<svg class="icon-arrow-sm" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
-  return cards.map(c => `<div class="service-card" data-testid="service-${c.slug}">
+  return cards.map(c => {
+    const desc = c.desc || '';
+    const descIsHtml = /<[a-z][\s\S]*>/i.test(desc);
+    const descHtml = descIsHtml ? desc : ('<p>' + desc + '</p>');
+    const titleArAttr = c.titleAr ? ' data-ar="'+String(c.titleAr).replace(/"/g,'&quot;')+'"' : '';
+    const descArAttr = c.descAr ? ' data-ar-html="'+String(c.descAr).replace(/"/g,'&quot;')+'"' : '';
+    return `<div class="service-card" data-testid="service-${c.slug}">
     <div class="service-card-image">
       <img src="${c.img || ''}" alt="${(c.title||'').replace(/"/g,'&quot;')}" />
     </div>
     <div class="service-card-content">
-      <h3 class="service-card-title" ${c.titleAr ? 'data-ar="'+c.titleAr.replace(/"/g,'&quot;')+'"' : ''}>${c.title || ''}</h3>
-      <p class="service-card-desc" ${c.descAr ? 'data-ar="'+c.descAr.replace(/"/g,'&quot;')+'"' : ''}>${c.desc || ''}</p>
+      <h3 class="service-card-title"${titleArAttr}>${c.title || ''}</h3>
+      <div class="service-card-desc"${descArAttr}>${descHtml}</div>
       <a href="/services/${c.slug}" class="service-card-link" data-ar="\u0627\u0642\u0631\u0623 \u0627\u0644\u0645\u0632\u064a\u062f">Read More ${arrowSvg}</a>
     </div>
-  </div>`).join('\n');
+  </div>`;
+  }).join('\n');
 }
 
 // Dynamic Cards API
-app.get('/admin/api/dynamic-cards/:type', async (req, res) => {
+app.get('/admin/api/dynamic-cards/:type', requireAdminAuth, async (req, res) => {
   try {
     const cards = req.params.type === 'projects' ? await getProjectCards() : await getServiceCards();
     res.json({ success: true, cards });
   } catch(e) { res.json({ success: false, error: e.message }); }
 });
 
-app.put('/admin/api/dynamic-cards/:type', express.json(), async (req, res) => {
+app.put('/admin/api/dynamic-cards/:type', requireAdminAuth, express.json(), async (req, res) => {
   try {
     const key = req.params.type === 'projects' ? 'dynamic_project_cards' : 'dynamic_service_cards';
     await dbSetSetting(key, JSON.stringify(req.body.cards || []));
@@ -1279,22 +2510,112 @@ app.put('/admin/api/dynamic-cards/:type', express.json(), async (req, res) => {
 });
 
 // Site Content Save/Load
-app.get('/admin/api/site-content/:key', async (req, res) => {
+app.get('/admin/api/site-content/:key', requireAdminAuth, async (req, res) => {
   try {
     const val = await dbGetSetting('content_' + req.params.key);
     res.json({ success: true, data: val ? JSON.parse(val) : null });
   } catch (e) { res.json({ success: false, error: e.message }); }
 });
 
-app.put('/admin/api/site-content/:key', express.json(), async (req, res) => {
+app.put('/admin/api/site-content/:key', requireAdminAuth, express.json(), async (req, res) => {
   try {
     await dbSetSetting('content_' + req.params.key, JSON.stringify(req.body.data || {}));
+    // Notify other live admins that this section just changed so their editor
+    // can auto-refresh. Best-effort; presence failure must not break save.
+    try {
+      const sid = ((req.adminToken && req.adminToken.tokenId) || 'tok') + ':' + String((req.body && req.body.clientId) || '').slice(0, 40);
+      await recordPresenceSave(req.params.key, sid, req.adminToken && req.adminToken.username);
+    } catch (e) {}
+    res.json({ success: true });
+  } catch (e) { res.json({ success: false, error: e.message }); }
+});
+
+// ---------------------------------------------------------------------------
+// Live admin presence ("see what the other admin is doing")
+// ---------------------------------------------------------------------------
+// State is persisted to site_settings as JSON so it survives across Vercel
+// serverless cold starts and is shared between every running instance.
+//   { users: { <username>: { page, label, ts } },
+//     saves: { <sectionKey>: { ts, by } } }
+// Entries older than PRESENCE_TTL_MS are dropped on every read.
+const PRESENCE_KEY = '_live_presence';
+const PRESENCE_TTL_MS = 15000;     // an admin is considered "online" for 15s after their last heartbeat
+const PRESENCE_SAVE_TTL_MS = 60000; // remember save-events for 60s so slow pollers still see them
+
+async function readPresence() {
+  try {
+    const raw = await dbGetSetting(PRESENCE_KEY);
+    if (!raw) return { users: {}, saves: {} };
+    const obj = JSON.parse(raw);
+    return { users: obj.users || {}, saves: obj.saves || {} };
+  } catch (e) { return { users: {}, saves: {} }; }
+}
+function prunePresence(state) {
+  const now = Date.now();
+  Object.keys(state.users).forEach((u) => {
+    if (!state.users[u] || (now - (state.users[u].ts || 0)) > PRESENCE_TTL_MS) delete state.users[u];
+  });
+  Object.keys(state.saves).forEach((k) => {
+    if (!state.saves[k] || (now - (state.saves[k].ts || 0)) > PRESENCE_SAVE_TTL_MS) delete state.saves[k];
+  });
+  return state;
+}
+async function writePresence(state) {
+  await dbSetSetting(PRESENCE_KEY, JSON.stringify(state));
+}
+async function recordPresenceSave(sectionKey, sessionId, username) {
+  const state = prunePresence(await readPresence());
+  state.saves[sectionKey] = { ts: Date.now(), by: username || 'admin', sid: sessionId || '' };
+  await writePresence(state);
+}
+
+// Heartbeat: client calls this every few seconds with its current screen.
+// Body: { page: 'content', label: 'Editing: About > Hero', clientId?: '...' }
+// Response includes the *other* online admin sessions and recent save events
+// so the client can render the presence pill and auto-refresh when needed.
+//
+// IMPORTANT: presence is keyed by *session* (token id + a per-tab clientId),
+// NOT by username. Multiple browsers / tabs / people can share one admin
+// account and we still want to show them as separate live participants.
+app.post('/admin/api/presence', requireAdminAuth, express.json(), async (req, res) => {
+  try {
+    const username = (req.adminToken && req.adminToken.username) || 'admin';
+    const tokenId = (req.adminToken && req.adminToken.tokenId) || '';
+    const clientId = String((req.body && req.body.clientId) || '').slice(0, 40);
+    const sessionKey = (tokenId || 'tok') + ':' + (clientId || 'tab');
+    const body = req.body || {};
+    const page = String(body.page || '').slice(0, 60);
+    const label = String(body.label || '').slice(0, 200);
+    const editingPage = String(body.editingPage || '').slice(0, 120);
+    const editingSection = String(body.editingSection || '').slice(0, 80);
+    const detailSlug = String(body.detailSlug || '').slice(0, 120);
+    const state = prunePresence(await readPresence());
+    state.users[sessionKey] = { user: username, page, label, editingPage, editingSection, detailSlug, ts: Date.now() };
+    await writePresence(state);
+    const others = Object.keys(state.users)
+      .filter((k) => k !== sessionKey)
+      .map((k) => Object.assign({ sid: k }, state.users[k]));
+    res.json({ success: true, me: username, mySid: sessionKey, others: others, saves: state.saves, serverTs: Date.now() });
+  } catch (e) { res.json({ success: false, error: e.message }); }
+});
+
+// Sign-out: drop my presence entry immediately so the other admin sees me
+// disappear without waiting for the 15s TTL. Body may include clientId so the
+// right per-tab session is removed.
+app.post('/admin/api/presence/leave', requireAdminAuth, express.json(), async (req, res) => {
+  try {
+    const tokenId = (req.adminToken && req.adminToken.tokenId) || '';
+    const clientId = String((req.body && req.body.clientId) || '').slice(0, 40);
+    const sessionKey = (tokenId || 'tok') + ':' + (clientId || 'tab');
+    const state = prunePresence(await readPresence());
+    delete state.users[sessionKey];
+    await writePresence(state);
     res.json({ success: true });
   } catch (e) { res.json({ success: false, error: e.message }); }
 });
 
 // Lead status update
-app.post('/admin/api/leads/:id/status', express.json(), async (req, res) => {
+app.post('/admin/api/leads/:id/status', requireAdminAuth, express.json(), async (req, res) => {
   try {
     const { status } = req.body;
     if (dbPool) {
@@ -1306,7 +2627,7 @@ app.post('/admin/api/leads/:id/status', express.json(), async (req, res) => {
   } catch (e) { res.json({ success: false, error: e.message }); }
 });
 
-app.get('/admin/api/pages', (req, res) => {
+app.get('/admin/api/pages', requireAdminAuth, (req, res) => {
   const pages = [
     { name: 'Home', path: '/', template: 'front-page.php', status: 'published' },
     { name: 'About Us', path: '/about', template: 'page-about.php', status: 'published' },
@@ -1353,6 +2674,7 @@ app.get('/', async (req, res) => {
   const content = readThemeFile('front-page.php');
   let html = executePhpTemplate(content, 'home');
   html = await applySavedContent(html, ['hero', 'logos', 'about-preview', 'services', 'marine', 'stats', 'projects', 'leadership', 'cta', 'header', 'footer']);
+  html = injectSeo(html, '/');
   res.send(html);
 });
 
@@ -1360,6 +2682,7 @@ app.get('/about', async (req, res) => {
   const content = readThemeFile('page-about.php');
   let html = executePhpTemplate(content, 'about');
   html = await applySavedContent(html, ['about-hero', 'about-overview', 'about-mission', 'about-leadership', 'about-commitment', 'about-clients', 'header', 'footer']);
+  html = injectSeo(html, '/about');
   res.send(html);
 });
 
@@ -1371,6 +2694,7 @@ app.get('/services', async (req, res) => {
   const cardsHtml = renderServiceCardsHtml(cards);
   html = html.replace(/<div class="services-grid">[\s\S]*?<\/div>\s*<\/div>\s*<\/section>/m,
     '<div class="services-grid">' + cardsHtml + '</div></div></section>');
+  html = injectSeo(html, '/services');
   res.send(html);
 });
 
@@ -1382,6 +2706,7 @@ app.get('/projects', async (req, res) => {
   const cardsHtml = renderProjectCardsHtml(cards);
   html = html.replace(/<div class="projects-grid">[\s\S]*?<\/div>\s*<\/div>\s*<\/section>/m,
     '<div class="projects-grid">' + cardsHtml + '</div></div></section>');
+  html = injectSeo(html, '/projects');
   res.send(html);
 });
 
@@ -1389,6 +2714,7 @@ app.get('/clients', async (req, res) => {
   const content = readThemeFile('page-clients.php');
   let html = executePhpTemplate(content, 'clients');
   html = await applySavedContent(html, ['clients-hero', 'clients-grid', 'clients-sectors', 'header', 'footer']);
+  html = injectSeo(html, '/clients');
   res.send(html);
 });
 
@@ -1406,7 +2732,7 @@ app.get('/blog', async (req, res) => {
           const safeTitleAr = escapeHtmlSafe(p.title_ar);
           const safeExcerpt = escapeHtmlSafe(p.excerpt);
           const safeExcerptAr = escapeHtmlSafe(p.excerpt_ar);
-          const safeImg = encodeURI(p.image_url || '');
+          const safeImg = escapeHtmlSafe(p.image_url || '');
           const safeSlug = encodeURIComponent(p.slug || '');
           postsHtml += `<div class="blog-card" data-testid="card-blog-${p.id}">
             ${p.image_url ? '<div class="blog-card-image"><img src="' + safeImg + '" alt="' + safeTitle + '" /></div>' : '<div class="blog-card-image"><div style="height:200px;background:linear-gradient(135deg,#0A3D6B,#0ea5e9);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:700">' + escapeHtmlSafe((p.title || '')[0]) + '</div></div>'}
@@ -1429,7 +2755,68 @@ app.get('/careers', async (req, res) => {
   const content = readThemeFile('page-careers.php');
   let html = executePhpTemplate(content, 'careers');
   html = await applySavedContent(html, ['careers-hero', 'careers-intro', 'careers-cta', 'header', 'footer']);
+  html = injectSeo(html, '/careers');
   res.send(html);
+});
+
+// SEO: robots.txt
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send(
+    'User-agent: *\n' +
+    'Allow: /\n' +
+    'Disallow: /admin\n' +
+    'Disallow: /admin/\n' +
+    'Disallow: /api/\n' +
+    '\n' +
+    'Sitemap: ' + SITE_URL + '/sitemap.xml\n'
+  );
+});
+
+// SEO: sitemap.xml (dynamic - includes published blog posts + service/project detail pages)
+app.get('/sitemap.xml', async (req, res) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = [
+    { loc: '/', priority: '1.0', changefreq: 'weekly' },
+    { loc: '/about', priority: '0.8', changefreq: 'monthly' },
+    { loc: '/services', priority: '0.9', changefreq: 'monthly' },
+    { loc: '/projects', priority: '0.9', changefreq: 'monthly' },
+    { loc: '/clients', priority: '0.6', changefreq: 'monthly' },
+    { loc: '/blog', priority: '0.8', changefreq: 'weekly' },
+    { loc: '/careers', priority: '0.5', changefreq: 'monthly' }
+  ];
+  try {
+    if (typeof getServiceCards === 'function') {
+      const svcs = await getServiceCards();
+      svcs.forEach(s => { if (s.slug) urls.push({ loc: '/services/' + s.slug, priority: '0.7', changefreq: 'monthly' }); });
+    }
+    if (typeof getProjectCards === 'function') {
+      const projs = await getProjectCards();
+      projs.forEach(p => { if (p.slug) urls.push({ loc: '/projects/' + p.slug, priority: '0.7', changefreq: 'monthly' }); });
+    }
+    if (dbPool) {
+      const r = await dbQuery("SELECT slug, updated_at FROM blog_posts WHERE status='published' ORDER BY updated_at DESC");
+      if (r && r.rows) {
+        r.rows.forEach(p => {
+          if (p.slug) urls.push({
+            loc: '/blog/' + p.slug,
+            lastmod: (p.updated_at ? new Date(p.updated_at).toISOString().slice(0,10) : today),
+            priority: '0.6', changefreq: 'monthly'
+          });
+        });
+      }
+    }
+  } catch (e) { console.error('sitemap build error:', e.message); }
+
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    urls.map(u =>
+      '  <url><loc>' + SITE_URL + u.loc + '</loc>' +
+      '<lastmod>' + (u.lastmod || today) + '</lastmod>' +
+      '<changefreq>' + u.changefreq + '</changefreq>' +
+      '<priority>' + u.priority + '</priority></url>'
+    ).join('\n') +
+    '\n</urlset>\n';
+  res.type('application/xml').send(xml);
 });
 
 app.get('/blog/:slug', async (req, res) => {
@@ -1448,25 +2835,39 @@ app.get('/blog/:slug', async (req, res) => {
     let header = executePhpTemplate(headerContent, 'blog');
     let footer = executePhpTemplate(footerContent, 'blog');
     const safePostTitle = escapeHtmlSafe(post.title);
-    const safePostImg = encodeURI(post.image_url || '');
+    const safePostTitleAr = escapeHtmlSafe(post.title_ar || '');
+    const safePostImg = escapeHtmlSafe(post.image_url || '');
     const safePostContent = post.content ? sanitizeBlogHtml(post.content) : escapeHtmlSafe(post.excerpt || '');
+    const safePostContentArHtml = post.content_ar ? sanitizeBlogHtml(post.content_ar) : '';
+    const safePostContentArAttr = escapeHtmlSafe(safePostContentArHtml);
+    const titleArAttr = post.title_ar ? ' data-ar="' + safePostTitleAr + '"' : '';
+    const contentArAttr = post.content_ar ? ' data-ar-html="' + safePostContentArAttr + '" dir="auto"' : '';
+    const dateEn = new Date(post.created_at).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+    let dateAr = '';
+    try { dateAr = new Date(post.created_at).toLocaleDateString('ar', {year:'numeric',month:'long',day:'numeric'}); } catch(e) { dateAr = dateEn; }
     const postHtml = `
       <section class="hero-banner" style="min-height:200px">
         <div class="container text-center" style="padding-top:120px;padding-bottom:40px">
-          <h1 class="hero-banner-title hero-banner-title-lg">${safePostTitle}</h1>
-          <p class="hero-banner-subtitle">${new Date(post.created_at).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'})}</p>
+          <h1 class="hero-banner-title hero-banner-title-lg"${titleArAttr}>${safePostTitle}</h1>
+          <p class="hero-banner-subtitle" data-ar="${escapeHtmlSafe(dateAr)}">${dateEn}</p>
         </div>
       </section>
       <section class="section bg-white">
         <div class="container" style="max-width:800px;margin:0 auto">
           ${post.image_url ? '<img src="' + safePostImg + '" style="width:100%;border-radius:12px;margin-bottom:2rem" alt="' + safePostTitle + '" />' : ''}
-          <div class="blog-post-content" style="font-size:1.05rem;line-height:1.8;color:#334155">${safePostContent}</div>
+          <div class="blog-post-content" style="font-size:1.05rem;line-height:1.8;color:#334155"${contentArAttr}>${safePostContent}</div>
           <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid #e2e8f0">
-            <a href="/blog" class="service-card-link" style="font-size:1rem">&larr; Back to Blog</a>
+            <a href="/blog" class="service-card-link" style="font-size:1rem" data-ar="&rarr; العودة إلى المدونة">&larr; Back to Blog</a>
           </div>
         </div>
       </section>`;
-    res.send(header + postHtml + footer);
+    let outHtml = header + postHtml + footer;
+    outHtml = injectSeo(outHtml, '/blog/' + req.params.slug, {
+      title: post.title + ' | Cahit Contracting Blog',
+      description: (post.excerpt || post.title || '').toString().slice(0, 200),
+      image: post.image_url || DEFAULT_OG_IMAGE
+    });
+    res.send(outHtml);
   } catch (e) {
     const content = readThemeFile('404.php');
     res.status(500).send(executePhpTemplate(content, '404'));
@@ -1494,6 +2895,10 @@ app.get('/projects/:slug', async (req, res) => {
     let scope = '';
     let img2 = '';
     let img3 = '';
+    let titleAr = '';
+    let subtitleAr = '';
+    let contentAr = '';
+    let scopeAr = '';
 
     if (dbPool) {
       const r = await dbQuery('SELECT value FROM site_settings WHERE key=$1', ['content_project-detail-' + slug]);
@@ -1510,6 +2915,10 @@ app.get('/projects/:slug', async (req, res) => {
         scope = data['project-detail-scope'] || '';
         img2 = data['project-detail-img2'] || '';
         img3 = data['project-detail-img3'] || '';
+        titleAr = data['project-detail-title-ar'] || '';
+        subtitleAr = data['project-detail-subtitle-ar'] || '';
+        contentAr = data['project-detail-content-ar'] || '';
+        scopeAr = data['project-detail-scope-ar'] || '';
       }
       const projCards = await getProjectCards();
       const matchCard = projCards.find(c => c.slug === slug);
@@ -1518,7 +2927,6 @@ app.get('/projects/:slug', async (req, res) => {
         if (!title || title === slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())) title = matchCard.title || title;
         if (!location) location = matchCard.location || '';
         if (!category) category = matchCard.badge || '';
-        if (!content) content = matchCard.desc || '';
       }
     }
 
@@ -1540,29 +2948,73 @@ app.get('/projects/:slug', async (req, res) => {
         <div class="hero-banner-overlay"></div>
         <div class="hero-banner-content">
           <div class="container">
-            <h1 class="hero-banner-title" data-field="project-detail-title">${title}</h1>
-            ${subtitle ? '<p class="hero-banner-subtitle" data-field="project-detail-subtitle">' + subtitle + '</p>' : ''}
+            <h1 class="hero-banner-title" data-field="project-detail-title"${titleAr ? ' data-ar="' + titleAr.replace(/"/g, '&quot;') + '"' : ''}>${title}</h1>
+            ${subtitle ? '<p class="hero-banner-subtitle" data-field="project-detail-subtitle"' + (subtitleAr ? ' data-ar="' + subtitleAr.replace(/"/g, '&quot;') + '"' : '') + '>' + subtitle + '</p>' : ''}
           </div>
         </div>
       </section>
       <section class="section bg-white">
         <div class="container" style="max-width:900px;margin:0 auto">
           ${infoItems ? '<div class="detail-info-bar" style="display:flex;flex-wrap:wrap;gap:1.5rem;padding:1.5rem;background:#f8fafc;border-radius:12px;margin-bottom:2rem;font-size:0.95rem;color:#334155">' + infoItems + '</div>' : ''}
-          ${content ? '<div class="detail-content" data-field="project-detail-content" style="font-size:1.05rem;line-height:1.8;color:#334155;white-space:pre-line">' + content + '</div>' : '<div class="detail-content" style="font-size:1.05rem;line-height:1.8;color:#64748b;text-align:center;padding:3rem 0">Detail content coming soon. Edit this page from the admin dashboard.</div>'}
-          ${scope ? '<div style="margin-top:2rem"><h3 style="font-size:1.2rem;font-weight:600;color:#0A3D6B;margin-bottom:1rem">Scope of Work</h3><div data-field="project-detail-scope" style="font-size:1rem;line-height:1.8;color:#334155;white-space:pre-line">' + scope + '</div></div>' : ''}
+          ${content ? '<div class="detail-content" data-field="project-detail-content"' + (contentAr ? ' data-ar-html="' + contentAr.replace(/"/g, '&quot;') + '"' : '') + ' style="font-size:1.05rem;line-height:1.8;color:#334155;white-space:normal">' + content + '</div>' : '<div class="detail-content" style="font-size:1.05rem;line-height:1.8;color:#64748b;text-align:center;padding:3rem 0">Detail content coming soon. Edit this page from the admin dashboard.</div>'}
+          ${scope ? '<div style="margin-top:2rem"><h3 style="font-size:1.2rem;font-weight:600;color:#0A3D6B;margin-bottom:1rem" data-ar="نطاق العمل">Scope of Work</h3><div data-field="project-detail-scope"' + (scopeAr ? ' data-ar-html="' + scopeAr.replace(/"/g, '&quot;') + '"' : '') + ' style="font-size:1rem;line-height:1.8;color:#334155;white-space:normal">' + scope + '</div></div>' : ''}
           ${galleryHtml}
           <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid #e2e8f0">
             <a href="/projects" class="service-card-link" style="font-size:1rem">&larr; Back to Projects</a>
           </div>
         </div>
       </section>`;
-    res.send(header + detailHtml + footer);
+    let outHtml = header + detailHtml + footer;
+    outHtml = injectSeo(outHtml, '/projects/' + slug, {
+      title: title + ' | ' + (category || 'Construction Project') + ' in Oman | Cahit Contracting',
+      description: (subtitle || (title + ' — a ' + (category || 'construction') + ' project delivered by Cahit Trading & Contracting in ' + (location || 'Oman') + '.')).toString().slice(0, 200),
+      image: heroImg || DEFAULT_OG_IMAGE
+    });
+    res.send(outHtml);
   } catch (e) {
     console.error('Project detail error:', e.message);
     const content = readThemeFile('404.php');
     res.status(500).send(executePhpTemplate(content, '404'));
   }
 });
+
+// Auto-format admin content so plain-text-with-bullets ("• item\n• item")
+// renders as a real <ul><li> on the live site. Without this, the editor's
+// bullet characters were being injected raw and CSS white-space:normal made
+// every line collapse into one paragraph.
+function normalizeRichText(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  if (!s) return '';
+  // If author already wrote real HTML blocks, leave it alone.
+  if (/<(ul|ol|li|p|h[1-6]|div|table|br\s*\/?)>/i.test(s)) return s;
+  // Split on line breaks (real or HTML <br>).
+  const lines = s
+    .replace(/<br\s*\/?>/gi, '\n')
+    .split(/\r?\n/)
+    .map((l) => l.replace(/\u00A0/g, ' ').trim())
+    .filter(Boolean);
+  if (!lines.length) return s;
+  const out = [];
+  let bulletBuf = [];
+  const flushBullets = () => {
+    if (!bulletBuf.length) return;
+    out.push('<ul style="margin:0 0 1rem;padding-inline-start:1.4rem;list-style:disc">' +
+      bulletBuf.map((b) => '<li style="margin-bottom:.5rem">' + b + '</li>').join('') + '</ul>');
+    bulletBuf = [];
+  };
+  for (const line of lines) {
+    const m = line.match(/^[\u2022\u25CF\u25E6\u2043\u2219\*\-–—›▪◦·]+\s*(.+)$/);
+    if (m) {
+      bulletBuf.push(m[1].trim());
+    } else {
+      flushBullets();
+      out.push('<p style="margin:0 0 .8rem">' + line + '</p>');
+    }
+  }
+  flushBullets();
+  return out.join('');
+}
 
 app.get('/services/:slug', async (req, res) => {
   try {
@@ -1582,6 +3034,11 @@ app.get('/services/:slug', async (req, res) => {
     let process = '';
     let img2 = '';
     let img3 = '';
+    let titleAr = '';
+    let subtitleAr = '';
+    let contentAr = '';
+    let featuresAr = '';
+    let processAr = '';
 
     if (dbPool) {
       const r = await dbQuery('SELECT value FROM site_settings WHERE key=$1', ['content_service-detail-' + slug]);
@@ -1595,13 +3052,17 @@ app.get('/services/:slug', async (req, res) => {
         process = data['service-detail-process'] || '';
         img2 = data['service-detail-img2'] || '';
         img3 = data['service-detail-img3'] || '';
+        titleAr = data['service-detail-title-ar'] || '';
+        subtitleAr = data['service-detail-subtitle-ar'] || '';
+        contentAr = data['service-detail-content-ar'] || '';
+        featuresAr = data['service-detail-features-ar'] || '';
+        processAr = data['service-detail-process-ar'] || '';
       }
       const svcCards = await getServiceCards();
       const matchSvc = svcCards.find(c => c.slug === slug);
       if (matchSvc) {
         if (!heroImg) heroImg = matchSvc.img || '';
         if (!title || title === slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())) title = matchSvc.title || title;
-        if (!content) content = matchSvc.desc || '';
       }
     }
 
@@ -1616,16 +3077,31 @@ app.get('/services/:slug', async (req, res) => {
         <div class="hero-banner-overlay"></div>
         <div class="hero-banner-content">
           <div class="container">
-            <h1 class="hero-banner-title" data-field="service-detail-title">${title}</h1>
-            ${subtitle ? '<p class="hero-banner-subtitle" data-field="service-detail-subtitle">' + subtitle + '</p>' : ''}
+            <h1 class="hero-banner-title" data-field="service-detail-title"${titleAr ? ' data-ar="' + titleAr.replace(/"/g, '&quot;') + '"' : ''}>${title}</h1>
+            ${subtitle ? '<p class="hero-banner-subtitle" data-field="service-detail-subtitle"' + (subtitleAr ? ' data-ar="' + subtitleAr.replace(/"/g, '&quot;') + '"' : '') + '>' + subtitle + '</p>' : ''}
           </div>
         </div>
       </section>
       <section class="section bg-white">
         <div class="container" style="max-width:900px;margin:0 auto">
-          ${content ? '<div class="detail-content" data-field="service-detail-content" style="font-size:1.05rem;line-height:1.8;color:#334155;white-space:pre-line">' + content + '</div>' : '<div class="detail-content" style="font-size:1.05rem;line-height:1.8;color:#64748b;text-align:center;padding:3rem 0">Detail content coming soon. Edit this page from the admin dashboard.</div>'}
-          ${features ? '<div style="margin-top:2rem"><h3 style="font-size:1.2rem;font-weight:600;color:#0A3D6B;margin-bottom:1rem">Key Features & Capabilities</h3><div data-field="service-detail-features" style="font-size:1rem;line-height:1.8;color:#334155;white-space:pre-line">' + features + '</div></div>' : ''}
-          ${process ? '<div style="margin-top:2rem"><h3 style="font-size:1.2rem;font-weight:600;color:#0A3D6B;margin-bottom:1rem">Our Process & Approach</h3><div data-field="service-detail-process" style="font-size:1rem;line-height:1.8;color:#334155;white-space:pre-line">' + process + '</div></div>' : ''}
+          ${(function(){
+            const cN = normalizeRichText(content);
+            const cAr = normalizeRichText(contentAr);
+            if (!cN) return '<div class="detail-content service-rich" style="font-size:1.05rem;line-height:1.8;color:#64748b;text-align:center;padding:3rem 0">Detail content coming soon. Edit this page from the admin dashboard.</div>';
+            return '<div class="detail-content service-rich" data-field="service-detail-content"' + (cAr ? ' data-ar-html="' + cAr.replace(/"/g, '&quot;') + '"' : '') + ' style="font-size:1.05rem;line-height:1.8;color:#334155">' + cN + '</div>';
+          })()}
+          ${(function(){
+            const fN = normalizeRichText(features);
+            if (!fN) return '';
+            const fAr = normalizeRichText(featuresAr);
+            return '<div style="margin-top:2rem"><h3 style="font-size:1.2rem;font-weight:600;color:#0A3D6B;margin-bottom:1rem" data-ar="الميزات والقدرات الرئيسية">Key Features & Capabilities</h3><div class="service-rich" data-field="service-detail-features"' + (fAr ? ' data-ar-html="' + fAr.replace(/"/g, '&quot;') + '"' : '') + ' style="font-size:1rem;line-height:1.8;color:#334155">' + fN + '</div></div>';
+          })()}
+          ${(function(){
+            const pN = normalizeRichText(process);
+            if (!pN) return '';
+            const pAr = normalizeRichText(processAr);
+            return '<div style="margin-top:2rem"><h3 style="font-size:1.2rem;font-weight:600;color:#0A3D6B;margin-bottom:1rem" data-ar="منهجيتنا في العمل">Our Process & Approach</h3><div class="service-rich" data-field="service-detail-process"' + (pAr ? ' data-ar-html="' + pAr.replace(/"/g, '&quot;') + '"' : '') + ' style="font-size:1rem;line-height:1.8;color:#334155">' + pN + '</div></div>';
+          })()}
           ${galleryHtml}
           <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid #e2e8f0">
             <a href="/services" class="service-card-link" style="font-size:1rem">&larr; Back to Services</a>
@@ -1639,7 +3115,13 @@ app.get('/services/:slug', async (req, res) => {
           <button onclick="openContactPopup();" class="btn btn-white">Contact Our Team</button>
         </div>
       </section>`;
-    res.send(header + detailHtml + footer);
+    let outHtml = header + detailHtml + footer;
+    outHtml = injectSeo(outHtml, '/services/' + slug, {
+      title: title + ' in Oman | Cahit Trading & Contracting LLC',
+      description: (subtitle || (title + ' services across the Sultanate of Oman by Cahit Trading & Contracting LLC.')).toString().slice(0, 200),
+      image: heroImg || DEFAULT_OG_IMAGE
+    });
+    res.send(outHtml);
   } catch (e) {
     console.error('Service detail error:', e.message);
     const content = readThemeFile('404.php');
@@ -1664,7 +3146,20 @@ async function initDatabase() {
     await dbQuery(`CREATE TABLE IF NOT EXISTS chatbot_knowledge (id SERIAL PRIMARY KEY, title VARCHAR(500) NOT NULL DEFAULT '', content TEXT NOT NULL DEFAULT '', sort_order INT DEFAULT 0, created_at TIMESTAMP DEFAULT NOW())`);
     await dbQuery(`CREATE TABLE IF NOT EXISTS leads (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL DEFAULT '', email VARCHAR(255) NOT NULL DEFAULT '', phone VARCHAR(100) DEFAULT '', service_type VARCHAR(255) DEFAULT '', details TEXT DEFAULT '', status VARCHAR(50) DEFAULT 'new', created_at TIMESTAMP DEFAULT NOW())`);
     await dbQuery(`CREATE TABLE IF NOT EXISTS blog_posts (id SERIAL PRIMARY KEY, title VARCHAR(500) NOT NULL DEFAULT '', title_ar VARCHAR(500) DEFAULT '', excerpt TEXT DEFAULT '', excerpt_ar TEXT DEFAULT '', content TEXT DEFAULT '', content_ar TEXT DEFAULT '', slug VARCHAR(255) UNIQUE, image_url TEXT DEFAULT '', status VARCHAR(50) DEFAULT 'published', created_at TIMESTAMP DEFAULT NOW(), updated_at TIMESTAMP DEFAULT NOW())`);
+    await dbQuery(`CREATE TABLE IF NOT EXISTS blog_images (id SERIAL PRIMARY KEY, mime_type VARCHAR(100) NOT NULL DEFAULT 'image/png', data BYTEA NOT NULL, created_at TIMESTAMP DEFAULT NOW())`);
+    await dbQuery(`CREATE TABLE IF NOT EXISTS blog_media (id SERIAL PRIMARY KEY, mime_type VARCHAR(100) NOT NULL DEFAULT 'application/octet-stream', original_name VARCHAR(500) DEFAULT '', data BYTEA NOT NULL, created_at TIMESTAMP DEFAULT NOW())`);
     await dbQuery(`CREATE TABLE IF NOT EXISTS page_views (id SERIAL PRIMARY KEY, page VARCHAR(500) NOT NULL, referrer VARCHAR(1000) DEFAULT '', user_agent TEXT DEFAULT '', session_id VARCHAR(100) DEFAULT '', ip VARCHAR(100) DEFAULT '', created_at TIMESTAMP DEFAULT NOW())`);
+    await dbQuery(`CREATE TABLE IF NOT EXISTS admin_sessions (token_id VARCHAR(64) PRIMARY KEY, username VARCHAR(255) NOT NULL DEFAULT '', expires_at TIMESTAMPTZ NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW())`);
+    await dbQuery(`CREATE TABLE IF NOT EXISTS admin_password_resets (token_hash VARCHAR(128) PRIMARY KEY, username VARCHAR(255) NOT NULL, expires_at TIMESTAMPTZ NOT NULL, used_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), requester_ip VARCHAR(100) DEFAULT '')`);
+    await dbQuery(`ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ`);
+    await dbQuery(`ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS last_ip VARCHAR(100) DEFAULT ''`);
+    await dbQuery(`ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS last_user_agent VARCHAR(500) DEFAULT ''`);
+    await dbQuery(`ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS created_ip VARCHAR(100) DEFAULT ''`);
+    await dbQuery(`ALTER TABLE admin_sessions ADD COLUMN IF NOT EXISTS created_user_agent VARCHAR(500) DEFAULT ''`);
+    await dbQuery(`UPDATE admin_sessions SET created_ip = last_ip WHERE (created_ip IS NULL OR created_ip = '') AND last_ip IS NOT NULL AND last_ip <> ''`);
+    await dbQuery(`UPDATE admin_sessions SET created_user_agent = last_user_agent WHERE (created_user_agent IS NULL OR created_user_agent = '') AND last_user_agent IS NOT NULL AND last_user_agent <> ''`);
+    await dbQuery(`CREATE INDEX IF NOT EXISTS admin_sessions_expires_at_idx ON admin_sessions (expires_at)`);
+    await dbQuery('DELETE FROM admin_sessions WHERE expires_at < NOW()');
     await dbQuery(`CREATE INDEX IF NOT EXISTS idx_page_views_created ON page_views(created_at)`);
     await dbQuery(`CREATE INDEX IF NOT EXISTS idx_page_views_page ON page_views(page)`);
     console.log('Database tables initialized');
