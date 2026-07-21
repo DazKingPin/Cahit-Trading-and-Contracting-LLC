@@ -194,6 +194,12 @@
 
       <div class="quote-section quote-section-border">
         <h3 class="quote-section-label">Your Contact Information</h3>
+        <!-- Honeypot: hidden from people and screen readers, but a form-filling
+             bot sees an input named "website" and completes it. Any submission
+             carrying a value here is discarded server-side. -->
+        <div style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true">
+          <label>Website<input type="text" id="quote-website" name="website" tabindex="-1" autocomplete="off"></label>
+        </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Full Name <span class="required">*</span></label>

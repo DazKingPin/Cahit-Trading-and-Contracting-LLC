@@ -1,4 +1,39 @@
 (function() {
+  // Every /admin/api/* route is behind requireAdminAuth, which reads the
+  // bearer token from the Authorization header only — it does not fall back to
+  // a cookie. Attaching that header by hand at each call site meant roughly
+  // half of them were sending none and silently getting a 401 back, so the
+  // helpers below are the single place the token is applied.
+  function adminToken() {
+    return sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token') || '';
+  }
+
+  function authFetch(url, opts) {
+    opts = opts || {};
+    var headers = {};
+    // Copy any caller-supplied headers first so an explicit Authorization (or
+    // Content-Type) still wins over the default applied here.
+    if (opts.headers) {
+      Object.keys(opts.headers).forEach(function(k) { headers[k] = opts.headers[k]; });
+    }
+    var hasAuth = Object.keys(headers).some(function(k) { return k.toLowerCase() === 'authorization'; });
+    if (!hasAuth) headers['Authorization'] = 'Bearer ' + adminToken();
+    opts.headers = headers;
+    return fetch(url, opts);
+  }
+
+  // A 401 here means the token expired while the tab was open. Bounce to the
+  // login screen rather than leaving the page silently empty.
+  function handleAuthFailure(res) {
+    if (res && res.status === 401) {
+      sessionStorage.removeItem('cahit_admin_token');
+      localStorage.removeItem('cahit_admin_token');
+      window.location.href = '/admin/login';
+      return true;
+    }
+    return false;
+  }
+
   var state = {
     currentPage: 'dashboard',
     pages: [
@@ -11,6 +46,8 @@
       { name: 'Careers', path: '/careers', template: 'page-careers.php', status: 'published' }
     ],
     leads: [],
+    leadFilter: 'all',
+    selectedLeads: {},
     blogPosts: [],
     projectCards: [],
     serviceCards: [],
@@ -56,14 +93,23 @@
   }
 
   function loadLeads() {
-    fetch('/admin/api/leads').then(function(r) { return r.json(); }).then(function(data) {
-      if (data.success) { state.leads = data.data; if (state.currentPage === 'dashboard' || state.currentPage === 'leads') renderPage(state.currentPage); }
+    authFetch('/admin/api/leads').then(function(r) {
+      if (handleAuthFailure(r)) return null;
+      return r.json();
+    }).then(function(data) {
+      if (data && data.success) {
+        state.leads = data.data || [];
+        if (state.currentPage === 'dashboard' || state.currentPage === 'leads') renderPage(state.currentPage);
+      }
     }).catch(function() {});
   }
+  // Referenced from an inline onclick in the leads toolbar, which resolves
+  // against the global scope rather than this IIFE.
+  window.loadLeads = loadLeads;
 
   function loadMediaFromServer() {
     var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
-    fetch('/admin/api/uploads', { headers: { 'Authorization': 'Bearer ' + token } })
+    authFetch('/admin/api/uploads', { headers: { 'Authorization': 'Bearer ' + token } })
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success && d.files) {
@@ -84,7 +130,7 @@
   }
 
   function loadSiteSettings() {
-    fetch('/admin/api/site-content/settings').then(function(r) { return r.json(); }).then(function(d) {
+    authFetch('/admin/api/site-content/settings').then(function(r) { return r.json(); }).then(function(d) {
       if (d.success && d.data) { state.siteSettings = d.data; }
     }).catch(function() {});
   }
@@ -92,7 +138,7 @@
   function loadSavedSectionContent(section) {
     var isDetail = (section === 'project-detail' || section === 'service-detail');
     var loadKey = isDetail ? section + '-' + (state.detailSlug || '') : section;
-    fetch('/admin/api/site-content/' + loadKey).then(function(r) { return r.json(); }).then(function(d) {
+    authFetch('/admin/api/site-content/' + loadKey).then(function(r) { return r.json(); }).then(function(d) {
       if (d.success && d.data) {
         var data = d.data;
         Object.keys(data).forEach(function(key) {
@@ -154,7 +200,7 @@
       case 'cards': content.innerHTML = renderCardManager(); bindCardManagerActions(); break;
       case 'media': content.innerHTML = renderMedia(); bindMediaActions(); break;
       case 'blog': content.innerHTML = renderBlogManager(); loadBlogPosts(); break;
-      case 'leads': content.innerHTML = renderLeads(); break;
+      case 'leads': content.innerHTML = renderLeads(); bindLeadActions(); break;
       case 'analytics': content.innerHTML = renderAnalytics(); loadAnalyticsData(); bindAnalyticsActions(); break;
       case 'chatbot': content.innerHTML = renderChatbotKnowledge(); bindChatbotActions(); break;
       case 'settings': content.innerHTML = renderSettings(); bindSettingsActions(); break;
@@ -819,7 +865,7 @@
         if (!this.files || !this.files[0]) return;
         var formData = new FormData();
         formData.append('file', this.files[0]);
-        fetch('/admin/api/upload', { method: 'POST', body: formData })
+        authFetch('/admin/api/upload', { method: 'POST', body: formData })
           .then(function(r) { return r.json(); })
           .then(function(result) {
             if (result.success && result.url) {
@@ -839,7 +885,7 @@
         var type = isProjects ? 'projects' : 'services';
         saveAllBtn.disabled = true;
         saveAllBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Saving...';
-        fetch('/admin/api/dynamic-cards/' + type, {
+        authFetch('/admin/api/dynamic-cards/' + type, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cards: cards })
@@ -861,10 +907,10 @@
   }
 
   function loadDynamicCards() {
-    fetch('/admin/api/dynamic-cards/projects').then(function(r) { return r.json(); }).then(function(d) {
+    authFetch('/admin/api/dynamic-cards/projects').then(function(r) { return r.json(); }).then(function(d) {
       if (d.success && d.cards) state.projectCards = d.cards;
     }).catch(function() {});
-    fetch('/admin/api/dynamic-cards/services').then(function(r) { return r.json(); }).then(function(d) {
+    authFetch('/admin/api/dynamic-cards/services').then(function(r) { return r.json(); }).then(function(d) {
       if (d.success && d.cards) state.serviceCards = d.cards;
     }).catch(function() {});
   }
@@ -1073,7 +1119,7 @@
         state.detailSlug = this.value;
         state.editedContent = {};
         var saveKey = state.editingSection + '-' + state.detailSlug;
-        fetch('/admin/api/site-content/' + saveKey)
+        authFetch('/admin/api/site-content/' + saveKey)
           .then(function(r) { return r.json(); })
           .then(function(result) {
             if (result.success && result.data) {
@@ -1105,7 +1151,7 @@
         });
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Saving...';
-        fetch('/admin/api/site-content/' + saveKey, {
+        authFetch('/admin/api/site-content/' + saveKey, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ data: data })
@@ -1234,7 +1280,7 @@
       if (span) span.textContent = 'Uploading...';
     }
 
-    fetch('/admin/api/upload', {
+    authFetch('/admin/api/upload', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token },
       body: formData
@@ -1682,7 +1728,7 @@
       (function(file) {
         var formData = new FormData();
         formData.append('file', file);
-        fetch('/admin/api/upload', {
+        authFetch('/admin/api/upload', {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + token },
           body: formData
@@ -1717,6 +1763,25 @@
     }
   }
 
+  // Lead fields are attacker-controlled — they arrive from a public form that
+  // is actively being spammed. They used to be concatenated into the table
+  // markup raw, so a lead whose name contained a <script> tag would run inside
+  // the authenticated admin page.
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function visibleLeads() {
+    var f = state.leadFilter || 'all';
+    if (f === 'all') return state.leads;
+    return state.leads.filter(function(l) { return (l.status || 'new') === f; });
+  }
+
   function renderLeads() {
     if (state.leads.length === 0) {
       return '' +
@@ -1727,41 +1792,133 @@
         '</div>';
     }
 
+    var shown = visibleLeads();
+    var spamCount = state.leads.filter(function(l) { return l.status === 'spam'; }).length;
+    var selected = state.selectedLeads || {};
+    var selectedCount = Object.keys(selected).filter(function(k) { return selected[k]; }).length;
+
     var rows = '';
-    state.leads.forEach(function(l, i) {
-      var statusBadge = l.status === 'new' ? '<span class="badge badge-blue">New</span>' :
-                        l.status === 'contacted' ? '<span class="badge badge-green">Contacted</span>' :
-                        '<span class="badge badge-gray">' + (l.status || 'New') + '</span>';
+    shown.forEach(function(l, i) {
+      var status = l.status || 'new';
+      var statusBadge = status === 'new' ? '<span class="badge badge-blue">New</span>' :
+                        status === 'contacted' ? '<span class="badge badge-green">Contacted</span>' :
+                        status === 'spam' ? '<span class="badge badge-gray" style="background:#fee2e2;color:#b91c1c">Spam</span>' :
+                        '<span class="badge badge-gray">' + esc(status) + '</span>';
       var dateStr = l.created_at ? new Date(l.created_at).toLocaleDateString('en-US', {year:'numeric',month:'short',day:'numeric'}) : '-';
-      var actions = l.status === 'new' ?
+      var actions = status === 'new' ?
         '<button class="btn btn-sm btn-outline" onclick="markLeadStatus(' + l.id + ', \'contacted\')" data-testid="btn-lead-contact-' + l.id + '">Mark Contacted</button>' :
         '<button class="btn btn-sm btn-outline" onclick="markLeadStatus(' + l.id + ', \'new\')" data-testid="btn-lead-new-' + l.id + '">Mark New</button>';
       rows += '<tr data-testid="lead-row-' + i + '">' +
-        '<td><div class="lead-name">' + (l.name || 'Unknown') + '</div><div class="lead-email">' + (l.email || '') + '</div></td>' +
-        '<td>' + (l.phone || '-') + '</td>' +
-        '<td>' + (l.service_type || '-') + '</td>' +
+        '<td><input type="checkbox" class="lead-check" data-lead-id="' + l.id + '"' + (selected[l.id] ? ' checked' : '') + ' data-testid="check-lead-' + l.id + '"></td>' +
+        '<td><div class="lead-name">' + esc(l.name || 'Unknown') + '</div><div class="lead-email">' + esc(l.email || '') + '</div></td>' +
+        '<td>' + esc(l.phone || '-') + '</td>' +
+        '<td>' + esc(l.service_type || '-') + '</td>' +
         '<td>' + statusBadge + '</td>' +
         '<td>' + dateStr + '</td>' +
-        '<td>' + actions + '</td>' +
-        '<td><div class="lead-details-text" style="max-width:200px;font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + ((l.details || '').replace(/"/g, '&quot;')) + '">' + (l.details || '-') + '</div></td>' +
+        '<td>' + actions + ' <button class="btn btn-sm btn-outline" style="color:#b91c1c;border-color:#fecaca" onclick="deleteLead(' + l.id + ')" data-testid="btn-lead-delete-' + l.id + '">Delete</button></td>' +
+        '<td><div class="lead-details-text" style="max-width:200px;font-size:12px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(l.details || '') + '">' + esc(l.details || '-') + '</div></td>' +
       '</tr>';
     });
 
+    function tab(key, label, n) {
+      var active = (state.leadFilter || 'all') === key;
+      return '<button class="btn btn-sm ' + (active ? '' : 'btn-outline') + '" onclick="setLeadFilter(\'' + key + '\')" data-testid="tab-leads-' + key + '">' + label + ' (' + n + ')</button>';
+    }
+
     return '' +
-      '<div class="toolbar">' +
-        '<span style="font-size:14px;color:var(--text-muted)">' + state.leads.length + ' leads</span>' +
+      '<div class="toolbar" style="flex-wrap:wrap;gap:8px">' +
+        tab('all', 'All', state.leads.length) +
+        tab('new', 'New', state.leads.filter(function(l) { return (l.status || 'new') === 'new'; }).length) +
+        tab('contacted', 'Contacted', state.leads.filter(function(l) { return l.status === 'contacted'; }).length) +
+        tab('spam', 'Spam', spamCount) +
         '<div class="toolbar-spacer"></div>' +
-        '<button class="btn btn-outline" onclick="location.reload()" data-testid="button-refresh-leads">Refresh</button>' +
+        (selectedCount ? '<button class="btn btn-sm" style="background:#b91c1c;color:#fff" onclick="deleteSelectedLeads()" data-testid="button-delete-selected">Delete selected (' + selectedCount + ')</button>' : '') +
+        (spamCount ? '<button class="btn btn-sm btn-outline" style="color:#b91c1c;border-color:#fecaca" onclick="deleteLeadsByStatus(\'spam\')" data-testid="button-delete-spam">Delete all spam (' + spamCount + ')</button>' : '') +
+        '<button class="btn btn-outline btn-sm" onclick="loadLeads()" data-testid="button-refresh-leads">Refresh</button>' +
       '</div>' +
       '<div class="card">' +
         '<div class="card-body-np leads-table-wrap">' +
           '<table class="table">' +
-            '<thead><tr><th>Contact</th><th>Phone</th><th>Service</th><th>Status</th><th>Date</th><th>Action</th><th>Details</th></tr></thead>' +
+            '<thead><tr>' +
+              '<th style="width:32px"><input type="checkbox" id="lead-check-all" data-testid="check-lead-all"></th>' +
+              '<th>Contact</th><th>Phone</th><th>Service</th><th>Status</th><th>Date</th><th>Action</th><th>Details</th>' +
+            '</tr></thead>' +
             '<tbody>' + rows + '</tbody>' +
           '</table>' +
         '</div>' +
       '</div>';
   }
+
+  // Checkbox wiring is delegated from the table rather than bound per row, so
+  // it survives the re-render that follows every filter change or delete.
+  function bindLeadActions() {
+    var all = document.getElementById('lead-check-all');
+    if (all) {
+      all.addEventListener('change', function() {
+        var on = this.checked;
+        state.selectedLeads = state.selectedLeads || {};
+        visibleLeads().forEach(function(l) { state.selectedLeads[l.id] = on; });
+        renderPage('leads');
+      });
+    }
+    document.querySelectorAll('.lead-check').forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        state.selectedLeads = state.selectedLeads || {};
+        state.selectedLeads[this.getAttribute('data-lead-id')] = this.checked;
+        renderPage('leads');
+      });
+    });
+  }
+
+  window.setLeadFilter = function(f) {
+    state.leadFilter = f;
+    renderPage('leads');
+  };
+
+  function afterLeadDelete(d, label) {
+    if (d && d.success) {
+      state.selectedLeads = {};
+      showToast(label.replace('{n}', d.deleted), 'success');
+      loadLeads();
+    } else {
+      showToast((d && (d.message || d.error)) || 'Delete failed', 'error');
+    }
+  }
+
+  window.deleteLead = function(id) {
+    if (!confirm('Delete this lead permanently?')) return;
+    authFetch('/admin/api/leads/' + id, { method: 'DELETE' })
+      .then(function(r) { if (handleAuthFailure(r)) return null; return r.json(); })
+      .then(function(d) { if (d) afterLeadDelete(d, 'Lead deleted'); })
+      .catch(function() { showToast('Delete failed', 'error'); });
+  };
+
+  window.deleteSelectedLeads = function() {
+    var sel = state.selectedLeads || {};
+    var ids = Object.keys(sel).filter(function(k) { return sel[k]; }).map(Number);
+    if (!ids.length) { showToast('No leads selected', 'error'); return; }
+    if (!confirm('Delete ' + ids.length + ' lead(s) permanently? This cannot be undone.')) return;
+    authFetch('/admin/api/leads/bulk-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    })
+      .then(function(r) { if (handleAuthFailure(r)) return null; return r.json(); })
+      .then(function(d) { if (d) afterLeadDelete(d, 'Deleted {n} lead(s)'); })
+      .catch(function() { showToast('Delete failed', 'error'); });
+  };
+
+  window.deleteLeadsByStatus = function(status) {
+    if (!confirm('Delete every lead marked "' + status + '" permanently? This cannot be undone.')) return;
+    authFetch('/admin/api/leads/bulk-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: status })
+    })
+      .then(function(r) { if (handleAuthFailure(r)) return null; return r.json(); })
+      .then(function(d) { if (d) afterLeadDelete(d, 'Deleted {n} lead(s)'); })
+      .catch(function() { showToast('Delete failed', 'error'); });
+  };
 
   function renderAnalytics() {
     return '' +
@@ -1776,7 +1933,7 @@
   }
 
   function loadAnalyticsData() {
-    fetch('/admin/api/analytics').then(function(r) { return r.json(); }).then(function(result) {
+    authFetch('/admin/api/analytics').then(function(r) { return r.json(); }).then(function(result) {
       if (!result.success || !result.data) {
         document.getElementById('analytics-content').innerHTML = '<div style="text-align:center;padding:60px;color:#64748b"><p>Unable to load analytics data.</p></div>';
         return;
@@ -1972,7 +2129,7 @@
 
   function bindChatbotActions() {
     var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
-    fetch('/admin/api/chatbot-knowledge', { headers: { 'Authorization': 'Bearer ' + token } })
+    authFetch('/admin/api/chatbot-knowledge', { headers: { 'Authorization': 'Bearer ' + token } })
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success) {
@@ -1995,7 +2152,7 @@
         addKnowledgeEntry(document.getElementById('knowledge-entries'), '', '');
       });
 
-    fetch('/admin/api/openai-key-status', { headers: { 'Authorization': 'Bearer ' + token } })
+    authFetch('/admin/api/openai-key-status', { headers: { 'Authorization': 'Bearer ' + token } })
       .then(function(r) { return r.json(); })
       .then(function(d) {
         var ks = document.getElementById('chatbot-key-status');
@@ -2038,7 +2195,7 @@
       btn.disabled = true;
       btn.textContent = 'Saving...';
       var savePromises = [
-        fetch('/admin/api/chatbot-knowledge', {
+        authFetch('/admin/api/chatbot-knowledge', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify({ entries: entries, personality: personality.trim(), language: language, position: position })
@@ -2049,7 +2206,7 @@
       ];
       if (apiKeyVal.trim()) {
         savePromises.push(
-          fetch('/admin/api/save-openai-key', {
+          authFetch('/admin/api/save-openai-key', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({ key: apiKeyVal.trim() })
@@ -2090,7 +2247,7 @@
     });
 
     document.getElementById('exportKnowledgeBtn').addEventListener('click', function() {
-      fetch('/admin/api/chatbot-knowledge-export', { headers: { 'Authorization': 'Bearer ' + token } })
+      authFetch('/admin/api/chatbot-knowledge-export', { headers: { 'Authorization': 'Bearer ' + token } })
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.success) {
@@ -2249,7 +2406,7 @@
         var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
         changeCredsBtn.disabled = true;
         changeCredsBtn.textContent = 'Updating...';
-        fetch('/admin/api/change-credentials', {
+        authFetch('/admin/api/change-credentials', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify({ currentPassword: currentPw, newUsername: username || undefined, newPassword: newPw })
@@ -2294,7 +2451,7 @@
     var token = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
     var keyStatus = document.getElementById('openai-key-status');
     if (keyStatus && token) {
-      fetch('/admin/api/openai-key-status', { headers: { 'Authorization': 'Bearer ' + token } })
+      authFetch('/admin/api/openai-key-status', { headers: { 'Authorization': 'Bearer ' + token } })
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.hasKey) {
@@ -2330,7 +2487,7 @@
         settingsData.toggles = toggles;
 
         var savePromises = [
-          fetch('/admin/api/site-content/settings', {
+          authFetch('/admin/api/site-content/settings', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ data: settingsData })
@@ -2341,7 +2498,7 @@
         var apiKeyVal = apiKeyEl ? apiKeyEl.value.trim() : '';
         if (apiKeyVal) {
           savePromises.push(
-            fetch('/admin/api/save-openai-key', {
+            authFetch('/admin/api/save-openai-key', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
               body: JSON.stringify({ key: apiKeyVal })
@@ -2385,7 +2542,7 @@
   }
 
   window.markLeadStatus = function(id, status) {
-    fetch('/admin/api/leads/' + id + '/status', {
+    authFetch('/admin/api/leads/' + id + '/status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: status })
@@ -2400,11 +2557,24 @@
   };
 
   function aiBlogCall(type, topic, language, sourceText) {
-    return fetch('/admin/api/ai-blog-generate', {
+    return authFetch('/admin/api/ai-blog-generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: type, topic: topic, language: language || 'en', sourceText: sourceText || '' })
-    }).then(function(r) { return r.json(); });
+    }).then(function(r) {
+      if (handleAuthFailure(r)) return { success: false, error: 'Session expired — please sign in again.' };
+      return r.json().then(function(d) {
+        // Failures arrive in two shapes: the AI routes answer 200 with
+        // {success:false, error}, while the auth/plumbing layers answer non-2xx
+        // with {message}. Normalise both so the caller always has `error` set
+        // and never renders an empty toast.
+        if (!d || typeof d !== 'object') return { success: false, error: 'Unexpected response from server.' };
+        if (!d.success && !d.error) d.error = d.message || ('Request failed (HTTP ' + r.status + ')');
+        return d;
+      }).catch(function() {
+        return { success: false, error: 'Server returned an unreadable response (HTTP ' + r.status + ').' };
+      });
+    });
   }
 
   function rteInitialHtml(text) {
@@ -2567,7 +2737,7 @@
               var f = fi.files[0]; if (!f) return;
               var rteToken = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
               var fd = new FormData(); fd.append('file', f);
-              fetch('/admin/api/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + rteToken }, body: fd })
+              authFetch('/admin/api/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + rteToken }, body: fd })
                 .then(function(r) { return r.json(); })
                 .then(function(d) {
                   if (d.success && d.url) {
@@ -2593,7 +2763,7 @@
               var file = items[i].getAsFile();
               var rteToken = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
               var fd = new FormData(); fd.append('file', file);
-              fetch('/admin/api/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + rteToken }, body: fd })
+              authFetch('/admin/api/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + rteToken }, body: fd })
                 .then(function(r) { return r.json(); })
                 .then(function(d) {
                   if (d.success && d.url) {
@@ -2672,35 +2842,61 @@
       return text.split(/\n\n+/).map(function(p) { return '<p>' + p.replace(/\n/g, '<br>') + '</p>'; }).join('');
     }
 
+    // Translate one field at a time via the dedicated /admin/api/translate
+    // endpoint. The previous version packed title, excerpt and content into a
+    // single blob fenced with "TITLE:"/"EXCERPT:"/"CONTENT:" markers and then
+    // re-parsed the reply — but the model translates the markers too, so the
+    // Arabic it came back with ("العنوان:", "الملخص:", …) only matched the
+    // hard-coded regexes some of the time. When it missed, the whole blob
+    // (markers included) was dumped into the content box and the Arabic title
+    // and excerpt stayed empty. Per-field calls remove the round-trip entirely.
+    function translateField(text, target) {
+      if (!text) return Promise.resolve('');
+      return authFetch('/admin/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text, target: target })
+      }).then(function(r) {
+        if (handleAuthFailure(r)) throw new Error('Session expired — please sign in again.');
+        return r.json();
+      }).then(function(d) {
+        if (!d || !d.success) throw new Error((d && (d.error || d.message)) || 'Translation failed');
+        return d.translated || '';
+      });
+    }
+
     document.getElementById('ai-translate-ar').addEventListener('click', function() {
       var content = rteText('bp-content');
       var title = document.getElementById('bp-title').value.trim();
       var excerpt = document.getElementById('bp-excerpt').value.trim();
       if (!content && !title) { showToast('Write English content first', 'error'); return; }
       showAiLoading('Translating to Arabic...');
-      var fullText = (title ? 'TITLE: ' + title + '\n\n' : '') + (excerpt ? 'EXCERPT: ' + excerpt + '\n\n' : '') + (content ? 'CONTENT:\n' + content : '');
-      aiBlogCall('translate', '', 'ar', fullText).then(function(d) {
-        if (d.success) {
-          showAiOutput(d.content);
-          var parts = d.content;
-          var titleMatch = parts.match(/TITLE:\s*(.+)/i) || parts.match(/العنوان:\s*(.+)/i);
-          var excerptMatch = parts.match(/EXCERPT:\s*(.+)/i) || parts.match(/المقتطف:\s*(.+)/i);
-          var contentMatch = parts.match(/CONTENT:\s*([\s\S]+)/i) || parts.match(/المحتوى:\s*([\s\S]+)/i);
-          if (titleMatch) document.getElementById('bp-title-ar').value = titleMatch[1].trim();
-          if (excerptMatch) document.getElementById('bp-excerpt-ar').value = excerptMatch[1].trim();
-          if (contentMatch) rteSetHtml('bp-content-ar', plainToHtml(contentMatch[1].trim()));
-          else if (!titleMatch && !excerptMatch) {
-            rteSetHtml('bp-content-ar', plainToHtml(d.content.trim()));
-          }
-          showToast('Arabic fields filled', 'success');
-        } else { showAiError(d.error); }
-      }).catch(function() { showAiError('Translation failed'); });
+      Promise.all([
+        translateField(title, 'ar'),
+        translateField(excerpt, 'ar'),
+        translateField(content, 'ar')
+      ]).then(function(out) {
+        var arTitle = out[0], arExcerpt = out[1], arContent = out[2];
+        if (arTitle) document.getElementById('bp-title-ar').value = arTitle;
+        if (arExcerpt) document.getElementById('bp-excerpt-ar').value = arExcerpt;
+        if (arContent) rteSetHtml('bp-content-ar', plainToHtml(arContent));
+        showAiOutput(arContent || arTitle);
+        showToast('Arabic fields filled', 'success');
+      }).catch(function(err) {
+        showAiError((err && err.message) || 'Translation failed');
+      });
     });
     document.getElementById('ai-translate-en').addEventListener('click', function() {
       var content = rteText('bp-content-ar');
       if (!content) { showToast('Write Arabic content first', 'error'); return; }
       showAiLoading('Translating to English...');
-      aiBlogCall('translate', '', 'en', content).then(function(d) { d.success ? showAiOutput(d.content) : showAiError(d.error); }).catch(function() { showAiError('Translation failed'); });
+      // AR→EN stays review-only: it prints the translation for the editor to
+      // copy rather than overwriting whatever is already in the English fields.
+      translateField(content, 'en').then(function(en) {
+        showAiOutput(en);
+      }).catch(function(err) {
+        showAiError((err && err.message) || 'Translation failed');
+      });
     });
     document.getElementById('ai-improve').addEventListener('click', function() {
       var content = rteText('bp-content');
@@ -2715,7 +2911,7 @@
         if (!d.success) { showAiError(d.error); return; }
         var imgPrompt = d.content;
         showAiLoading('Creating cover image with AI (this may take 30-60s)...');
-        fetch('/admin/api/ai-blog-image', {
+        authFetch('/admin/api/ai-blog-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: imgPrompt })
@@ -2792,7 +2988,7 @@
   window.deleteBlogPost = function(id) {
     if (!confirm('Delete this blog post?')) return;
     var delToken = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
-    fetch('/admin/api/blog-posts/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + delToken } })
+    authFetch('/admin/api/blog-posts/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + delToken } })
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.success) { showToast('Post deleted', 'success'); loadBlogPosts(); }
@@ -2802,7 +2998,7 @@
 
   function loadBlogPosts() {
     var loadToken = sessionStorage.getItem('cahit_admin_token') || localStorage.getItem('cahit_admin_token');
-    fetch('/admin/api/blog-posts', { headers: { 'Authorization': 'Bearer ' + loadToken } }).then(function(r) { return r.json(); }).then(function(d) {
+    authFetch('/admin/api/blog-posts', { headers: { 'Authorization': 'Bearer ' + loadToken } }).then(function(r) { return r.json(); }).then(function(d) {
       if (d.success) { state.blogPosts = d.data || []; if (state.currentPage === 'blog') renderPage('blog'); }
     }).catch(function() {});
   }

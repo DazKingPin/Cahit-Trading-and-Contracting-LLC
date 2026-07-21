@@ -36,13 +36,32 @@ async function dbSaveKnowledgeEntries(entries) {
 }
 
 async function dbSaveLead(lead) {
-  const r = await dbQuery('INSERT INTO leads (name, email, phone, service_type, details, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [lead.name, lead.email, lead.phone || '', lead.service_type || '', lead.details || '', 'new']);
+  // status comes from the caller's spam screening — it used to be hard-coded to
+  // 'new', which silently threw away the classification.
+  const r = await dbQuery('INSERT INTO leads (name, email, phone, service_type, details, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *', [lead.name, lead.email, lead.phone || '', lead.service_type || '', lead.details || '', lead.status || 'new']);
   return r ? r.rows[0] : lead;
 }
 
 async function dbGetLeads() {
   const r = await dbQuery('SELECT * FROM leads ORDER BY created_at DESC');
   return r ? r.rows : [];
+}
+
+// Parameterised with an int[] rather than an interpolated IN-list so a bulk
+// delete can never be turned into injection by a crafted id.
+async function dbDeleteLeads(ids) {
+  const r = await dbQuery('DELETE FROM leads WHERE id = ANY($1::int[]) RETURNING id', [ids]);
+  return r ? r.rows.length : 0;
+}
+
+async function dbDeleteLeadsByStatus(status) {
+  const r = await dbQuery('DELETE FROM leads WHERE status = $1 RETURNING id', [status]);
+  return r ? r.rows.length : 0;
+}
+
+async function dbDeleteAllLeads() {
+  const r = await dbQuery('DELETE FROM leads RETURNING id');
+  return r ? r.rows.length : 0;
 }
 
 const app = express();
@@ -965,6 +984,114 @@ function parseMultipart(req) {
 
 const leadsStore = [];
 
+// Splice in place — leadsStore is a module-level const and other handlers hold
+// the same reference, so it must never be reassigned.
+function removeLeadsWhere(pred) {
+  let removed = 0;
+  for (let i = leadsStore.length - 1; i >= 0; i--) {
+    if (pred(leadsStore[i])) { leadsStore.splice(i, 1); removed++; }
+  }
+  return removed;
+}
+
+// ===== Lead spam screening =====
+// Both public intake paths (POST /admin/api/leads and the lead branch of
+// POST /api/ajax) were unauthenticated, unvalidated and unthrottled, so a bot
+// that found either one could insert rows and trigger a notification email as
+// fast as it could send requests. Note the chatbot is NOT an intake path — it
+// never writes to the leads table — so a flood of junk leads comes from these
+// endpoints being hit directly, not from the chat widget.
+
+function clientIp(req) {
+  const fwd = (req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return fwd || req.ip || (req.connection && req.connection.remoteAddress) || 'unknown';
+}
+
+// Fixed-window counter per IP. In-memory, so it resets on redeploy and is
+// per-instance — enough to blunt a naive flood, not a substitute for a WAF.
+const LEAD_RATE = { windowMs: 10 * 60 * 1000, max: 5 };
+const leadRateHits = new Map();
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const entry = leadRateHits.get(ip);
+  if (!entry || now - entry.start > LEAD_RATE.windowMs) {
+    leadRateHits.set(ip, { start: now, count: 1 });
+    return false;
+  }
+  entry.count++;
+  return entry.count > LEAD_RATE.max;
+}
+
+// Bounded cleanup so the map cannot grow without limit under a distributed flood.
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, e] of leadRateHits) {
+    if (now - e.start > LEAD_RATE.windowMs) leadRateHits.delete(ip);
+  }
+}, LEAD_RATE.windowMs).unref?.();
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+const SPAM_WORDS = /\b(seo services|backlinks?|crypto|bitcoin|forex|casino|viagra|cialis|loan offer|work from home|click here|buy now|telegram|whatsapp group|guest post|link building|rank your site)\b/i;
+const CYRILLIC_OR_CJK = /[Ѐ-ӿ一-鿿]/;
+
+function countLinks(str) {
+  return (String(str).match(/https?:\/\/|www\.|\[url|<a\s/gi) || []).length;
+}
+
+/**
+ * Classify an inbound lead.
+ * Returns { drop, status, reason } — `drop` discards it silently, otherwise
+ * `status` is 'new' (deliver + email) or 'spam' (store for review, no email).
+ */
+function screenLead(req, fields) {
+  const name = String(fields.name || fields.fullName || '').trim();
+  const email = String(fields.email || '').trim();
+  const details = String(fields.details || '').trim();
+  const phone = String(fields.phone || '').trim();
+  const blob = [name, details, String(fields.service_type || '')].join(' ');
+
+  // 1. Honeypot — a hidden field no human ever fills in.
+  if (String(fields.website || fields.company_url || '').trim()) {
+    return { drop: true, reason: 'honeypot' };
+  }
+
+  // 2. Form filled impossibly fast (bots post instantly on page load).
+  const elapsed = parseInt(fields.form_elapsed_ms, 10);
+  if (Number.isInteger(elapsed) && elapsed >= 0 && elapsed < 2000) {
+    return { drop: true, reason: 'submitted-in-' + elapsed + 'ms' };
+  }
+
+  // 3. Per-IP flood.
+  if (rateLimited(clientIp(req))) {
+    return { drop: true, reason: 'rate-limit' };
+  }
+
+  // 4. Structurally unusable — no way to reply to it.
+  if (!email || !EMAIL_RE.test(email)) {
+    return { drop: true, reason: 'invalid-email' };
+  }
+  if (!name || name.length > 120) {
+    return { drop: true, reason: 'missing-or-oversized-name' };
+  }
+
+  // 5. Heuristics — kept for review rather than dropped, so a false positive
+  //    is recoverable by the admin instead of losing a real enquiry.
+  let score = 0;
+  if (countLinks(details) >= 2) score += 2;
+  if (countLinks(name) > 0 || /[<>]/.test(name)) score += 3;
+  if (SPAM_WORDS.test(blob)) score += 2;
+  // Enquiries for an Oman contractor arrive in English or Arabic; Cyrillic or
+  // CJK on its own is enough to warrant review. It only flags — a genuine
+  // approach from e.g. a Korean partner still lands in the Spam tab intact
+  // rather than being discarded.
+  if (CYRILLIC_OR_CJK.test(blob)) score += 3;
+  if (details.length > 3000) score += 1;
+  if (phone && phone.replace(/\D/g, '').length > 18) score += 1;
+
+  return { drop: false, status: score >= 3 ? 'spam' : 'new', reason: 'score=' + score };
+}
+
 function getEmailTransporter() {
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || '587');
@@ -1130,23 +1257,32 @@ app.post('/api/ajax', async (req, res) => {
       res.json({ success: true, data: { reply: 'Sorry, I\'m having trouble right now. Please contact us at ctc@cahitcontracting.com or call +968 2411 2406 Ext: 101.' } });
     }
   } else {
-    if (fields.name || fields.email) {
+    if (fields.name || fields.fullName || fields.email) {
+      const verdict = screenLead(req, fields);
+      if (verdict.drop) {
+        // Same silent-200 as the JSON endpoint: never tell a bot why it failed.
+        console.warn('[leads] dropped ' + verdict.reason + ' ip=' + clientIp(req));
+        return res.json({ success: true, data: { id: leadsStore.length } });
+      }
       const lead = {
         id: leadsStore.length + 1,
-        name: fields.name || '',
+        // The quote form posts `fullName` while the funnel posts `name`; the
+        // old code only read `name`, so every quote-form lead was stored with a
+        // blank name and showed up in the admin as "Unknown".
+        name: fields.name || fields.fullName || '',
         email: fields.email || '',
         phone: fields.phone || '',
         service_type: fields.service_type || '',
         details: fields.details || '',
-        status: 'new',
+        status: verdict.status,
         created_at: new Date().toISOString().split('T')[0]
       };
       if (dbPool) {
         const saved = await dbSaveLead(lead);
-        sendLeadEmail(saved || lead);
+        if (verdict.status !== 'spam') sendLeadEmail(saved || lead);
       } else {
         leadsStore.push(lead);
-        sendLeadEmail(lead);
+        if (verdict.status !== 'spam') sendLeadEmail(lead);
       }
     }
     res.json({ success: true, data: { id: leadsStore.length } });
@@ -1391,13 +1527,24 @@ app.post('/admin/api/translate', requireAdminAuth, express.json(), async (req, r
           { role: 'system', content: systemMsg },
           { role: 'user', content: userMsg }
         ],
-        max_tokens: 3000,
+        // Arabic costs roughly twice as many tokens as the equivalent English,
+        // so a full-length post translated under the old 3000 ceiling came back
+        // cut off mid-sentence with no indication anything was missing.
+        max_tokens: 8000,
         temperature: 0.3
       })
     });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    const translated = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+    const choice = (data.choices && data.choices[0]) || null;
+    const translated = (choice && choice.message && choice.message.content) || '';
+    if (choice && choice.finish_reason === 'length') {
+      return res.json({
+        success: false,
+        error: 'The text is too long to translate in one pass — it was cut off. Translate it in smaller sections.',
+        translated: translated.trim()
+      });
+    }
     res.json({ success: true, translated: translated.trim() });
   } catch (err) {
     console.error('Translate error:', err.message || err);
@@ -2306,6 +2453,13 @@ app.get('/admin/api/leads', requireAdminAuth, async (req, res) => {
 });
 
 app.post('/admin/api/leads', express.json(), async (req, res) => {
+  const verdict = screenLead(req, req.body || {});
+  if (verdict.drop) {
+    // Answer 200 so a bot gets no signal about what tripped the filter, and
+    // never touch the database or the notification mail.
+    console.warn('[leads] dropped ' + verdict.reason + ' ip=' + clientIp(req));
+    return res.json({ success: true, data: { id: null } });
+  }
   const lead = {
     id: leadsStore.length + 1,
     name: req.body.name || '',
@@ -2313,17 +2467,67 @@ app.post('/admin/api/leads', express.json(), async (req, res) => {
     phone: req.body.phone || '',
     service_type: req.body.service_type || '',
     details: req.body.details || '',
-    status: 'new',
+    status: verdict.status,
     created_at: new Date().toISOString().split('T')[0]
   };
   if (dbPool) {
     const saved = await dbSaveLead(lead);
-    sendLeadEmail(saved || lead);
+    // Suspected spam is still recorded so the admin can review it, but it must
+    // not generate an email — the mail flood is the actual complaint.
+    if (verdict.status !== 'spam') sendLeadEmail(saved || lead);
     res.json({ success: true, data: saved || lead });
   } else {
     leadsStore.push(lead);
-    sendLeadEmail(lead);
+    if (verdict.status !== 'spam') sendLeadEmail(lead);
     res.json({ success: true, data: lead });
+  }
+});
+
+// ===== Lead deletion (admin only) =====
+// The leads table previously had no delete path at any layer — no SQL helper,
+// no route, and no control in the admin UI — which is why rubbish leads could
+// only ever be marked "contacted" and never actually cleared.
+app.delete('/admin/api/leads/:id', requireAdminAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isInteger(id)) return res.status(400).json({ success: false, message: 'Invalid lead id' });
+  try {
+    if (dbPool) {
+      const removed = await dbDeleteLeads([id]);
+      if (!removed) return res.status(404).json({ success: false, message: 'Lead not found' });
+    } else {
+      const removed = removeLeadsWhere(l => l.id === id);
+      if (!removed) return res.status(404).json({ success: false, message: 'Lead not found' });
+    }
+    res.json({ success: true, deleted: 1 });
+  } catch (err) {
+    console.error('Lead delete error:', err.message || err);
+    res.status(500).json({ success: false, message: 'Delete failed' });
+  }
+});
+
+app.post('/admin/api/leads/bulk-delete', requireAdminAuth, express.json(), async (req, res) => {
+  const { ids, status, all } = req.body || {};
+  try {
+    let deleted = 0;
+    if (Array.isArray(ids) && ids.length) {
+      const clean = ids.map(n => parseInt(n, 10)).filter(Number.isInteger);
+      if (!clean.length) return res.status(400).json({ success: false, message: 'No valid ids supplied' });
+      if (dbPool) deleted = await dbDeleteLeads(clean);
+      else deleted = removeLeadsWhere(l => clean.indexOf(l.id) !== -1);
+    } else if (status) {
+      if (dbPool) deleted = await dbDeleteLeadsByStatus(String(status));
+      else deleted = removeLeadsWhere(l => l.status === status);
+    } else if (all === true) {
+      if (dbPool) deleted = await dbDeleteAllLeads();
+      else deleted = removeLeadsWhere(() => true);
+    } else {
+      return res.status(400).json({ success: false, message: 'Specify ids, status, or all:true' });
+    }
+    console.log('[leads] bulk delete removed ' + deleted + ' by admin=' + (req.adminToken && req.adminToken.username || '?'));
+    res.json({ success: true, deleted });
+  } catch (err) {
+    console.error('Lead bulk delete error:', err.message || err);
+    res.status(500).json({ success: false, message: 'Bulk delete failed' });
   }
 });
 

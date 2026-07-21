@@ -416,6 +416,11 @@
       <button class="funnel-option" onclick="selectFunnelOption('funnel-decision', this)" data-ar="جزء من فريق">Part of a team</button>
     </div>
   </div>
+  <!-- Honeypot — see the matching field in header.php. Off-screen and
+       aria-hidden, so only an automated filler will populate it. -->
+  <div style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true">
+    <label>Website<input type="text" id="funnel-website" name="website" tabindex="-1" autocomplete="off" /></label>
+  </div>
   <div class="funnel-field">
     <label class="funnel-label" data-ar="الاسم الكامل">Full Name</label>
     <input type="text" class="funnel-input" id="funnel-name" placeholder="Your full name" data-placeholder-ar="اسمك الكامل" data-placeholder-en="Your full name" data-testid="funnel-input-name" />

@@ -1,6 +1,19 @@
 (function () {
   "use strict";
 
+  // Stamped once when the page loads so the server can tell how long the
+  // visitor actually spent on the form. Scripted submissions typically fire
+  // within a few hundred milliseconds of load.
+  var pageLoadedAt = Date.now();
+
+  // Attaches the two anti-spam signals the server screens on: the honeypot
+  // value (empty for a real visitor) and the elapsed time since page load.
+  function appendSpamSignals(formData, honeypotId) {
+    var hp = honeypotId ? document.getElementById(honeypotId) : null;
+    formData.append("website", hp ? hp.value : "");
+    formData.append("form_elapsed_ms", String(Date.now() - pageLoadedAt));
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initMobileMenu();
     initVideoHover();
@@ -290,6 +303,7 @@
     formData.append("fullName", fullname.value);
     formData.append("email", email.value);
     formData.append("phone", document.getElementById("quote-phone") ? document.getElementById("quote-phone").value : "");
+    appendSpamSignals(formData, "quote-website");
 
     var ajaxUrl = (typeof cahitData !== "undefined" && cahitData.ajaxUrl) ? cahitData.ajaxUrl : "/api/ajax";
 
@@ -821,6 +835,7 @@
       formData.append("name", funnelData["name"]);
       formData.append("email", funnelData["email"]);
       formData.append("phone", funnelData["phone"]);
+      appendSpamSignals(formData, "funnel-website");
 
       var ajaxUrl = (typeof cahitData !== "undefined" && cahitData.ajaxUrl) || "/api/ajax";
       var submitBtn = document.querySelector('[data-testid="funnel-submit-3"]');
